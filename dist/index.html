@@ -19,19 +19,10 @@
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
     .animate-spin{animation:spin 1s linear infinite}
     @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-    #err{display:none;color:#f87171;padding:20px;font-family:monospace;font-size:12px;background:#1E293B;margin:20px;border-radius:8px}
   </style>
+  <script type="module" crossorigin src="/assets/index-BbWZFkiX.js"></script>
 </head>
 <body>
   <div id="root"></div>
-  <div id="err"></div>
-  <script type="module" src="/assets/index-BbWZFkiX.js"></script>
-  <script>
-    window.onerror=function(m,s,l,c,e){
-      var d=document.getElementById('err');
-      d.style.display='block';
-      d.innerText='ERREUR: '+m+'\nFichier: '+s+'\nLigne: '+l;
-    };
-  </script>
 </body>
 </html>
