@@ -333,6 +333,45 @@ function GardesVue(props) {
   var gState = useState(initial);
   var gardes = gState[0];
   var setGardes = gState[1];
+  var showGavFormState = useState(false); var showGavForm = showGavFormState[0]; var setShowGavForm = showGavFormState[1];
+  var gavNomState = useState(""); var gavNom = gavNomState[0]; var setGavNom = gavNomState[1];
+  var gavPrenomState = useState(""); var gavPrenom = gavPrenomState[0]; var setGavPrenom = gavPrenomState[1];
+  var gavMotifState = useState(""); var gavMotif = gavMotifState[0]; var setGavMotif = gavMotifState[1];
+
+  useEffect(function() {
+    function chargerGav(){
+      supabase.from("gardes_vue").select("*").order("created_at",{ascending:false}).then(function(r){
+        if(r.data && r.data.length>0){
+          var nouvGardes = r.data.map(function(g){
+            return Object.assign({},g,{instruction:null,droits:{avocat:false,medecin:false,famille:false},heuresRestantes:24});
+          });
+          setGardes(function(prev){ return initial.concat(nouvGardes); });
+        }
+      });
+    }
+    chargerGav();
+    var timer=setInterval(chargerGav,15000);
+    return function(){ clearInterval(timer); };
+  }, []);
+
+  function creerGardeVue() {
+    if(!gavNom.trim() || !gavMotif.trim()) return;
+    var nouv = {
+      id: "GAV-"+Date.now(),
+      nom: gavNom, prenom: gavPrenom, motif: gavMotif,
+      statut: "en_cours", auteur: compte.identifiant,
+      unite: compte.service, corps: compte.corps,
+      date_arrestation: new Date().toLocaleDateString("fr-FR"),
+      heure_arrestation: new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})
+    };
+    supabase.from("gardes_vue").insert([nouv]).then(function(r){
+      if(!r.error){
+        var gav = Object.assign({},nouv,{instruction:null,droits:{avocat:false,medecin:false,famille:false},heuresRestantes:24});
+        setGardes(function(prev){return prev.concat([gav]);});
+        setShowGavForm(false); setGavNom(""); setGavPrenom(""); setGavMotif("");
+      } else { alert("Erreur: "+JSON.stringify(r.error)); }
+    });
+  }
 
   var voitTout = compte.role === "direction" || compte.role === "rh" || compte.role === "operations";
   var visibles = voitTout ? gardes : gardes.filter(function (g) { return g.auteur === compte.identifiant || g.unite === compte.service; });
@@ -375,8 +414,22 @@ function GardesVue(props) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-2xl font-black text-white">Gestion des Gardes a Vue</h2>
-      <p className="text-slate-500 text-xs">{voitTout ? "Vue consolidee" : "Service: " + compte.service}</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-black text-white">Gestion des Gardes a Vue</h2>
+          <p className="text-slate-500 text-xs">{voitTout ? "Vue consolidee" : "Service: " + compte.service}</p>
+        </div>
+        {peutAgir ? <button onClick={function(){setShowGavForm(function(v){return !v;})}} className="bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold">+ Nouvelle GAV</button> : null}
+      </div>
+      {showGavForm ? (
+        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-4 space-y-3">
+          <p className="text-white font-bold">Nouvelle Garde a Vue</p>
+          <input value={gavNom} onChange={function(e){setGavNom(e.target.value)}} placeholder="Nom *" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <input value={gavPrenom} onChange={function(e){setGavPrenom(e.target.value)}} placeholder="Prenom" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <input value={gavMotif} onChange={function(e){setGavMotif(e.target.value)}} placeholder="Motif de garde a vue *" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <button onClick={creerGardeVue} className="w-full bg-green-700 text-white py-2 rounded-xl font-bold text-sm">Enregistrer</button>
+        </div>
+      ) : null}
       <div className="grid grid-cols-3 gap-3">
         <StatCard icon="🔒" label="En cours" value={visibles.filter(function (g) { return g.statut === "actif"; }).length} color="#F59E0B" />
         <StatCard icon="⚠️" label="Delai critique" value={visibles.filter(function (g) { return g.heuresRestantes <= 6 && g.statut === "actif"; }).length} color="#DC2626" />
