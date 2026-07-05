@@ -360,7 +360,7 @@ function GardesVue(props) {
       id: "GAV-"+Date.now(),
       nom: gavNom, prenom: gavPrenom, motif: gavMotif,
       statut: "en_cours", auteur: compte.identifiant,
-      unite: compte.service, corps: compte.corps,
+      unite: compte.service,
       date_arrestation: new Date().toLocaleDateString("fr-FR"),
       heure_arrestation: new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})
     };
