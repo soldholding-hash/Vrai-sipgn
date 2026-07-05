@@ -772,6 +772,48 @@ function Carrieres(props) {
   var fState = useState("tous");
   var filter = fState[0];
   var setFilter = fState[1];
+  var showRecrueFormState = useState(false); var showRecrueForm = showRecrueFormState[0]; var setShowRecrueForm = showRecrueFormState[1];
+  var recNomState = useState(""); var recNom = recNomState[0]; var setRecNom = recNomState[1];
+  var recMatriculeState = useState(""); var recMatricule = recMatriculeState[0]; var setRecMatricule = recMatriculeState[1];
+  var recCorpsState = useState("Police"); var recCorps = recCorpsState[0]; var setRecCorps = recCorpsState[1];
+  var recServiceState = useState(""); var recService = recServiceState[0]; var setRecService = recServiceState[1];
+  var recDiplomeState = useState(""); var recDiplome = recDiplomeState[0]; var setRecDiplome = recDiplomeState[1];
+
+  useEffect(function() {
+    function chargerRecrues(){
+      supabase.from("personnels").select("*").order("created_at",{ascending:false}).then(function(r){
+        if(r.data && r.data.length>0){
+          var nouvAgents = r.data.map(function(a){
+            return { id:a.id, matricule:a.matricule, nom:a.nom, corps:a.corps, service:a.service, gradeIndex:a.gradeindex, anciennete:a.anciennete, statut:a.statut, diplome:a.diplome, instruction:null };
+          });
+          setAgents(function(prev){
+            var idsExistants = prev.map(function(p){return p.id;});
+            var aAjouter = nouvAgents.filter(function(a){return idsExistants.indexOf(a.id)===-1;});
+            return prev.concat(aAjouter);
+          });
+        }
+      });
+    }
+    chargerRecrues();
+    var timer=setInterval(chargerRecrues,15000);
+    return function(){ clearInterval(timer); };
+  }, []);
+
+  function creerRecrue() {
+    var nouv = {
+      id: "AGT-"+Date.now(),
+      matricule: recMatricule, nom: recNom, corps: recCorps,
+      service: recService, gradeindex: 0, anciennete: 0,
+      statut: "actif", diplome: recDiplome
+    };
+    supabase.from("personnels").insert([nouv]).then(function(r){
+      if(!r.error){
+        var agentComplet = { id:nouv.id, matricule:nouv.matricule, nom:nouv.nom, corps:nouv.corps, service:nouv.service, gradeIndex:0, anciennete:0, statut:"actif", diplome:nouv.diplome, instruction:null };
+        setAgents(function(prev){return prev.concat([agentComplet]);});
+        setShowRecrueForm(false); setRecNom(""); setRecMatricule(""); setRecService(""); setRecDiplome(""); setRecCorps("Police");
+      } else { alert("Erreur: "+JSON.stringify(r.error)); }
+    });
+  }
 
   var voitTout = compte.role === "rh" || compte.role === "personnel";
   var visiblesBase;
@@ -839,10 +881,26 @@ function Carrieres(props) {
 
   return (
     <div className="space-y-4">
-      <div>
-        <h2 className="text-2xl font-black text-white">Personnel et Carrieres</h2>
-        <p className="text-slate-500 text-xs">{voitTout ? "Vue consolidee DGRH" : "Service: " + compte.service}</p>
+      <div className="flex items-center justify-between flex-wrap gap-2">
+        <div>
+          <h2 className="text-2xl font-black text-white">Personnel et Carrieres</h2>
+          <p className="text-slate-500 text-xs">{voitTout ? "Vue consolidee DGRH" : "Service: " + compte.service}</p>
+        </div>
       </div>
+      {showRecrueForm ? (
+        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-4 space-y-3">
+          <p className="text-white font-bold">Nouvelle Recrue</p>
+          <input value={recNom} onChange={function(e){setRecNom(e.target.value)}} placeholder="Nom complet *" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <input value={recMatricule} onChange={function(e){setRecMatricule(e.target.value)}} placeholder="Matricule *" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <select value={recCorps} onChange={function(e){setRecCorps(e.target.value)}} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm">
+            <option value="Police">Police</option>
+            <option value="Gendarmerie">Gendarmerie</option>
+          </select>
+          <input value={recService} onChange={function(e){setRecService(e.target.value)}} placeholder="Service / Unite *" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <input value={recDiplome} onChange={function(e){setRecDiplome(e.target.value)}} placeholder="Diplome (optionnel)" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <button onClick={creerRecrue} className="w-full bg-green-700 text-white py-2 rounded-xl font-bold text-sm">Enregistrer</button>
+        </div>
+      ) : null}
       {visiblesBase.length === 0 ? <div className="bg-slate-800/90 rounded-2xl shadow-lg shadow-black/30 border border-slate-700 p-6 text-center text-slate-500 text-sm">Aucun dossier de personnel accessible pour ce profil.</div> : (
         <div className="space-y-4">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
