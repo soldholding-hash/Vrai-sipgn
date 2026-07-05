@@ -1,3 +1,5 @@
+import { createClient } from "@supabase/supabase-js"
+var supabase=createClient("https://lvstphnennbiwwubaepw.supabase.co","sb_publishable_IVEjS49BS6I9F2czR_UnvQ_f_fuykvY")
 import { useState, useEffect } from "react";
 import { LayoutDashboard, CalendarDays, FileWarning, Lock, Car, Truck, FileText, Users, Search, Bell, MessageSquare, LogOut, Siren, ShieldCheck, Clock, Fingerprint, ShieldAlert, Building2, Package, ClipboardCheck, Shuffle, CalendarCheck, GraduationCap, BookOpen, Video, VideoOff, Mic, MicOff, PhoneOff, MonitorPlay, Radio } from "lucide-react";
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, LineChart, Line, Treemap } from "recharts";
@@ -156,9 +158,33 @@ var STATUT_LABEL = { en_cours: "En cours", cloture: "Cloture", transmis_parquet:
 function MainCourante(props) {
   var compte = props.compte;
   var fState = useState("tous");
-  var filter = fState[0];
-  var setFilter = fState[1];
+  var filter = fState[0]; var setFilter = fState[1];
   var voitTout = compte.role === "direction" || compte.role === "rh" || compte.role === "operations";
+  var dbIncState = useState([]); var dbInc = dbIncState[0]; var setDbInc = dbIncState[1];
+  var showFormState = useState(false); var showForm = showFormState[0]; var setShowForm = showFormState[1];
+  var newTypeState = useState(""); var newType = newTypeState[0]; var setNewType = newTypeState[1];
+  var newLieuState = useState(""); var newLieu = newLieuState[0]; var setNewLieu = newLieuState[1];
+  var newDescState = useState(""); var newDesc = newDescState[0]; var setNewDesc = newDescState[1];
+  var newGravState = useState("moyen"); var newGrav = newGravState[0]; var setNewGrav = newGravState[1];
+
+  useEffect(function() {
+    supabase.from("incidents").select("*").order("created_at",{ascending:false}).then(function(r){
+      if(r.data) setDbInc(r.data);
+    });
+  }, []);
+
+  function creerIncident() {
+    var nouv = {
+      id: "INC-DB-"+Date.now(),
+      type: newType, lieu: newLieu, description: newDesc,
+      gravite: newGrav, statut: "en_cours",
+      auteur: compte.identifiant, corps: compte.corps,
+      date: new Date().toLocaleDateString("fr-FR"),
+      heure: new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})
+    };
+    supabase.from("incidents").insert([nouv]).then(function(r){
+    });
+  }
 
   var visibles = [];
   for (var i = 0; i < INCIDENTS_DATA.length; i++) {
