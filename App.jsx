@@ -886,6 +886,7 @@ function Carrieres(props) {
           <h2 className="text-2xl font-black text-white">Personnel et Carrieres</h2>
           <p className="text-slate-500 text-xs">{voitTout ? "Vue consolidee DGRH" : "Service: " + compte.service}</p>
         </div>
+        {peutGerer ? <button onClick={function(){setShowRecrueForm(function(v){return !v;});}} className="bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold">+ Nouvelle Recrue</button> : null}
       </div>
       {showRecrueForm ? (
         <div className="bg-slate-800 rounded-2xl border border-slate-700 p-4 space-y-3">
