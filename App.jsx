@@ -5682,6 +5682,26 @@ function EDossierPersonnel(props) {
   var agentsState = useState(AGENTS_DATA.map(function (a) { var c = {}; for (var k in a) { c[k] = a[k]; } return c; }));
   var agents = agentsState[0]; var setAgents = agentsState[1];
 
+  useEffect(function() {
+    function chargerRecruesEDossier(){
+      supabase.from("personnels").select("*").order("created_at",{ascending:false}).then(function(r){
+        if(r.data && r.data.length>0){
+          var nouvAgents = r.data.map(function(a){
+            return { id:a.id, matricule:a.matricule, nom:a.nom, corps:a.corps, service:a.service, gradeIndex:a.gradeindex, anciennete:a.anciennete, statut:a.statut, diplome:a.diplome, photo:a.photo };
+          });
+          setAgents(function(prev){
+            var idsExistants = prev.map(function(p){return p.id;});
+            var aAjouter = nouvAgents.filter(function(a){return idsExistants.indexOf(a.id)===-1;});
+            return prev.concat(aAjouter);
+          });
+        }
+      });
+    }
+    chargerRecruesEDossier();
+    var timer=setInterval(chargerRecruesEDossier,15000);
+    return function(){ clearInterval(timer); };
+  }, []);
+
   var agent = agents.find(function (a) { return a.id === selectedId; });
   var profil = AGENT_PROFILS_MAP[selectedId];
 
