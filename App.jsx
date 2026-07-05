@@ -168,9 +168,10 @@ function MainCourante(props) {
   var newGravState = useState("moyen"); var newGrav = newGravState[0]; var setNewGrav = newGravState[1];
 
   useEffect(function() {
-    supabase.from("incidents").select("*").order("created_at",{ascending:false}).then(function(r){
-      if(r.data) setDbInc(r.data);
-    });
+    function charger(){ supabase.from("incidents").select("*").order("created_at",{ascending:false}).then(function(r){ if(r.data) setDbInc(r.data); }); }
+    charger();
+    var timer=setInterval(charger, 15000);
+    return function(){ clearInterval(timer); };
   }, []);
 
   function creerIncident() {
