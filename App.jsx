@@ -251,6 +251,21 @@ function MainCourante(props) {
           );
         })}
       </div>
+      <button onClick={function(){setShowForm(function(v){return !v;})}} className="bg-blue-700 text-white px-4 py-2 rounded-xl text-sm font-bold mb-2">+ Signaler un incident</button>
+      {showForm ? (
+        <div className="bg-slate-800 rounded-2xl border border-slate-700 p-4 space-y-3 mb-3">
+          <p className="text-white font-bold">Nouveau signalement</p>
+          <input value={newType} onChange={function(e){setNewType(e.target.value)}} placeholder="Type (ex: Vol, Agression...)" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <input value={newLieu} onChange={function(e){setNewLieu(e.target.value)}} placeholder="Lieu" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <input value={newDesc} onChange={function(e){setNewDesc(e.target.value)}} placeholder="Description" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <select value={newGrav} onChange={function(e){setNewGrav(e.target.value)}} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm">
+            <option value="critique">Critique</option>
+            <option value="grave">Grave</option>
+            <option value="moyen">Moyen</option>
+          </select>
+          <button onClick={creerIncident} className="w-full bg-green-700 text-white py-2 rounded-xl font-bold text-sm">Enregistrer</button>
+        </div>
+      ) : null}
       <div className="space-y-2">
         {filtered.length === 0 ? <div className="bg-slate-800/90 rounded-2xl shadow-lg shadow-black/30 border border-slate-700 p-6 text-center text-slate-500 text-sm">Aucun incident enregistre.</div> : null}
         {filtered.map(function (inc) {
