@@ -778,6 +778,15 @@ function Carrieres(props) {
   var recCorpsState = useState("Police"); var recCorps = recCorpsState[0]; var setRecCorps = recCorpsState[1];
   var recServiceState = useState(""); var recService = recServiceState[0]; var setRecService = recServiceState[1];
   var recDiplomeState = useState(""); var recDiplome = recDiplomeState[0]; var setRecDiplome = recDiplomeState[1];
+  var recPhotoState = useState(""); var recPhoto = recPhotoState[0]; var setRecPhoto = recPhotoState[1];
+
+  function handlePhotoChange(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) { setRecPhoto(ev.target.result); };
+    reader.readAsDataURL(file);
+  }
 
   useEffect(function() {
     function chargerRecrues(){
@@ -804,13 +813,13 @@ function Carrieres(props) {
       id: "AGT-"+Date.now(),
       matricule: recMatricule, nom: recNom, corps: recCorps,
       service: recService, gradeindex: 0, anciennete: 0,
-      statut: "actif", diplome: recDiplome
+      statut: "actif", diplome: recDiplome, photo: recPhoto
     };
     supabase.from("personnels").insert([nouv]).then(function(r){
       if(!r.error){
         var agentComplet = { id:nouv.id, matricule:nouv.matricule, nom:nouv.nom, corps:nouv.corps, service:nouv.service, gradeIndex:0, anciennete:0, statut:"actif", diplome:nouv.diplome, instruction:null };
         setAgents(function(prev){return prev.concat([agentComplet]);});
-        setShowRecrueForm(false); setRecNom(""); setRecMatricule(""); setRecService(""); setRecDiplome(""); setRecCorps("Police");
+        setShowRecrueForm(false); setRecNom(""); setRecMatricule(""); setRecService(""); setRecDiplome(""); setRecCorps("Police"); setRecPhoto("");
       } else { alert("Erreur: "+JSON.stringify(r.error)); }
     });
   }
@@ -899,6 +908,10 @@ function Carrieres(props) {
           </select>
           <input value={recService} onChange={function(e){setRecService(e.target.value)}} placeholder="Service / Unite *" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
           <input value={recDiplome} onChange={function(e){setRecDiplome(e.target.value)}} placeholder="Diplome (optionnel)" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <div className="flex items-center gap-3">
+            {recPhoto ? <img src={recPhoto} className="w-14 h-14 rounded-full object-cover border border-slate-700" /> : <div className="w-14 h-14 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-slate-500 text-xs">Photo</div>}
+            <input type="file" accept="image/*" onChange={handlePhotoChange} className="text-slate-400 text-xs" />
+          </div>
           <button onClick={creerRecrue} className="w-full bg-green-700 text-white py-2 rounded-xl font-bold text-sm">Enregistrer</button>
         </div>
       ) : null}
