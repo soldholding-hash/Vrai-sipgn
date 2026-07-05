@@ -183,6 +183,8 @@ function MainCourante(props) {
       heure: new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"})
     };
     supabase.from("incidents").insert([nouv]).then(function(r){
+      alert("Resultat: "+JSON.stringify(r.error||"OK"));
+      if(!r.error){ setDbInc(function(prev){return [nouv].concat(prev);}); setShowForm(false); setNewType(""); setNewLieu(""); setNewDesc(""); }
     });
   }
 
