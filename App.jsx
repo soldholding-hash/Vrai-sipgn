@@ -189,9 +189,10 @@ function MainCourante(props) {
     });
   }
 
+  var tousInc = INCIDENTS_DATA.concat(dbInc);
   var visibles = [];
-  for (var i = 0; i < INCIDENTS_DATA.length; i++) {
-    var inc = INCIDENTS_DATA[i];
+  for (var i = 0; i < tousInc.length; i++) {
+    var inc = tousInc[i];
     if (voitTout) {
       if (compte.role !== "direction" || compte.corps === "Tous" || inc.corps === compte.corps) {
         visibles.push(inc);
