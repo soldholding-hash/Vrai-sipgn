@@ -8097,9 +8097,9 @@ function Dossiers360Agents(props) {
   var scoreEval = agent ? getScoreEval(agent) : null;
   var badge = agent ? getBadgeStatut(agent) : null;
 
-  var totalAgents = AGENTS_DATA.length;
-  var enService = AGENTS_DATA.filter(function (a) { return a.statut === "actif"; }).length;
-  var eligibles = AGENTS_DATA.filter(function (a) { return isEligiblePromotion(a) || a.statut === "proposition_promotion"; }).length;
+  var totalAgents = agentsData.length;
+  var enService = agentsData.filter(function (a) { return a.statut === "actif"; }).length;
+  var eligibles = agentsData.filter(function (a) { return isEligiblePromotion(a) || a.statut === "proposition_promotion"; }).length;
 
   return (
     <div className="space-y-4">
