@@ -5,23 +5,23 @@ import { LayoutDashboard, CalendarDays, FileWarning, Lock, Car, Truck, FileText,
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, LineChart, Line, Treemap } from "recharts";
 
 var COMPTES = [
-  { id: "CFP-001", identifiant: "cfp.brazzaville", motdepasse: "admin2026", role: "direction", nom: "Commandement des Forces de Police (CFP)", service: "Commandement des Forces de Police", corps: "Police", couleur: "#8B5CF6" },
-  { id: "CGN-001", identifiant: "cgn.brazzaville", motdepasse: "cgn2026", role: "direction", nom: "Commandement de la Gendarmerie Nationale (CGN)", service: "Commandement de la Gendarmerie Nationale", corps: "Gendarmerie", couleur: "#A21CAF" },
-  { id: "DRG-001", identifiant: "drg.brazzaville", motdepasse: "renseignement2026", role: "renseignement", nom: "Direction des Renseignements Generaux (DRG)", service: "Direction des Renseignements Generaux", corps: "Police", couleur: "#581C87" },
-  { id: "DGRH-001", identifiant: "dgrh.brazzaville", motdepasse: "rh2026", role: "rh", nom: "Direction Generale des Ressources Humaines", service: "DGRH", corps: "Tous", couleur: "#BE185D" },
-  { id: "DL-001", identifiant: "dl.brazzaville", motdepasse: "logistique2026", role: "dl", nom: "Direction de la Logistique", service: "Direction de la Logistique", corps: "Tous", couleur: "#0EA5E9" },
-  { id: "DAF-001", identifiant: "daf.brazzaville", motdepasse: "finances2026", role: "daf", nom: "Direction Administration et Finances", service: "DAF", corps: "Tous", couleur: "#16A34A" },
-  { id: "DOP-001", identifiant: "personnel.brazzaville", motdepasse: "personnel2026", role: "personnel", nom: "Direction Organisation et Personnel", service: "Direction du Personnel", corps: "Tous", couleur: "#D97706" },
-  { id: "DOPS-001", identifiant: "operations.brazzaville", motdepasse: "operations2026", role: "operations", nom: "Direction des Operations", service: "Direction des Operations", corps: "Tous", couleur: "#2563EB" },
-  { id: "INTERPOL-001", identifiant: "interpol.brazzaville", motdepasse: "interpol2026", role: "interpol", nom: "Bureau Central National INTERPOL", service: "INTERPOL Brazzaville", corps: "Police", couleur: "#EA580C" },
-  { id: "PNAV-001", identifiant: "police.navale", motdepasse: "navale2026", role: "navale", nom: "Police Navale", service: "Police Navale", corps: "Police", couleur: "#0369A1" },
-  { id: "GNAV-001", identifiant: "gendarmerie.navale", motdepasse: "navale2026", role: "navale", nom: "Gendarmerie Navale", service: "Gendarmerie Navale", corps: "Gendarmerie", couleur: "#0E7490" },
-  { id: "CC-001", identifiant: "commissariat.central", motdepasse: "police2026", role: "commissariat", nom: "Commissariat Central BZV", service: "Commissariat Central BZV", corps: "Police", couleur: "#003F87" },
-  { id: "BCA-001", identifiant: "bca.brazzaville", motdepasse: "accident2026", role: "accidents", nom: "Bureau Controle Accidents", service: "Bureau Controle Accidents BZV", corps: "Police", couleur: "#F59E0B" },
-  { id: "PJ-001", identifiant: "dcpj.brazzaville", motdepasse: "judiciaire2026", role: "judiciaire", nom: "DCPJ Brazzaville", service: "DCPJ Brazzaville", corps: "Police", couleur: "#DC2626" },
-  { id: "GN-001", identifiant: "gendarmerie.pnr", motdepasse: "gend2026", role: "gendarmerie", nom: "Brigade Territoriale PNR", service: "Brigade Territoriale Pointe-Noire", corps: "Gendarmerie", couleur: "#1B6B3A" },
-  { id: "CTL-001", identifiant: "controle.frontieres", motdepasse: "frontiere2026", role: "controle", nom: "Controle Voyageurs et Frontieres", service: "Poste Frontalier Aeroport", corps: "Police", couleur: "#0EA5E9" },
-  { id: "OPJ-001", identifiant: "opj.malanda", motdepasse: "enquete2026", role: "opj", nom: "Inspecteur Principal MALANDA Christian", service: "DCPJ Brazzaville", corps: "Police", couleur: "#9F1239", nomOfficier: "MALANDA Christian", matricule: "PNB-10234" }
+  { id: "CFP-001", identifiant: "cfp-congo@policenationale.cg", motdepasse: "admin2026", role: "direction", nom: "Commandement des Forces de Police (CFP)", service: "Commandement des Forces de Police", corps: "Police", couleur: "#8B5CF6" },
+  { id: "CGN-001", identifiant: "cgn-congo@gendarmerienationale.cg", motdepasse: "cgn2026", role: "direction", nom: "Commandement de la Gendarmerie Nationale (CGN)", service: "Commandement de la Gendarmerie Nationale", corps: "Gendarmerie", couleur: "#A21CAF" },
+  { id: "DRG-001", identifiant: "drg-congo@policenationale.cg", motdepasse: "renseignement2026", role: "renseignement", nom: "Direction des Renseignements Generaux (DRG)", service: "Direction des Renseignements Generaux", corps: "Police", couleur: "#581C87" },
+  { id: "DGRH-001", identifiant: "dgrh-congo@sipgn.cg", motdepasse: "rh2026", role: "rh", nom: "Direction Generale des Ressources Humaines", service: "DGRH", corps: "Tous", couleur: "#BE185D" },
+  { id: "DL-001", identifiant: "dl-congo@sipgn.cg", motdepasse: "logistique2026", role: "dl", nom: "Direction de la Logistique", service: "Direction de la Logistique", corps: "Tous", couleur: "#0EA5E9" },
+  { id: "DAF-001", identifiant: "daf-congo@sipgn.cg", motdepasse: "finances2026", role: "daf", nom: "Direction Administration et Finances", service: "DAF", corps: "Tous", couleur: "#16A34A" },
+  { id: "DOP-001", identifiant: "personnel-congo@sipgn.cg", motdepasse: "personnel2026", role: "personnel", nom: "Direction Organisation et Personnel", service: "Direction du Personnel", corps: "Tous", couleur: "#D97706" },
+  { id: "DOPS-001", identifiant: "operations-congo@sipgn.cg", motdepasse: "operations2026", role: "operations", nom: "Direction des Operations", service: "Direction des Operations", corps: "Tous", couleur: "#2563EB" },
+  { id: "INTERPOL-001", identifiant: "interpol-congo@policenationale.cg", motdepasse: "interpol2026", role: "interpol", nom: "Bureau Central National INTERPOL", service: "INTERPOL Brazzaville", corps: "Police", couleur: "#EA580C" },
+  { id: "PNAV-001", identifiant: "policenavale-congo@policenationale.cg", motdepasse: "navale2026", role: "navale", nom: "Police Navale", service: "Police Navale", corps: "Police", couleur: "#0369A1" },
+  { id: "GNAV-001", identifiant: "gendarmerienavale-congo@gendarmerienationale.cg", motdepasse: "navale2026", role: "navale", nom: "Gendarmerie Navale", service: "Gendarmerie Navale", corps: "Gendarmerie", couleur: "#0E7490" },
+  { id: "CC-001", identifiant: "commissariatcentral-congo@policenationale.cg", motdepasse: "police2026", role: "commissariat", nom: "Commissariat Central BZV", service: "Commissariat Central BZV", corps: "Police", couleur: "#003F87" },
+  { id: "BCA-001", identifiant: "bca-congo@policenationale.cg", motdepasse: "accident2026", role: "accidents", nom: "Bureau Controle Accidents", service: "Bureau Controle Accidents BZV", corps: "Police", couleur: "#F59E0B" },
+  { id: "PJ-001", identifiant: "dcpj-congo@policenationale.cg", motdepasse: "judiciaire2026", role: "judiciaire", nom: "DCPJ Brazzaville", service: "DCPJ Brazzaville", corps: "Police", couleur: "#DC2626" },
+  { id: "GN-001", identifiant: "gendarmeriepnr-congo@gendarmerienationale.cg", motdepasse: "gend2026", role: "gendarmerie", nom: "Brigade Territoriale PNR", service: "Brigade Territoriale Pointe-Noire", corps: "Gendarmerie", couleur: "#1B6B3A" },
+  { id: "CTL-001", identifiant: "frontieres-congo@policenationale.cg", motdepasse: "frontiere2026", role: "controle", nom: "Controle Voyageurs et Frontieres", service: "Poste Frontalier Aeroport", corps: "Police", couleur: "#0EA5E9" },
+  { id: "OPJ-001", identifiant: "opj.malanda@policenationale.cg", motdepasse: "enquete2026", role: "opj", nom: "Inspecteur Principal MALANDA Christian", service: "DCPJ Brazzaville", corps: "Police", couleur: "#9F1239", nomOfficier: "MALANDA Christian", matricule: "PNB-10234" }
 ];
 
 var LOGO_POLICE_B64 = "logo_police.png";
@@ -109,7 +109,7 @@ function LoginScreen(props) {
           <div className="space-y-3">
             <div>
               <label className="text-slate-400 text-xs font-bold uppercase">Identifiant de service</label>
-              <input value={identifiant} onChange={function (e) { setIdentifiant(e.target.value); }} placeholder="ex: commissariat.central" className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm" />
+              <input value={identifiant} onChange={function (e) { setIdentifiant(e.target.value); }} placeholder="ex: commissariatcentral-congo@policenationale.cg" className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm" />
             </div>
             <div>
               <label className="text-slate-400 text-xs font-bold uppercase">Mot de passe</label>
@@ -138,18 +138,18 @@ function LoginScreen(props) {
 }
 
 var INCIDENTS_DATA = [
-  { id: "INC-001", type: "Vol a main armee", lieu: "Marche Total, Brazzaville", gravite: "critique", statut: "en_cours", corps: "Police", auteur: "dcpj.brazzaville", description: "Braquage d un commercant. Deux suspects en fuite." },
-  { id: "INC-002", type: "Accident de circulation", lieu: "RN1 km 47, Pointe-Noire", gravite: "grave", statut: "en_cours", corps: "Police", auteur: "bca.brazzaville", description: "Collision frontale, 3 vehicules impliques." },
-  { id: "INC-003", type: "Trouble a l ordre public", lieu: "Bacongo, Brazzaville", gravite: "moyen", statut: "cloture", corps: "Police", auteur: "commissariat.central", description: "Rixe resolue par mediation." },
-  { id: "INC-004", type: "Trafic de stupefiants", lieu: "Port de Brazzaville", gravite: "critique", statut: "en_cours", corps: "Police", auteur: "dcpj.brazzaville", description: "Saisie de 12 kg de chanvre indien." },
-  { id: "INC-005", type: "Violence domestique", lieu: "Bacongo II, Brazzaville", gravite: "grave", statut: "transmis_parquet", corps: "Police", auteur: "commissariat.central", description: "Victime prise en charge, dossier transmis au Parquet." },
-  { id: "INC-006", type: "Exces de vitesse", lieu: "RN1 km 12, Brazzaville", gravite: "moyen", statut: "cloture", corps: "Police", auteur: "bca.brazzaville", description: "Vehicule controle a 112 km/h en zone 60." },
-  { id: "INC-007", type: "Conduite en etat d ivresse", lieu: "Corniche, Brazzaville", gravite: "grave", statut: "transmis_parquet", corps: "Police", auteur: "bca.brazzaville", description: "Alcoolemie 1,8 g/l. Permis retenu." },
-  { id: "INC-008", type: "Accident grave collision bus", lieu: "RN1 km 88, Niari", gravite: "critique", statut: "en_cours", corps: "Police", auteur: "bca.brazzaville", description: "7 blesses evacues vers l hopital de Dolisie." },
-  { id: "INC-009", type: "Cambriolage", lieu: "Moungali, Brazzaville", gravite: "grave", statut: "en_cours", corps: "Police", auteur: "commissariat.central", description: "Effraction nocturne, materiel derobe." },
-  { id: "INC-010", type: "Vol a la tire", lieu: "Gare routiere, Pointe-Noire", gravite: "moyen", statut: "en_cours", corps: "Gendarmerie", auteur: "gendarmerie.pnr", description: "Vol de telephone filme par camera de surveillance." },
-  { id: "INC-011", type: "Tentative d evasion", lieu: "Maison d arret de Brazzaville", gravite: "critique", statut: "transmis_parquet", corps: "Police", auteur: "dcpj.brazzaville", description: "Evasion dejouee, deux detenus isoles." },
-  { id: "INC-012", type: "Faux documents administratifs", lieu: "Aeroport Maya-Maya", gravite: "grave", statut: "en_cours", corps: "Police", auteur: "controle.frontieres", description: "Passeport presentant des signes de falsification." }
+  { id: "INC-001", type: "Vol a main armee", lieu: "Marche Total, Brazzaville", gravite: "critique", statut: "en_cours", corps: "Police", auteur: "dcpj-congo@policenationale.cg", description: "Braquage d un commercant. Deux suspects en fuite." },
+  { id: "INC-002", type: "Accident de circulation", lieu: "RN1 km 47, Pointe-Noire", gravite: "grave", statut: "en_cours", corps: "Police", auteur: "bca-congo@policenationale.cg", description: "Collision frontale, 3 vehicules impliques." },
+  { id: "INC-003", type: "Trouble a l ordre public", lieu: "Bacongo, Brazzaville", gravite: "moyen", statut: "cloture", corps: "Police", auteur: "commissariatcentral-congo@policenationale.cg", description: "Rixe resolue par mediation." },
+  { id: "INC-004", type: "Trafic de stupefiants", lieu: "Port de Brazzaville", gravite: "critique", statut: "en_cours", corps: "Police", auteur: "dcpj-congo@policenationale.cg", description: "Saisie de 12 kg de chanvre indien." },
+  { id: "INC-005", type: "Violence domestique", lieu: "Bacongo II, Brazzaville", gravite: "grave", statut: "transmis_parquet", corps: "Police", auteur: "commissariatcentral-congo@policenationale.cg", description: "Victime prise en charge, dossier transmis au Parquet." },
+  { id: "INC-006", type: "Exces de vitesse", lieu: "RN1 km 12, Brazzaville", gravite: "moyen", statut: "cloture", corps: "Police", auteur: "bca-congo@policenationale.cg", description: "Vehicule controle a 112 km/h en zone 60." },
+  { id: "INC-007", type: "Conduite en etat d ivresse", lieu: "Corniche, Brazzaville", gravite: "grave", statut: "transmis_parquet", corps: "Police", auteur: "bca-congo@policenationale.cg", description: "Alcoolemie 1,8 g/l. Permis retenu." },
+  { id: "INC-008", type: "Accident grave collision bus", lieu: "RN1 km 88, Niari", gravite: "critique", statut: "en_cours", corps: "Police", auteur: "bca-congo@policenationale.cg", description: "7 blesses evacues vers l hopital de Dolisie." },
+  { id: "INC-009", type: "Cambriolage", lieu: "Moungali, Brazzaville", gravite: "grave", statut: "en_cours", corps: "Police", auteur: "commissariatcentral-congo@policenationale.cg", description: "Effraction nocturne, materiel derobe." },
+  { id: "INC-010", type: "Vol a la tire", lieu: "Gare routiere, Pointe-Noire", gravite: "moyen", statut: "en_cours", corps: "Gendarmerie", auteur: "gendarmeriepnr-congo@gendarmerienationale.cg", description: "Vol de telephone filme par camera de surveillance." },
+  { id: "INC-011", type: "Tentative d evasion", lieu: "Maison d arret de Brazzaville", gravite: "critique", statut: "transmis_parquet", corps: "Police", auteur: "dcpj-congo@policenationale.cg", description: "Evasion dejouee, deux detenus isoles." },
+  { id: "INC-012", type: "Faux documents administratifs", lieu: "Aeroport Maya-Maya", gravite: "grave", statut: "en_cours", corps: "Police", auteur: "frontieres-congo@policenationale.cg", description: "Passeport presentant des signes de falsification." }
 ];
 
 var GRAVITE_COLOR = { critique: "#DC2626", grave: "#F59E0B", moyen: "#3B82F6", faible: "#22C55E" };
@@ -296,12 +296,12 @@ function MainCourante(props) {
 }
 
 var GARDES_VUE_DATA = [
-  { id: "GAV-001", nom: "MOUKOUARI Jean-Pierre", motif: "Vol a main armee", unite: "DCPJ Brazzaville", heuresRestantes: 34, statut: "actif", auteur: "dcpj.brazzaville" },
-  { id: "GAV-002", nom: "BAZANA Paul", motif: "Trafic de stupefiants", unite: "DCPJ Brazzaville", heuresRestantes: 9, statut: "actif", auteur: "dcpj.brazzaville" },
-  { id: "GAV-003", nom: "KOUMBA Arsene", motif: "Violence conjugale", unite: "Commissariat Central BZV", heuresRestantes: 15, statut: "actif", auteur: "commissariat.central" },
-  { id: "GAV-004", nom: "NKOUKA Theophile", motif: "Escroquerie", unite: "Brigade Territoriale PNR", heuresRestantes: 0, statut: "prolonge", auteur: "gendarmerie.pnr" },
-  { id: "GAV-005", nom: "ITOUA Patrice", motif: "Trafic de stupefiants", unite: "DCPJ Brazzaville", heuresRestantes: 42, statut: "actif", auteur: "dcpj.brazzaville" },
-  { id: "GAV-006", nom: "MASSAMBA Herve", motif: "Conduite en etat d ivresse recidive", unite: "Bureau Controle Accidents BZV", heuresRestantes: 5, statut: "actif", auteur: "bca.brazzaville" }
+  { id: "GAV-001", nom: "MOUKOUARI Jean-Pierre", motif: "Vol a main armee", unite: "DCPJ Brazzaville", heuresRestantes: 34, statut: "actif", auteur: "dcpj-congo@policenationale.cg" },
+  { id: "GAV-002", nom: "BAZANA Paul", motif: "Trafic de stupefiants", unite: "DCPJ Brazzaville", heuresRestantes: 9, statut: "actif", auteur: "dcpj-congo@policenationale.cg" },
+  { id: "GAV-003", nom: "KOUMBA Arsene", motif: "Violence conjugale", unite: "Commissariat Central BZV", heuresRestantes: 15, statut: "actif", auteur: "commissariatcentral-congo@policenationale.cg" },
+  { id: "GAV-004", nom: "NKOUKA Theophile", motif: "Escroquerie", unite: "Brigade Territoriale PNR", heuresRestantes: 0, statut: "prolonge", auteur: "gendarmeriepnr-congo@gendarmerienationale.cg" },
+  { id: "GAV-005", nom: "ITOUA Patrice", motif: "Trafic de stupefiants", unite: "DCPJ Brazzaville", heuresRestantes: 42, statut: "actif", auteur: "dcpj-congo@policenationale.cg" },
+  { id: "GAV-006", nom: "MASSAMBA Herve", motif: "Conduite en etat d ivresse recidive", unite: "Bureau Controle Accidents BZV", heuresRestantes: 5, statut: "actif", auteur: "bca-congo@policenationale.cg" }
 ];
 
 function GavTimer(props) {
@@ -622,9 +622,9 @@ function Vehicules(props) {
 }
 
 var PLAINTES_DATA = [
-  { id: "PL-001", reference: "PL-BZV-234-2026", type: "Escroquerie", plaignant: "MOUKALA Bernadette", telephone: "06-123-4567", description: "Arnaque en ligne, virement de 450000 FCFA perdu.", statut: "enregistree", auteur: "commissariat.central" },
-  { id: "PL-002", reference: "PL-PNR-233-2026", type: "Agression physique", plaignant: "LOUBASSOU Martin", telephone: "05-987-6543", description: "Victime d agression. Certificat medical fourni.", statut: "enquete", auteur: "gendarmerie.pnr" },
-  { id: "PL-003", reference: "PL-BZV-232-2026", type: "Vol de vehicule", plaignant: "NTSIMBA Clarisse", telephone: "06-456-7890", description: "Toyota RAV4 gris vole devant domicile.", statut: "transmis_parquet", auteur: "dcpj.brazzaville" }
+  { id: "PL-001", reference: "PL-BZV-234-2026", type: "Escroquerie", plaignant: "MOUKALA Bernadette", telephone: "06-123-4567", description: "Arnaque en ligne, virement de 450000 FCFA perdu.", statut: "enregistree", auteur: "commissariatcentral-congo@policenationale.cg" },
+  { id: "PL-002", reference: "PL-PNR-233-2026", type: "Agression physique", plaignant: "LOUBASSOU Martin", telephone: "05-987-6543", description: "Victime d agression. Certificat medical fourni.", statut: "enquete", auteur: "gendarmeriepnr-congo@gendarmerienationale.cg" },
+  { id: "PL-003", reference: "PL-BZV-232-2026", type: "Vol de vehicule", plaignant: "NTSIMBA Clarisse", telephone: "06-456-7890", description: "Toyota RAV4 gris vole devant domicile.", statut: "transmis_parquet", auteur: "dcpj-congo@policenationale.cg" }
 ];
 
 var STATUT_PLAINTE_LABEL = { enregistree: "Enregistree", enquete: "En enquete", transmis_parquet: "Au Parquet" };
@@ -1001,20 +1001,20 @@ var STATUT_EVT_LABEL = { planifie: "Planifie", termine: "Termine", annule: "Annu
 var STATUT_EVT_COLOR = { planifie: "#3B82F6", termine: "#22C55E", annule: "#64748B" };
 
 var EVENTS_DATA = [
-  { id: "EVT-001", titre: "Reunion Etat-Major hebdomadaire", type: "reunion", date: "2026-06-19", heure: "08:00", duree: "2h", corps: "Tous", service: "Commandement des Forces de Police", lieu: "QG CFP Brazzaville", criticite: "normale", statut: "planifie", auteur: "cfp.brazzaville" },
-  { id: "EVT-002", titre: "Operation conjointe anti-stupefiants Port BZV", type: "intervention", date: "2026-06-19", heure: "05:00", duree: "4h", corps: "Police", service: "DCPJ Brazzaville", lieu: "Port de Brazzaville", criticite: "critique", statut: "planifie", auteur: "dcpj.brazzaville" },
-  { id: "EVT-003", titre: "Echeance transmission dossier INC-004 au Parquet", type: "echeance", date: "2026-06-20", heure: "17:00", duree: null, corps: "Police", service: "DCPJ Brazzaville", lieu: "Tribunal de Grande Instance", criticite: "critique", statut: "planifie", auteur: "dcpj.brazzaville" },
-  { id: "EVT-004", titre: "Controle routier renforce RN1", type: "mission", date: "2026-06-20", heure: "06:00", duree: "6h", corps: "Police", service: "Bureau Controle Accidents BZV", lieu: "RN1 km 12", criticite: "normale", statut: "planifie", auteur: "bca.brazzaville" },
-  { id: "EVT-005", titre: "Formation maniement armes reglementaires", type: "formation", date: "2026-06-22", heure: "09:00", duree: "3 jours", corps: "Gendarmerie", service: "Brigade Territoriale Pointe-Noire", lieu: "Centre d entrainement PNR", criticite: "normale", statut: "planifie", auteur: "gendarmerie.pnr" },
-  { id: "EVT-006", titre: "Audience disciplinaire agent KOUMBA Arsene", type: "echeance", date: "2026-06-18", heure: "14:00", duree: "1h", corps: "Police", service: "Direction du Personnel", lieu: "DGRH Brazzaville", criticite: "critique", statut: "planifie", auteur: "personnel.brazzaville" },
-  { id: "EVT-007", titre: "Mission escorte convoi mineraux Boko Songho", type: "mission", date: "2026-06-23", heure: "05:30", duree: "8h", corps: "Gendarmerie", service: "Direction des Operations", lieu: "Axe Boko Songho - Dolisie", criticite: "critique", statut: "planifie", auteur: "operations.brazzaville" },
-  { id: "EVT-008", titre: "Reunion budgetaire trimestrielle DAF", type: "reunion", date: "2026-06-25", heure: "10:00", duree: "3h", corps: "Tous", service: "DAF", lieu: "DAF Brazzaville", criticite: "normale", statut: "planifie", auteur: "daf.brazzaville" },
-  { id: "EVT-009", titre: "Renouvellement habilitations INTERPOL", type: "echeance", date: "2026-06-30", heure: "09:00", duree: null, corps: "Police", service: "INTERPOL Brazzaville", lieu: "BCN INTERPOL", criticite: "normale", statut: "planifie", auteur: "interpol.brazzaville" },
-  { id: "EVT-010", titre: "Patrouille maritime conjointe", type: "intervention", date: "2026-06-21", heure: "07:00", duree: "5h", corps: "Police", service: "Police Navale", lieu: "Embouchure Pointe-Noire", criticite: "normale", statut: "planifie", auteur: "police.navale" },
-  { id: "EVT-011", titre: "Controle frontalier renforce vacances scolaires", type: "mission", date: "2026-06-26", heure: "06:00", duree: "7 jours", corps: "Police", service: "Poste Frontalier Aeroport", lieu: "Aeroport Maya-Maya", criticite: "critique", statut: "planifie", auteur: "controle.frontieres" },
-  { id: "EVT-012", titre: "Maintenance programmee parc vehicules", type: "echeance", date: "2026-06-24", heure: "08:00", duree: "1 jour", corps: "Tous", service: "Direction de la Logistique", lieu: "Garage central BZV", criticite: "normale", statut: "planifie", auteur: "dl.brazzaville" },
-  { id: "EVT-013", titre: "Reunion coordination Gendarmerie Navale", type: "reunion", date: "2026-06-17", heure: "09:00", duree: "2h", corps: "Gendarmerie", service: "Gendarmerie Navale", lieu: "Base navale Pointe-Noire", criticite: "normale", statut: "termine", auteur: "gendarmerie.navale" },
-  { id: "EVT-014", titre: "Intervention rixe signalee Bacongo", type: "intervention", date: "2026-06-18", heure: "21:00", duree: "2h", corps: "Police", service: "Commissariat Central BZV", lieu: "Bacongo", criticite: "critique", statut: "planifie", auteur: "commissariat.central" }
+  { id: "EVT-001", titre: "Reunion Etat-Major hebdomadaire", type: "reunion", date: "2026-06-19", heure: "08:00", duree: "2h", corps: "Tous", service: "Commandement des Forces de Police", lieu: "QG CFP Brazzaville", criticite: "normale", statut: "planifie", auteur: "cfp-congo@policenationale.cg" },
+  { id: "EVT-002", titre: "Operation conjointe anti-stupefiants Port BZV", type: "intervention", date: "2026-06-19", heure: "05:00", duree: "4h", corps: "Police", service: "DCPJ Brazzaville", lieu: "Port de Brazzaville", criticite: "critique", statut: "planifie", auteur: "dcpj-congo@policenationale.cg" },
+  { id: "EVT-003", titre: "Echeance transmission dossier INC-004 au Parquet", type: "echeance", date: "2026-06-20", heure: "17:00", duree: null, corps: "Police", service: "DCPJ Brazzaville", lieu: "Tribunal de Grande Instance", criticite: "critique", statut: "planifie", auteur: "dcpj-congo@policenationale.cg" },
+  { id: "EVT-004", titre: "Controle routier renforce RN1", type: "mission", date: "2026-06-20", heure: "06:00", duree: "6h", corps: "Police", service: "Bureau Controle Accidents BZV", lieu: "RN1 km 12", criticite: "normale", statut: "planifie", auteur: "bca-congo@policenationale.cg" },
+  { id: "EVT-005", titre: "Formation maniement armes reglementaires", type: "formation", date: "2026-06-22", heure: "09:00", duree: "3 jours", corps: "Gendarmerie", service: "Brigade Territoriale Pointe-Noire", lieu: "Centre d entrainement PNR", criticite: "normale", statut: "planifie", auteur: "gendarmeriepnr-congo@gendarmerienationale.cg" },
+  { id: "EVT-006", titre: "Audience disciplinaire agent KOUMBA Arsene", type: "echeance", date: "2026-06-18", heure: "14:00", duree: "1h", corps: "Police", service: "Direction du Personnel", lieu: "DGRH Brazzaville", criticite: "critique", statut: "planifie", auteur: "personnel-congo@sipgn.cg" },
+  { id: "EVT-007", titre: "Mission escorte convoi mineraux Boko Songho", type: "mission", date: "2026-06-23", heure: "05:30", duree: "8h", corps: "Gendarmerie", service: "Direction des Operations", lieu: "Axe Boko Songho - Dolisie", criticite: "critique", statut: "planifie", auteur: "operations-congo@sipgn.cg" },
+  { id: "EVT-008", titre: "Reunion budgetaire trimestrielle DAF", type: "reunion", date: "2026-06-25", heure: "10:00", duree: "3h", corps: "Tous", service: "DAF", lieu: "DAF Brazzaville", criticite: "normale", statut: "planifie", auteur: "daf-congo@sipgn.cg" },
+  { id: "EVT-009", titre: "Renouvellement habilitations INTERPOL", type: "echeance", date: "2026-06-30", heure: "09:00", duree: null, corps: "Police", service: "INTERPOL Brazzaville", lieu: "BCN INTERPOL", criticite: "normale", statut: "planifie", auteur: "interpol-congo@policenationale.cg" },
+  { id: "EVT-010", titre: "Patrouille maritime conjointe", type: "intervention", date: "2026-06-21", heure: "07:00", duree: "5h", corps: "Police", service: "Police Navale", lieu: "Embouchure Pointe-Noire", criticite: "normale", statut: "planifie", auteur: "policenavale-congo@policenationale.cg" },
+  { id: "EVT-011", titre: "Controle frontalier renforce vacances scolaires", type: "mission", date: "2026-06-26", heure: "06:00", duree: "7 jours", corps: "Police", service: "Poste Frontalier Aeroport", lieu: "Aeroport Maya-Maya", criticite: "critique", statut: "planifie", auteur: "frontieres-congo@policenationale.cg" },
+  { id: "EVT-012", titre: "Maintenance programmee parc vehicules", type: "echeance", date: "2026-06-24", heure: "08:00", duree: "1 jour", corps: "Tous", service: "Direction de la Logistique", lieu: "Garage central BZV", criticite: "normale", statut: "planifie", auteur: "dl-congo@sipgn.cg" },
+  { id: "EVT-013", titre: "Reunion coordination Gendarmerie Navale", type: "reunion", date: "2026-06-17", heure: "09:00", duree: "2h", corps: "Gendarmerie", service: "Gendarmerie Navale", lieu: "Base navale Pointe-Noire", criticite: "normale", statut: "termine", auteur: "gendarmerienavale-congo@gendarmerienationale.cg" },
+  { id: "EVT-014", titre: "Intervention rixe signalee Bacongo", type: "intervention", date: "2026-06-18", heure: "21:00", duree: "2h", corps: "Police", service: "Commissariat Central BZV", lieu: "Bacongo", criticite: "critique", statut: "planifie", auteur: "commissariatcentral-congo@policenationale.cg" }
 ];
 
 function CalendrierOperationnel(props) {
@@ -1271,12 +1271,12 @@ function CalendrierOperationnel(props) {
 
 var PRIORITE_NOTE = { urgente: "#DC2626", importante: "#F59E0B", information: "#3B82F6" };
 var NOTES_DATA = [
-  { id: "NS-001", titre: "Consignes operation anti-stupefiants Port BZV", contenu: "Tous les agents de la DCPJ et du Commissariat Central sont convoques a 04h30 au QG CFP pour briefing. Tenue operationnelle obligatoire. Discrecion totale.", auteur: "cfp.brazzaville", auteurNom: "CFP - Commandement des Forces de Police", date: "2026-06-18", priorite: "urgente", destinataires: ["dcpj.brazzaville", "commissariat.central", "operations.brazzaville"], lu: [] },
-  { id: "NS-002", titre: "Procedure d acces aux fichiers INTERPOL - mise a jour", contenu: "Suite a la mise a jour du systeme BCN, les acces aux fichiers INTERPOL reqierent desormais une double authentification. Contacter le BCN Brazzaville pour renouveler les habilitations avant le 30 juin.", auteur: "interpol.brazzaville", auteurNom: "BCN INTERPOL Brazzaville", date: "2026-06-17", priorite: "importante", destinataires: ["dcpj.brazzaville", "controle.frontieres", "gendarmerie.pnr", "cfp.brazzaville", "cgn.brazzaville"], lu: [] },
-  { id: "NS-003", titre: "Calendrier visites medicales periodiques - Juin 2026", contenu: "Les agents dont le matricule commence par PNB-10 sont convoques a la visite medicale periodique le 25 juin 2026 a 08h00 au service medical du Commandement.", auteur: "dgrh.brazzaville", auteurNom: "Direction Generale des Ressources Humaines", date: "2026-06-16", priorite: "information", destinataires: ["tous"], lu: [] },
-  { id: "NS-004", titre: "Alerte vehicule recherche - RAV4 gris BZV-7714-PL", contenu: "Un Toyota RAV4 gris immatricule BZV-7714-PL signale vole. Toutes les unites sont priees de signaler toute observation. Contacter immediatement le Commissariat Central.", auteur: "commissariat.central", auteurNom: "Commissariat Central BZV", date: "2026-06-18", priorite: "urgente", destinataires: ["tous"], lu: [] },
-  { id: "NS-005", titre: "Formation premiers secours - inscriptions ouvertes", contenu: "La Direction de la Logistique organise une formation aux premiers secours les 28 et 29 juin. Places limitees a 20 agents. Inscriptions aupres de la DL avant le 22 juin.", auteur: "dl.brazzaville", auteurNom: "Direction de la Logistique", date: "2026-06-15", priorite: "information", destinataires: ["tous"], lu: [] },
-  { id: "NS-006", titre: "Renforcement controles frontaliers - zone vacacances", contenu: "En prevision des departs en vacances scolaires, le dispositif de controle a l aeroport Maya-Maya est renforce du 26 juin au 10 juillet. Effectifs supplementaires requis.", auteur: "controle.frontieres", auteurNom: "Controle Voyageurs et Frontieres", date: "2026-06-17", priorite: "importante", destinataires: ["tous"], lu: [] }
+  { id: "NS-001", titre: "Consignes operation anti-stupefiants Port BZV", contenu: "Tous les agents de la DCPJ et du Commissariat Central sont convoques a 04h30 au QG CFP pour briefing. Tenue operationnelle obligatoire. Discrecion totale.", auteur: "cfp-congo@policenationale.cg", auteurNom: "CFP - Commandement des Forces de Police", date: "2026-06-18", priorite: "urgente", destinataires: ["dcpj-congo@policenationale.cg", "commissariatcentral-congo@policenationale.cg", "operations-congo@sipgn.cg"], lu: [] },
+  { id: "NS-002", titre: "Procedure d acces aux fichiers INTERPOL - mise a jour", contenu: "Suite a la mise a jour du systeme BCN, les acces aux fichiers INTERPOL reqierent desormais une double authentification. Contacter le BCN Brazzaville pour renouveler les habilitations avant le 30 juin.", auteur: "interpol-congo@policenationale.cg", auteurNom: "BCN INTERPOL Brazzaville", date: "2026-06-17", priorite: "importante", destinataires: ["dcpj-congo@policenationale.cg", "frontieres-congo@policenationale.cg", "gendarmeriepnr-congo@gendarmerienationale.cg", "cfp-congo@policenationale.cg", "cgn-congo@gendarmerienationale.cg"], lu: [] },
+  { id: "NS-003", titre: "Calendrier visites medicales periodiques - Juin 2026", contenu: "Les agents dont le matricule commence par PNB-10 sont convoques a la visite medicale periodique le 25 juin 2026 a 08h00 au service medical du Commandement.", auteur: "dgrh-congo@sipgn.cg", auteurNom: "Direction Generale des Ressources Humaines", date: "2026-06-16", priorite: "information", destinataires: ["tous"], lu: [] },
+  { id: "NS-004", titre: "Alerte vehicule recherche - RAV4 gris BZV-7714-PL", contenu: "Un Toyota RAV4 gris immatricule BZV-7714-PL signale vole. Toutes les unites sont priees de signaler toute observation. Contacter immediatement le Commissariat Central.", auteur: "commissariatcentral-congo@policenationale.cg", auteurNom: "Commissariat Central BZV", date: "2026-06-18", priorite: "urgente", destinataires: ["tous"], lu: [] },
+  { id: "NS-005", titre: "Formation premiers secours - inscriptions ouvertes", contenu: "La Direction de la Logistique organise une formation aux premiers secours les 28 et 29 juin. Places limitees a 20 agents. Inscriptions aupres de la DL avant le 22 juin.", auteur: "dl-congo@sipgn.cg", auteurNom: "Direction de la Logistique", date: "2026-06-15", priorite: "information", destinataires: ["tous"], lu: [] },
+  { id: "NS-006", titre: "Renforcement controles frontaliers - zone vacacances", contenu: "En prevision des departs en vacances scolaires, le dispositif de controle a l aeroport Maya-Maya est renforce du 26 juin au 10 juillet. Effectifs supplementaires requis.", auteur: "frontieres-congo@policenationale.cg", auteurNom: "Controle Voyageurs et Frontieres", date: "2026-06-17", priorite: "importante", destinataires: ["tous"], lu: [] }
 ];
 
 function estDestinataire(compte, note) {
@@ -1443,13 +1443,13 @@ function Notes(props) {
 }
 
 var MESSAGES_DATA = [
-  { id: "MSG-001", de: "dcpj.brazzaville", deNom: "DCPJ Brazzaville", a: "cfp.brazzaville", aNom: "CFP", texte: "Commandant, le suspect INC-004 est toujours en fuite. Demande autorisation pour perquisition du domicile.", date: "2026-06-18", heure: "07:45", lu: false },
-  { id: "MSG-002", de: "cfp.brazzaville", deNom: "CFP", a: "dcpj.brazzaville", aNom: "DCPJ Brazzaville", texte: "Autorisation accordee. Proceder avec un effectif de 4 agents minimum. Rapport exige sous 2h.", date: "2026-06-18", heure: "08:02", lu: false },
-  { id: "MSG-003", de: "bca.brazzaville", deNom: "Bureau Controle Accidents", a: "dgrh.brazzaville", aNom: "DGRH", texte: "Bonjour, besoin d un renflement de 2 agents pour le controle routier du 20 juin RN1. Merci.", date: "2026-06-17", heure: "14:30", lu: true },
-  { id: "MSG-004", de: "dgrh.brazzaville", deNom: "DGRH", a: "bca.brazzaville", aNom: "Bureau Controle Accidents", texte: "Pris en compte. Agents MAKOSSO et MASSAMBA affectes pour le 20 juin. Bonne mission.", date: "2026-06-17", heure: "15:10", lu: true },
-  { id: "MSG-005", de: "gendarmerie.pnr", deNom: "Brigade Territoriale PNR", a: "cgn.brazzaville", aNom: "CGN", texte: "Mon Commandant, le suspect NKOUKA est en fin de GAV prolongee. Demande instruction pour suite a donner.", date: "2026-06-18", heure: "09:15", lu: false },
-  { id: "MSG-006", de: "controle.frontieres", deNom: "Controle Frontieres", a: "interpol.brazzaville", aNom: "BCN INTERPOL", texte: "Passeport suspect detecte. Reference INC-012. Confirmation du fichier INTERPOL demandee pour le voyageur KOULIMBA Jean.", date: "2026-06-18", heure: "10:45", lu: false },
-  { id: "MSG-007", de: "interpol.brazzaville", deNom: "BCN INTERPOL", a: "controle.frontieres", aNom: "Controle Frontieres", texte: "Verification effectuee. Individu non fiche INTERPOL. Cependant signalement national actif. Retenir et alerter la DCPJ.", date: "2026-06-18", heure: "11:02", lu: false }
+  { id: "MSG-001", de: "dcpj-congo@policenationale.cg", deNom: "DCPJ Brazzaville", a: "cfp-congo@policenationale.cg", aNom: "CFP", texte: "Commandant, le suspect INC-004 est toujours en fuite. Demande autorisation pour perquisition du domicile.", date: "2026-06-18", heure: "07:45", lu: false },
+  { id: "MSG-002", de: "cfp-congo@policenationale.cg", deNom: "CFP", a: "dcpj-congo@policenationale.cg", aNom: "DCPJ Brazzaville", texte: "Autorisation accordee. Proceder avec un effectif de 4 agents minimum. Rapport exige sous 2h.", date: "2026-06-18", heure: "08:02", lu: false },
+  { id: "MSG-003", de: "bca-congo@policenationale.cg", deNom: "Bureau Controle Accidents", a: "dgrh-congo@sipgn.cg", aNom: "DGRH", texte: "Bonjour, besoin d un renflement de 2 agents pour le controle routier du 20 juin RN1. Merci.", date: "2026-06-17", heure: "14:30", lu: true },
+  { id: "MSG-004", de: "dgrh-congo@sipgn.cg", deNom: "DGRH", a: "bca-congo@policenationale.cg", aNom: "Bureau Controle Accidents", texte: "Pris en compte. Agents MAKOSSO et MASSAMBA affectes pour le 20 juin. Bonne mission.", date: "2026-06-17", heure: "15:10", lu: true },
+  { id: "MSG-005", de: "gendarmeriepnr-congo@gendarmerienationale.cg", deNom: "Brigade Territoriale PNR", a: "cgn-congo@gendarmerienationale.cg", aNom: "CGN", texte: "Mon Commandant, le suspect NKOUKA est en fin de GAV prolongee. Demande instruction pour suite a donner.", date: "2026-06-18", heure: "09:15", lu: false },
+  { id: "MSG-006", de: "frontieres-congo@policenationale.cg", deNom: "Controle Frontieres", a: "interpol-congo@policenationale.cg", aNom: "BCN INTERPOL", texte: "Passeport suspect detecte. Reference INC-012. Confirmation du fichier INTERPOL demandee pour le voyageur KOULIMBA Jean.", date: "2026-06-18", heure: "10:45", lu: false },
+  { id: "MSG-007", de: "interpol-congo@policenationale.cg", deNom: "BCN INTERPOL", a: "frontieres-congo@policenationale.cg", aNom: "Controle Frontieres", texte: "Verification effectuee. Individu non fiche INTERPOL. Cependant signalement national actif. Retenir et alerter la DCPJ.", date: "2026-06-18", heure: "11:02", lu: false }
 ];
 
 function Messagerie(props) {
@@ -8484,14 +8484,14 @@ function CasierJudiciaire(props) {
 
 
 var SALLES_VISIO = [
-  { id: "SALLE-CFP", nom: "Salle Commandement — CFP", hotes: ["cfp.brazzaville", "cgn.brazzaville"], statut: "disponible", capacite: 20, chiffrement: "AES-256", participants: [] },
-  { id: "SALLE-OPS", nom: "Salle Operations — DOPS", hotes: ["operations.brazzaville", "cfp.brazzaville"], statut: "en_cours", capacite: 12, chiffrement: "AES-256", participants: ["cfp.brazzaville", "operations.brazzaville", "dcpj.brazzaville"] },
-  { id: "SALLE-LOG", nom: "Reunion Logistique — DL", hotes: ["dl.brazzaville"], statut: "disponible", capacite: 8, chiffrement: "AES-256", participants: [] },
-  { id: "SALLE-DAF", nom: "Comite Financier — DAF", hotes: ["daf.brazzaville"], statut: "planifiee", capacite: 6, chiffrement: "AES-256", participants: [], heurePlanifiee: "14h30" },
-  { id: "SALLE-RH", nom: "Reunion DRH / Personnel", hotes: ["dgrh.brazzaville", "personnel.brazzaville"], statut: "disponible", capacite: 10, chiffrement: "AES-256", participants: [] },
-  { id: "SALLE-DRG", nom: "Briefing Renseignements — DRG", hotes: ["drg.brazzaville"], statut: "disponible", capacite: 6, chiffrement: "AES-256", participants: [] },
-  { id: "SALLE-INTER", nom: "Coordination INTERPOL", hotes: ["interpol.brazzaville"], statut: "disponible", capacite: 8, chiffrement: "AES-256", participants: [] },
-  { id: "SALLE-BCA", nom: "Revue Accidents — BCA", hotes: ["bca.brazzaville"], statut: "disponible", capacite: 6, chiffrement: "AES-256", participants: [] }
+  { id: "SALLE-CFP", nom: "Salle Commandement — CFP", hotes: ["cfp-congo@policenationale.cg", "cgn-congo@gendarmerienationale.cg"], statut: "disponible", capacite: 20, chiffrement: "AES-256", participants: [] },
+  { id: "SALLE-OPS", nom: "Salle Operations — DOPS", hotes: ["operations-congo@sipgn.cg", "cfp-congo@policenationale.cg"], statut: "en_cours", capacite: 12, chiffrement: "AES-256", participants: ["cfp-congo@policenationale.cg", "operations-congo@sipgn.cg", "dcpj-congo@policenationale.cg"] },
+  { id: "SALLE-LOG", nom: "Reunion Logistique — DL", hotes: ["dl-congo@sipgn.cg"], statut: "disponible", capacite: 8, chiffrement: "AES-256", participants: [] },
+  { id: "SALLE-DAF", nom: "Comite Financier — DAF", hotes: ["daf-congo@sipgn.cg"], statut: "planifiee", capacite: 6, chiffrement: "AES-256", participants: [], heurePlanifiee: "14h30" },
+  { id: "SALLE-RH", nom: "Reunion DRH / Personnel", hotes: ["dgrh-congo@sipgn.cg", "personnel-congo@sipgn.cg"], statut: "disponible", capacite: 10, chiffrement: "AES-256", participants: [] },
+  { id: "SALLE-DRG", nom: "Briefing Renseignements — DRG", hotes: ["drg-congo@policenationale.cg"], statut: "disponible", capacite: 6, chiffrement: "AES-256", participants: [] },
+  { id: "SALLE-INTER", nom: "Coordination INTERPOL", hotes: ["interpol-congo@policenationale.cg"], statut: "disponible", capacite: 8, chiffrement: "AES-256", participants: [] },
+  { id: "SALLE-BCA", nom: "Revue Accidents — BCA", hotes: ["bca-congo@policenationale.cg"], statut: "disponible", capacite: 6, chiffrement: "AES-256", participants: [] }
 ];
 
 var HISTORIQUE_VISIO = [
@@ -8502,66 +8502,66 @@ var HISTORIQUE_VISIO = [
 ];
 
 var TOUS_COMPTES_VISIO = [
-  { id: "cfp.brazzaville", nom: "Commandement des Forces de Police (CFP)", service: "CFP", couleur: "#8B5CF6", initiales: "CF" },
-  { id: "cgn.brazzaville", nom: "Commandement de la Gendarmerie Nationale (CGN)", service: "CGN", couleur: "#A21CAF", initiales: "CG" },
-  { id: "drg.brazzaville", nom: "Direction des Renseignements Generaux (DRG)", service: "DRG", couleur: "#581C87", initiales: "DR" },
-  { id: "dgrh.brazzaville", nom: "Direction Generale des Ressources Humaines", service: "DGRH", couleur: "#BE185D", initiales: "RH" },
-  { id: "dl.brazzaville", nom: "Direction de la Logistique", service: "DL", couleur: "#0EA5E9", initiales: "DL" },
-  { id: "daf.brazzaville", nom: "Direction Administration et Finances", service: "DAF", couleur: "#16A34A", initiales: "DF" },
-  { id: "personnel.brazzaville", nom: "Direction Organisation et Personnel", service: "PERS", couleur: "#D97706", initiales: "PE" },
-  { id: "operations.brazzaville", nom: "Direction des Operations", service: "DOPS", couleur: "#2563EB", initiales: "OP" },
-  { id: "interpol.brazzaville", nom: "Bureau Central National INTERPOL", service: "INTERPOL", couleur: "#EA580C", initiales: "IN" },
-  { id: "commissariat.central", nom: "Commissariat Central BZV", service: "COMM", couleur: "#003F87", initiales: "CC" },
-  { id: "bca.brazzaville", nom: "Bureau Controle Accidents", service: "BCA", couleur: "#F59E0B", initiales: "BC" },
-  { id: "dcpj.brazzaville", nom: "DCPJ Brazzaville", service: "DCPJ", couleur: "#DC2626", initiales: "PJ" },
-  { id: "gendarmerie.pnr", nom: "Brigade Territoriale Pointe-Noire", service: "GEND PNR", couleur: "#1B6B3A", initiales: "GN" },
-  { id: "controle.frontieres", nom: "Controle Voyageurs et Frontieres", service: "FRONT", couleur: "#0284C7", initiales: "FR" },
-  { id: "police.navale", nom: "Police Navale Pointe-Noire", service: "PNAV", couleur: "#0C4A6E", initiales: "PN" },
-  { id: "gendarmerie.navale", nom: "Gendarmerie Maritime Pointe-Noire", service: "GNAV", couleur: "#14532D", initiales: "GV" },
+  { id: "cfp-congo@policenationale.cg", nom: "Commandement des Forces de Police (CFP)", service: "CFP", couleur: "#8B5CF6", initiales: "CF" },
+  { id: "cgn-congo@gendarmerienationale.cg", nom: "Commandement de la Gendarmerie Nationale (CGN)", service: "CGN", couleur: "#A21CAF", initiales: "CG" },
+  { id: "drg-congo@policenationale.cg", nom: "Direction des Renseignements Generaux (DRG)", service: "DRG", couleur: "#581C87", initiales: "DR" },
+  { id: "dgrh-congo@sipgn.cg", nom: "Direction Generale des Ressources Humaines", service: "DGRH", couleur: "#BE185D", initiales: "RH" },
+  { id: "dl-congo@sipgn.cg", nom: "Direction de la Logistique", service: "DL", couleur: "#0EA5E9", initiales: "DL" },
+  { id: "daf-congo@sipgn.cg", nom: "Direction Administration et Finances", service: "DAF", couleur: "#16A34A", initiales: "DF" },
+  { id: "personnel-congo@sipgn.cg", nom: "Direction Organisation et Personnel", service: "PERS", couleur: "#D97706", initiales: "PE" },
+  { id: "operations-congo@sipgn.cg", nom: "Direction des Operations", service: "DOPS", couleur: "#2563EB", initiales: "OP" },
+  { id: "interpol-congo@policenationale.cg", nom: "Bureau Central National INTERPOL", service: "INTERPOL", couleur: "#EA580C", initiales: "IN" },
+  { id: "commissariatcentral-congo@policenationale.cg", nom: "Commissariat Central BZV", service: "COMM", couleur: "#003F87", initiales: "CC" },
+  { id: "bca-congo@policenationale.cg", nom: "Bureau Controle Accidents", service: "BCA", couleur: "#F59E0B", initiales: "BC" },
+  { id: "dcpj-congo@policenationale.cg", nom: "DCPJ Brazzaville", service: "DCPJ", couleur: "#DC2626", initiales: "PJ" },
+  { id: "gendarmeriepnr-congo@gendarmerienationale.cg", nom: "Brigade Territoriale Pointe-Noire", service: "GEND PNR", couleur: "#1B6B3A", initiales: "GN" },
+  { id: "frontieres-congo@policenationale.cg", nom: "Controle Voyageurs et Frontieres", service: "FRONT", couleur: "#0284C7", initiales: "FR" },
+  { id: "policenavale-congo@policenationale.cg", nom: "Police Navale Pointe-Noire", service: "PNAV", couleur: "#0C4A6E", initiales: "PN" },
+  { id: "gendarmerienavale-congo@gendarmerienationale.cg", nom: "Gendarmerie Maritime Pointe-Noire", service: "GNAV", couleur: "#14532D", initiales: "GV" },
   { id: "opj.brazzaville", nom: "Officier de Police Judiciaire", service: "OPJ", couleur: "#7C3AED", initiales: "OJ" }
 ];
 
 var REUNIONS_INITIALES = [
   {
-    id: "REU-001", titre: "Point hebdomadaire CFP — Securite nationale", animateur: "cfp.brazzaville",
+    id: "REU-001", titre: "Point hebdomadaire CFP — Securite nationale", animateur: "cfp-congo@policenationale.cg",
     date: "2026-06-26", heureDebut: "09:00", heureFin: "10:00",
     type: "hebdomadaire", ordre_du_jour: "1. Bilan incidents semaine\n2. Effectifs et deployments\n3. Coordination gendarmerie\n4. Divers",
-    participants: ["cfp.brazzaville", "cgn.brazzaville", "operations.brazzaville", "dcpj.brazzaville"],
+    participants: ["cfp-congo@policenationale.cg", "cgn-congo@gendarmerienationale.cg", "operations-congo@sipgn.cg", "dcpj-congo@policenationale.cg"],
     statut: "planifiee", salle: "SALLE-CFP", priorite: "haute", rappel: 15
   },
   {
-    id: "REU-002", titre: "Comite financier mensuel DAF", animateur: "daf.brazzaville",
+    id: "REU-002", titre: "Comite financier mensuel DAF", animateur: "daf-congo@sipgn.cg",
     date: "2026-06-26", heureDebut: "14:30", heureFin: "16:00",
     type: "mensuel", ordre_du_jour: "1. Revue budgetaire juin\n2. Engagements en attente\n3. Previsions juillet\n4. Validation depenses >5M FCFA",
-    participants: ["daf.brazzaville", "cfp.brazzaville", "dl.brazzaville", "personnel.brazzaville"],
+    participants: ["daf-congo@sipgn.cg", "cfp-congo@policenationale.cg", "dl-congo@sipgn.cg", "personnel-congo@sipgn.cg"],
     statut: "planifiee", salle: "SALLE-DAF", priorite: "haute", rappel: 30
   },
   {
-    id: "REU-003", titre: "Briefing INTERPOL — cooperation regionale", animateur: "interpol.brazzaville",
+    id: "REU-003", titre: "Briefing INTERPOL — cooperation regionale", animateur: "interpol-congo@policenationale.cg",
     date: "2026-06-27", heureDebut: "10:00", heureFin: "11:30",
     type: "ponctuelle", ordre_du_jour: "1. Mandats actifs region Afrique Centrale\n2. Echange de renseignements\n3. Formation procedures INTERPOL\n4. Prochaine conference NCB",
-    participants: ["interpol.brazzaville", "cfp.brazzaville", "dcpj.brazzaville", "drg.brazzaville"],
+    participants: ["interpol-congo@policenationale.cg", "cfp-congo@policenationale.cg", "dcpj-congo@policenationale.cg", "drg-congo@policenationale.cg"],
     statut: "planifiee", salle: "SALLE-INTER", priorite: "critique", rappel: 60
   },
   {
-    id: "REU-004", titre: "Reunion logistique — reapprovisionnement Q3", animateur: "dl.brazzaville",
+    id: "REU-004", titre: "Reunion logistique — reapprovisionnement Q3", animateur: "dl-congo@sipgn.cg",
     date: "2026-06-28", heureDebut: "08:00", heureFin: "09:00",
     type: "ponctuelle", ordre_du_jour: "1. Etat des stocks munitions\n2. Parc vehicules — revisions\n3. Commandes en attente\n4. Budget logistique",
-    participants: ["dl.brazzaville", "cfp.brazzaville", "operations.brazzaville", "bca.brazzaville"],
+    participants: ["dl-congo@sipgn.cg", "cfp-congo@policenationale.cg", "operations-congo@sipgn.cg", "bca-congo@policenationale.cg"],
     statut: "planifiee", salle: "SALLE-LOG", priorite: "normale", rappel: 15
   },
   {
-    id: "REU-005", titre: "Coordination DRH — GPEC semestre", animateur: "dgrh.brazzaville",
+    id: "REU-005", titre: "Coordination DRH — GPEC semestre", animateur: "dgrh-congo@sipgn.cg",
     date: "2026-06-30", heureDebut: "09:30", heureFin: "11:00",
     type: "ponctuelle", ordre_du_jour: "1. Avancements en attente\n2. Affectations juillet\n3. Plan de formation H2 2026\n4. Recrutements ouverts",
-    participants: ["dgrh.brazzaville", "personnel.brazzaville", "cfp.brazzaville", "cgn.brazzaville"],
+    participants: ["dgrh-congo@sipgn.cg", "personnel-congo@sipgn.cg", "cfp-congo@policenationale.cg", "cgn-congo@gendarmerienationale.cg"],
     statut: "planifiee", salle: "SALLE-RH", priorite: "normale", rappel: 30
   },
   {
-    id: "REU-006", titre: "Reunion urgente — incident securite Pointe-Noire", animateur: "cgn.brazzaville",
+    id: "REU-006", titre: "Reunion urgente — incident securite Pointe-Noire", animateur: "cgn-congo@gendarmerienationale.cg",
     date: "2026-06-25", heureDebut: "07:00", heureFin: "08:00",
     type: "ponctuelle", ordre_du_jour: "1. Situation securitaire zone portuaire\n2. Deploiement forces\n3. Coordination avec Brigade PNR",
-    participants: ["cgn.brazzaville", "cfp.brazzaville", "gendarmerie.pnr", "operations.brazzaville", "controle.frontieres"],
+    participants: ["cgn-congo@gendarmerienationale.cg", "cfp-congo@policenationale.cg", "gendarmeriepnr-congo@gendarmerienationale.cg", "operations-congo@sipgn.cg", "frontieres-congo@policenationale.cg"],
     statut: "terminee", salle: "SALLE-CFP", priorite: "critique", rappel: 0
   }
 ];
@@ -9033,23 +9033,23 @@ function VideoConference(props) {
   var statutLabel = { disponible:"Disponible", en_cours:"En cours", planifiee:"Planifiee" };
 
   var AVATARS_VISIO = [
-    { id: "cfp.brazzaville", initiales: "CF", nom: "CFP" },
-    { id: "cgn.brazzaville", initiales: "CG", nom: "CGN" },
-    { id: "operations.brazzaville", initiales: "OP", nom: "DOPS" },
-    { id: "dcpj.brazzaville", initiales: "PJ", nom: "DCPJ" },
-    { id: "drg.brazzaville", initiales: "DR", nom: "DRG" },
-    { id: "dgrh.brazzaville", initiales: "RH", nom: "DRH" },
-    { id: "dl.brazzaville", initiales: "DL", nom: "LOG" },
-    { id: "daf.brazzaville", initiales: "DF", nom: "DAF" },
-    { id: "personnel.brazzaville", initiales: "PE", nom: "PERS" },
-    { id: "interpol.brazzaville", initiales: "IN", nom: "INT" },
-    { id: "bca.brazzaville", initiales: "BC", nom: "BCA" },
-    { id: "commissariat.central", initiales: "CC", nom: "COMM" },
-    { id: "dcpj.brazzaville", initiales: "PJ", nom: "DCPJ" },
-    { id: "gendarmerie.pnr", initiales: "GN", nom: "GEND" },
-    { id: "controle.frontieres", initiales: "FR", nom: "FRON" },
-    { id: "police.navale", initiales: "PN", nom: "PNAV" },
-    { id: "gendarmerie.navale", initiales: "GV", nom: "GNAV" }
+    { id: "cfp-congo@policenationale.cg", initiales: "CF", nom: "CFP" },
+    { id: "cgn-congo@gendarmerienationale.cg", initiales: "CG", nom: "CGN" },
+    { id: "operations-congo@sipgn.cg", initiales: "OP", nom: "DOPS" },
+    { id: "dcpj-congo@policenationale.cg", initiales: "PJ", nom: "DCPJ" },
+    { id: "drg-congo@policenationale.cg", initiales: "DR", nom: "DRG" },
+    { id: "dgrh-congo@sipgn.cg", initiales: "RH", nom: "DRH" },
+    { id: "dl-congo@sipgn.cg", initiales: "DL", nom: "LOG" },
+    { id: "daf-congo@sipgn.cg", initiales: "DF", nom: "DAF" },
+    { id: "personnel-congo@sipgn.cg", initiales: "PE", nom: "PERS" },
+    { id: "interpol-congo@policenationale.cg", initiales: "IN", nom: "INT" },
+    { id: "bca-congo@policenationale.cg", initiales: "BC", nom: "BCA" },
+    { id: "commissariatcentral-congo@policenationale.cg", initiales: "CC", nom: "COMM" },
+    { id: "dcpj-congo@policenationale.cg", initiales: "PJ", nom: "DCPJ" },
+    { id: "gendarmeriepnr-congo@gendarmerienationale.cg", initiales: "GN", nom: "GEND" },
+    { id: "frontieres-congo@policenationale.cg", initiales: "FR", nom: "FRON" },
+    { id: "policenavale-congo@policenationale.cg", initiales: "PN", nom: "PNAV" },
+    { id: "gendarmerienavale-congo@gendarmerienationale.cg", initiales: "GV", nom: "GNAV" }
   ];
 
   function getInitiales(id) {
