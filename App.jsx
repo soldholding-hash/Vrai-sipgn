@@ -8062,7 +8062,7 @@ function Dossiers360Agents(props) {
   });
 
   var agent = agentsData.find(function (a) { return a.id === selId; });
-  var profil = agent ? AGENT_PROFILS_MAP[agent.id] : null;
+  var profil = agent ? (AGENT_PROFILS_MAP[agent.id] || { evaluations: [], historiqueDiscipline: [], historiqueAffectations: [{ service: agent.service, periode: (agent.anciennete ? (2026 - agent.anciennete) : 2026) + "-present" }], dateNaissance: "N/A", lieuNaissance: "N/A", competences: { armes: 0, secourisme: 0, criminalistique: 0, informatique: 0, langues: 0 } }) : null;
 
   function getSalaire(a) {
     var grilles = SALAIRES_PAR_GRADE[a.corps];
