@@ -8025,6 +8025,29 @@ var FORMATIONS_SPECIALES_PAR_AGENT = {
 
 function Dossiers360Agents(props) {
   var compte = props.compte;
+  var agentsDataState = useState(AGENTS_DATA);
+  var agentsData = agentsDataState[0]; var setAgentsData = agentsDataState[1];
+
+  useEffect(function() {
+    function chargerRecrues360(){
+      supabase.from("personnels").select("*").order("created_at",{ascending:false}).then(function(r){
+        if(r.data && r.data.length>0){
+          var nouvAgents = r.data.map(function(a){
+            return { id:a.id, matricule:a.matricule, nom:a.nom, corps:a.corps, service:a.service, gradeIndex:a.gradeindex, anciennete:a.anciennete, statut:a.statut, diplome:a.diplome, photo:a.photo };
+          });
+          setAgentsData(function(prev){
+            var idsExistants = prev.map(function(p){return p.id;});
+            var aAjouter = nouvAgents.filter(function(a){return idsExistants.indexOf(a.id)===-1;});
+            return prev.concat(aAjouter);
+          });
+        }
+      });
+    }
+    chargerRecrues360();
+    var timer=setInterval(chargerRecrues360,15000);
+    return function(){ clearInterval(timer); };
+  }, []);
+
   var rechercheState = useState("");
   var recherche = rechercheState[0]; var setRecherche = rechercheState[1];
   var selState = useState("AGT-006");
