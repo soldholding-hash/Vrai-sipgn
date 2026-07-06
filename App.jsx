@@ -8055,13 +8055,13 @@ function Dossiers360Agents(props) {
   var filtreCorpsState = useState("tous");
   var filtreCorps = filtreCorpsState[0]; var setFiltreCorps = filtreCorpsState[1];
 
-  var agentsFiltres = AGENTS_DATA.filter(function (a) {
+  var agentsFiltres = agentsData.filter(function (a) {
     var matchNom = !recherche || a.nom.toLowerCase().indexOf(recherche.toLowerCase()) >= 0 || a.matricule.toLowerCase().indexOf(recherche.toLowerCase()) >= 0;
     var matchCorps = filtreCorps === "tous" || a.corps === filtreCorps;
     return matchNom && matchCorps;
   });
 
-  var agent = AGENTS_DATA.find(function (a) { return a.id === selId; });
+  var agent = agentsData.find(function (a) { return a.id === selId; });
   var profil = agent ? AGENT_PROFILS_MAP[agent.id] : null;
 
   function getSalaire(a) {
