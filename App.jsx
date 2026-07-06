@@ -9663,6 +9663,21 @@ export default function App() {
   var crisisModeState = useState(false);
   var crisisMode = crisisModeState[0];
   var setCrisisMode = crisisModeState[1];
+  var showWelcomeState = useState(false);
+  var showWelcome = showWelcomeState[0];
+  var setShowWelcome = showWelcomeState[1];
+  var msgNonLusState = useState(0);
+  var msgNonLus = msgNonLusState[0];
+  var setMsgNonLus = msgNonLusState[1];
+
+  useEffect(function () {
+    if (compte) {
+      setShowWelcome(true);
+      supabase.from("messages").select("*").eq("a", compte.identifiant).eq("lu", false).then(function (r) {
+        if (r.data) { setMsgNonLus(r.data.length); }
+      });
+    }
+  }, [compte]);
 
   useEffect(function () {
     var intervalId = setInterval(function () { setHorloge(new Date()); }, 1000);
@@ -9689,6 +9704,8 @@ export default function App() {
     nav = nav.filter(function (n) { return n.id !== "territorial"; });
   }
   var urgences = INCIDENTS_DATA.filter(function (i) { return i.gravite === "critique" && i.statut === "en_cours"; }).length + GARDES_VUE_DATA.filter(function (g) { return g.heuresRestantes <= 6 && g.statut === "actif"; }).length;
+  var mcEnCours = INCIDENTS_DATA.filter(function (i) { return i.statut === "en_cours"; }).length;
+  var gavActives = GARDES_VUE_DATA.filter(function (g) { return g.statut === "actif"; }).length;
   var initiales = compte.identifiant.slice(0, 2).toUpperCase();
 
   var content;
@@ -9804,6 +9821,31 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
+      {showWelcome ? (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-2xl p-6 max-w-sm w-full space-y-4">
+            <div>
+              <p className="text-white font-black text-lg">Bienvenue, {compte.nom}</p>
+              <p className="text-slate-500 text-xs">Voici votre situation a la connexion</p>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between bg-slate-800 rounded-xl px-3 py-2">
+                <span className="text-slate-300 text-sm">Mains courantes en cours</span>
+                <span className="text-white font-bold">{mcEnCours}</span>
+              </div>
+              <div className="flex items-center justify-between bg-slate-800 rounded-xl px-3 py-2">
+                <span className="text-slate-300 text-sm">Gardes a vue actives</span>
+                <span className="text-white font-bold">{gavActives}</span>
+              </div>
+              <div className="flex items-center justify-between bg-slate-800 rounded-xl px-3 py-2">
+                <span className="text-slate-300 text-sm">Messages non lus</span>
+                <span className="text-white font-bold">{msgNonLus}</span>
+              </div>
+            </div>
+            <button onClick={function () { setShowWelcome(false); }} className="w-full bg-blue-700 text-white py-2 rounded-xl font-bold text-sm">Compris</button>
+          </div>
+        </div>
+      ) : null}
       <div className="bg-slate-900 border-b border-slate-800 flex items-center px-4 py-2.5 gap-4">
         <div className="flex items-center gap-2.5">
           <Ecusson size={30} />
@@ -9830,8 +9872,9 @@ export default function App() {
           <Bell size={15} />
           {urgences > 0 ? <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{urgences}</span> : null}
         </button>
-        <button className="w-8 h-8 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white">
+        <button className="relative w-8 h-8 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white">
           <MessageSquare size={15} />
+          {msgNonLus > 0 ? <span className="absolute -top-1 -right-1 bg-red-600 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{msgNonLus}</span> : null}
         </button>
         <div className="hidden sm:flex items-center gap-2 pl-2 border-l border-slate-800">
           <div style={{ background: compte.couleur + "33", color: compte.couleur, border: "1px solid " + compte.couleur }} className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black">
