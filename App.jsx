@@ -1462,6 +1462,26 @@ function Messagerie(props) {
   var msgs = msgsState[0];
   var setMsgs = msgsState[1];
 
+  useEffect(function() {
+    function chargerMessages(){
+      supabase.from("messages").select("*").order("created_at",{ascending:true}).then(function(r){
+        if(r.data && r.data.length>0){
+          var nouvMsgs = r.data.map(function(m){
+            return { id:m.id, de:m.de, deNom:m.denom, a:m.a, aNom:m.anom, texte:m.texte, date:m.date, heure:m.heure, lu:m.lu };
+          });
+          setMsgs(function(prev){
+            var idsExistants = prev.map(function(p){return p.id;});
+            var aAjouter = nouvMsgs.filter(function(m){return idsExistants.indexOf(m.id)===-1;});
+            return prev.concat(aAjouter);
+          });
+        }
+      });
+    }
+    chargerMessages();
+    var timer=setInterval(chargerMessages,15000);
+    return function(){ clearInterval(timer); };
+  }, []);
+
   var convState = useState(null);
   var convPartner = convState[0];
   var setConvPartner = convState[1];
@@ -1502,8 +1522,13 @@ function Messagerie(props) {
       heure: new Date().getHours() + ":" + (new Date().getMinutes() < 10 ? "0" : "") + new Date().getMinutes(),
       lu: false
     };
-    setMsgs(function (prev) { return prev.concat([m]); });
-    nouveauMsg[1]("");
+    var mSupabase = { id:m.id, de:m.de, denom:m.deNom, a:m.a, anom:m.aNom, texte:m.texte, date:m.date, heure:m.heure, lu:m.lu };
+    supabase.from("messages").insert([mSupabase]).then(function(r){
+      if(!r.error){
+        setMsgs(function (prev) { return prev.concat([m]); });
+        nouveauMsg[1]("");
+      } else { alert("Erreur envoi: "+JSON.stringify(r.error)); }
+    });
   }
 
   function nouvConversation() {
