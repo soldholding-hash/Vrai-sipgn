@@ -779,6 +779,18 @@ function Carrieres(props) {
   var recServiceState = useState(""); var recService = recServiceState[0]; var setRecService = recServiceState[1];
   var recDiplomeState = useState(""); var recDiplome = recDiplomeState[0]; var setRecDiplome = recDiplomeState[1];
   var recPhotoState = useState(""); var recPhoto = recPhotoState[0]; var setRecPhoto = recPhotoState[1];
+  var recPrenomState = useState(""); var recPrenom = recPrenomState[0]; var setRecPrenom = recPrenomState[1];
+  var recDateNaissanceState = useState(""); var recDateNaissance = recDateNaissanceState[0]; var setRecDateNaissance = recDateNaissanceState[1];
+  var recLieuNaissanceState = useState(""); var recLieuNaissance = recLieuNaissanceState[0]; var setRecLieuNaissance = recLieuNaissanceState[1];
+  var recGradeIndexState = useState(0); var recGradeIndex = recGradeIndexState[0]; var setRecGradeIndex = recGradeIndexState[1];
+  var recMatriculeMilitaireState = useState(""); var recMatriculeMilitaire = recMatriculeMilitaireState[0]; var setRecMatriculeMilitaire = recMatriculeMilitaireState[1];
+  var recMatriculeSoldeState = useState(""); var recMatriculeSolde = recMatriculeSoldeState[0]; var setRecMatriculeSolde = recMatriculeSoldeState[1];
+  var recAnneeRecrutementState = useState(""); var recAnneeRecrutement = recAnneeRecrutementState[0]; var setRecAnneeRecrutement = recAnneeRecrutementState[1];
+  var recEcoleFormationState = useState(""); var recEcoleFormation = recEcoleFormationState[0]; var setRecEcoleFormation = recEcoleFormationState[1];
+  var recDiplomeMilitaireState = useState(""); var recDiplomeMilitaire = recDiplomeMilitaireState[0]; var setRecDiplomeMilitaire = recDiplomeMilitaireState[1];
+  var recDernierDiplomeScolaireState = useState(""); var recDernierDiplomeScolaire = recDernierDiplomeScolaireState[0]; var setRecDernierDiplomeScolaire = recDernierDiplomeScolaireState[1];
+  var recSalaireState = useState(""); var recSalaire = recSalaireState[0]; var setRecSalaire = recSalaireState[1];
+  var recSituationFamilialeState = useState("Celibataire"); var recSituationFamiliale = recSituationFamilialeState[0]; var setRecSituationFamiliale = recSituationFamilialeState[1];
 
   function handlePhotoChange(e) {
     var file = e.target.files[0];
@@ -809,17 +821,31 @@ function Carrieres(props) {
   }, []);
 
   function creerRecrue() {
+    if (!recNom || !recPrenom || !recMatricule || !recService) {
+      alert("Merci de remplir au minimum: Nom, Prenom, Matricule et Service.");
+      return;
+    }
     var nouv = {
       id: "AGT-"+Date.now(),
-      matricule: recMatricule, nom: recNom, corps: recCorps,
-      service: recService, gradeindex: 0, anciennete: 0,
-      statut: "actif", diplome: recDiplome, photo: recPhoto
+      matricule: recMatricule, nom: recNom, prenom: recPrenom, corps: recCorps,
+      service: recService, gradeindex: recGradeIndex, anciennete: 0,
+      statut: "actif", diplome: recDiplome, photo: recPhoto,
+      datenaissance: recDateNaissance, lieunaissance: recLieuNaissance,
+      matriculemilitaire: recMatriculeMilitaire, matriculesolde: recMatriculeSolde,
+      anneerecrutement: recAnneeRecrutement, ecoleformation: recEcoleFormation,
+      diplomemilitaire: recDiplomeMilitaire, dernierdiplomescolaire: recDernierDiplomeScolaire,
+      salaire: recSalaire, situationfamiliale: recSituationFamiliale
     };
     supabase.from("personnels").insert([nouv]).then(function(r){
       if(!r.error){
-        var agentComplet = { id:nouv.id, matricule:nouv.matricule, nom:nouv.nom, corps:nouv.corps, service:nouv.service, gradeIndex:0, anciennete:0, statut:"actif", diplome:nouv.diplome, instruction:null };
+        var agentComplet = { id:nouv.id, matricule:nouv.matricule, nom:nouv.nom, prenom:nouv.prenom, corps:nouv.corps, service:nouv.service, gradeIndex:recGradeIndex, anciennete:0, statut:"actif", diplome:nouv.diplome, instruction:null };
         setAgents(function(prev){return prev.concat([agentComplet]);});
-        setShowRecrueForm(false); setRecNom(""); setRecMatricule(""); setRecService(""); setRecDiplome(""); setRecCorps("Police"); setRecPhoto("");
+        setShowRecrueForm(false);
+        setRecNom(""); setRecPrenom(""); setRecMatricule(""); setRecService(""); setRecDiplome(""); setRecCorps("Police"); setRecPhoto("");
+        setRecDateNaissance(""); setRecLieuNaissance(""); setRecGradeIndex(0);
+        setRecMatriculeMilitaire(""); setRecMatriculeSolde(""); setRecAnneeRecrutement("");
+        setRecEcoleFormation(""); setRecDiplomeMilitaire(""); setRecDernierDiplomeScolaire("");
+        setRecSalaire(""); setRecSituationFamiliale("Celibataire");
       } else { alert("Erreur: "+JSON.stringify(r.error)); }
     });
   }
@@ -908,6 +934,31 @@ function Carrieres(props) {
           </select>
           <input value={recService} onChange={function(e){setRecService(e.target.value)}} placeholder="Service / Unite *" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
           <input value={recDiplome} onChange={function(e){setRecDiplome(e.target.value)}} placeholder="Diplome (optionnel)" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <div className="grid grid-cols-2 gap-2">
+            <input value={recPrenom} onChange={function(e){setRecPrenom(e.target.value)}} placeholder="Prenom *" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+            <input type="date" value={recDateNaissance} onChange={function(e){setRecDateNaissance(e.target.value)}} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          </div>
+          <input value={recLieuNaissance} onChange={function(e){setRecLieuNaissance(e.target.value)}} placeholder="Lieu de naissance" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <select value={recGradeIndex} onChange={function(e){setRecGradeIndex(parseInt(e.target.value,10))}} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm">
+            {gradesDe(recCorps).map(function(g,i){ return <option key={i} value={i}>{g}</option>; })}
+          </select>
+          <div className="grid grid-cols-2 gap-2">
+            <input value={recMatriculeMilitaire} onChange={function(e){setRecMatriculeMilitaire(e.target.value)}} placeholder="Matricule militaire" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+            <input value={recMatriculeSolde} onChange={function(e){setRecMatriculeSolde(e.target.value)}} placeholder="Matricule solde" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          </div>
+          <input value={recAnneeRecrutement} onChange={function(e){setRecAnneeRecrutement(e.target.value)}} placeholder="Annee de recrutement" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <input value={recEcoleFormation} onChange={function(e){setRecEcoleFormation(e.target.value)}} placeholder="Ecole de formation / Base commune" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <input value={recDiplomeMilitaire} onChange={function(e){setRecDiplomeMilitaire(e.target.value)}} placeholder="Diplome militaire" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <input value={recDernierDiplomeScolaire} onChange={function(e){setRecDernierDiplomeScolaire(e.target.value)}} placeholder="Dernier diplome scolaire" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+          <div className="grid grid-cols-2 gap-2">
+            <input value={recSalaire} onChange={function(e){setRecSalaire(e.target.value)}} placeholder="Salaire (FCFA)" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
+            <select value={recSituationFamiliale} onChange={function(e){setRecSituationFamiliale(e.target.value)}} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm">
+              <option value="Celibataire">Celibataire</option>
+              <option value="Marie">Marie(e)</option>
+              <option value="Divorce">Divorce(e)</option>
+              <option value="Veuf">Veuf/Veuve</option>
+            </select>
+          </div>
           <div className="flex items-center gap-3">
             {recPhoto ? <img src={recPhoto} className="w-14 h-14 rounded-full object-cover border border-slate-700" /> : <div className="w-14 h-14 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center text-slate-500 text-xs">Photo</div>}
             <input type="file" accept="image/*" onChange={handlePhotoChange} className="text-slate-400 text-xs" />

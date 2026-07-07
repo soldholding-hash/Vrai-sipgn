@@ -1,3 +1,9 @@
+import { useState, useEffect } from "react";
+import { LayoutDashboard, CalendarDays, FileWarning, Lock, Car, Truck, FileText, Users, Search, Bell, MessageSquare, LogOut, Siren, ShieldCheck, Clock, Fingerprint, ShieldAlert, Building2, Package, ClipboardCheck, Shuffle, CalendarCheck, GraduationCap, BookOpen, Video, VideoOff, Mic, MicOff, PhoneOff, MonitorPlay, Radio } from "lucide-react";
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, LineChart, Line, Treemap } from "recharts";
+import { useState, useEffect } from "react";
+import { LayoutDashboard, CalendarDays, FileWarning, Lock, Car, Truck, FileText, Users, Search, Bell, MessageSquare, LogOut, Siren, ShieldCheck, Clock, Fingerprint, ShieldAlert, Building2, Package, ClipboardCheck, Shuffle, CalendarCheck, GraduationCap, BookOpen, Video, VideoOff, Mic, MicOff, PhoneOff, MonitorPlay, Radio } from "lucide-react";
+import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, LineChart, Line, Treemap } from "recharts";
 function DataScientistRouter(props) {
   var compte = props.compte;
   if (compte.role === "dl") { return <DataScientistDL compte={compte} />; }
