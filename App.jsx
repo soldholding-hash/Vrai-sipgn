@@ -1,27 +1,27 @@
 import { createClient } from "@supabase/supabase-js"
 var supabase=createClient("https://lvstphnennbiwwubaepw.supabase.co","sb_publishable_IVEjS49BS6I9F2czR_UnvQ_f_fuykvY",{global:{headers:{"apikey":"sb_publishable_IVEjS49BS6I9F2czR_UnvQ_f_fuykvY","Authorization":"Bearer sb_publishable_IVEjS49BS6I9F2czR_UnvQ_f_fuykvY"}}})
-import { useState, useEffect } from "react";
-import { LayoutDashboard, CalendarDays, FileWarning, Lock, Car, Truck, FileText, Users, Search, Bell, MessageSquare, LogOut, Siren, ShieldCheck, Clock, Fingerprint, ShieldAlert, Building2, Package, ClipboardCheck, Shuffle, CalendarCheck, GraduationCap, BookOpen, Video, VideoOff, Mic, MicOff, PhoneOff, MonitorPlay, Radio } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { LayoutDashboard, CalendarDays, FileWarning, Lock, Car, Truck, FileText, Users, Search, Bell, MessageSquare, LogOut, Siren, ShieldCheck, Clock, Fingerprint, ShieldAlert, Building2, Package, ClipboardCheck, Shuffle, CalendarCheck, GraduationCap, BookOpen, Video, VideoOff, Mic, MicOff, Phone, PhoneOff, PhoneIncoming, MonitorPlay, Radio } from "lucide-react";
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, LineChart, Line, Treemap } from "recharts";
 
 var COMPTES = [
-  { id: "CFP-001", identifiant: "cfp-congo@policenationale.cg", motdepasse: "admin2026", role: "direction", nom: "Commandement des Forces de Police (CFP)", service: "Commandement des Forces de Police", corps: "Police", couleur: "#8B5CF6" },
-  { id: "CGN-001", identifiant: "cgn-congo@gendarmerienationale.cg", motdepasse: "cgn2026", role: "direction", nom: "Commandement de la Gendarmerie Nationale (CGN)", service: "Commandement de la Gendarmerie Nationale", corps: "Gendarmerie", couleur: "#A21CAF" },
-  { id: "DRG-001", identifiant: "drg-congo@policenationale.cg", motdepasse: "renseignement2026", role: "renseignement", nom: "Direction des Renseignements Generaux (DRG)", service: "Direction des Renseignements Generaux", corps: "Police", couleur: "#581C87" },
-  { id: "DGRH-001", identifiant: "dgrh-congo@sipgn.cg", motdepasse: "rh2026", role: "rh", nom: "Direction Generale des Ressources Humaines", service: "DGRH", corps: "Tous", couleur: "#BE185D" },
-  { id: "DL-001", identifiant: "dl-congo@sipgn.cg", motdepasse: "logistique2026", role: "dl", nom: "Direction de la Logistique", service: "Direction de la Logistique", corps: "Tous", couleur: "#0EA5E9" },
-  { id: "DAF-001", identifiant: "daf-congo@sipgn.cg", motdepasse: "finances2026", role: "daf", nom: "Direction Administration et Finances", service: "DAF", corps: "Tous", couleur: "#16A34A" },
-  { id: "DOP-001", identifiant: "personnel-congo@sipgn.cg", motdepasse: "personnel2026", role: "personnel", nom: "Direction Organisation et Personnel", service: "Direction du Personnel", corps: "Tous", couleur: "#D97706" },
-  { id: "DOPS-001", identifiant: "operations-congo@sipgn.cg", motdepasse: "operations2026", role: "operations", nom: "Direction des Operations", service: "Direction des Operations", corps: "Tous", couleur: "#2563EB" },
-  { id: "INTERPOL-001", identifiant: "interpol-congo@policenationale.cg", motdepasse: "interpol2026", role: "interpol", nom: "Bureau Central National INTERPOL", service: "INTERPOL Brazzaville", corps: "Police", couleur: "#EA580C" },
-  { id: "PNAV-001", identifiant: "policenavale-congo@policenationale.cg", motdepasse: "navale2026", role: "navale", nom: "Police Navale", service: "Police Navale", corps: "Police", couleur: "#0369A1" },
-  { id: "GNAV-001", identifiant: "gendarmerienavale-congo@gendarmerienationale.cg", motdepasse: "navale2026", role: "navale", nom: "Gendarmerie Navale", service: "Gendarmerie Navale", corps: "Gendarmerie", couleur: "#0E7490" },
-  { id: "CC-001", identifiant: "commissariatcentral-congo@policenationale.cg", motdepasse: "police2026", role: "commissariat", nom: "Commissariat Central BZV", service: "Commissariat Central BZV", corps: "Police", couleur: "#003F87" },
-  { id: "BCA-001", identifiant: "bca-congo@policenationale.cg", motdepasse: "accident2026", role: "accidents", nom: "Bureau Controle Accidents", service: "Bureau Controle Accidents BZV", corps: "Police", couleur: "#F59E0B" },
-  { id: "PJ-001", identifiant: "dcpj-congo@policenationale.cg", motdepasse: "judiciaire2026", role: "judiciaire", nom: "DCPJ Brazzaville", service: "DCPJ Brazzaville", corps: "Police", couleur: "#DC2626" },
-  { id: "GN-001", identifiant: "gendarmeriepnr-congo@gendarmerienationale.cg", motdepasse: "gend2026", role: "gendarmerie", nom: "Brigade Territoriale PNR", service: "Brigade Territoriale Pointe-Noire", corps: "Gendarmerie", couleur: "#1B6B3A" },
-  { id: "CTL-001", identifiant: "frontieres-congo@policenationale.cg", motdepasse: "frontiere2026", role: "controle", nom: "Controle Voyageurs et Frontieres", service: "Poste Frontalier Aeroport", corps: "Police", couleur: "#0EA5E9" },
-  { id: "OPJ-001", identifiant: "opj.malanda@policenationale.cg", motdepasse: "enquete2026", role: "opj", nom: "Inspecteur Principal MALANDA Christian", service: "DCPJ Brazzaville", corps: "Police", couleur: "#9F1239", nomOfficier: "MALANDA Christian", matricule: "PNB-10234" }
+  { id: "CFP-001", identifiant: "cfp-congo@policenationale.cg", numero: "035 671 001", motdepasse: "admin2026", role: "direction", nom: "Commandement des Forces de Police (CFP)", service: "Commandement des Forces de Police", corps: "Police", couleur: "#8B5CF6" },
+  { id: "CGN-001", identifiant: "cgn-congo@gendarmerienationale.cg", numero: "035 671 002", motdepasse: "cgn2026", role: "direction", nom: "Commandement de la Gendarmerie Nationale (CGN)", service: "Commandement de la Gendarmerie Nationale", corps: "Gendarmerie", couleur: "#A21CAF" },
+  { id: "DRG-001", identifiant: "drg-congo@policenationale.cg", numero: "035 671 003", motdepasse: "renseignement2026", role: "renseignement", nom: "Direction des Renseignements Generaux (DRG)", service: "Direction des Renseignements Generaux", corps: "Police", couleur: "#581C87" },
+  { id: "DGRH-001", identifiant: "dgrh-congo@sipgn.cg", numero: "035 671 004", motdepasse: "rh2026", role: "rh", nom: "Direction Generale des Ressources Humaines", service: "DGRH", corps: "Tous", couleur: "#BE185D" },
+  { id: "DL-001", identifiant: "dl-congo@sipgn.cg", numero: "035 671 005", motdepasse: "logistique2026", role: "dl", nom: "Direction de la Logistique", service: "Direction de la Logistique", corps: "Tous", couleur: "#0EA5E9" },
+  { id: "DAF-001", identifiant: "daf-congo@sipgn.cg", numero: "035 671 006", motdepasse: "finances2026", role: "daf", nom: "Direction Administration et Finances", service: "DAF", corps: "Tous", couleur: "#16A34A" },
+  { id: "DOP-001", identifiant: "personnel-congo@sipgn.cg", numero: "035 671 007", motdepasse: "personnel2026", role: "personnel", nom: "Direction Organisation et Personnel", service: "Direction du Personnel", corps: "Tous", couleur: "#D97706" },
+  { id: "DOPS-001", identifiant: "operations-congo@sipgn.cg", numero: "035 671 008", motdepasse: "operations2026", role: "operations", nom: "Direction des Operations", service: "Direction des Operations", corps: "Tous", couleur: "#2563EB" },
+  { id: "INTERPOL-001", identifiant: "interpol-congo@policenationale.cg", numero: "035 671 009", motdepasse: "interpol2026", role: "interpol", nom: "Bureau Central National INTERPOL", service: "INTERPOL Brazzaville", corps: "Police", couleur: "#EA580C" },
+  { id: "PNAV-001", identifiant: "policenavale-congo@policenationale.cg", numero: "035 671 010", motdepasse: "navale2026", role: "navale", nom: "Police Navale", service: "Police Navale", corps: "Police", couleur: "#0369A1" },
+  { id: "GNAV-001", identifiant: "gendarmerienavale-congo@gendarmerienationale.cg", numero: "035 671 011", motdepasse: "navale2026", role: "navale", nom: "Gendarmerie Navale", service: "Gendarmerie Navale", corps: "Gendarmerie", couleur: "#0E7490" },
+  { id: "CC-001", identifiant: "commissariatcentral-congo@policenationale.cg", numero: "035 671 012", motdepasse: "police2026", role: "commissariat", nom: "Commissariat Central BZV", service: "Commissariat Central BZV", corps: "Police", couleur: "#003F87" },
+  { id: "BCA-001", identifiant: "bca-congo@policenationale.cg", numero: "035 671 013", motdepasse: "accident2026", role: "accidents", nom: "Bureau Controle Accidents", service: "Bureau Controle Accidents BZV", corps: "Police", couleur: "#F59E0B" },
+  { id: "PJ-001", identifiant: "dcpj-congo@policenationale.cg", numero: "035 671 014", motdepasse: "judiciaire2026", role: "judiciaire", nom: "DCPJ Brazzaville", service: "DCPJ Brazzaville", corps: "Police", couleur: "#DC2626" },
+  { id: "GN-001", identifiant: "gendarmeriepnr-congo@gendarmerienationale.cg", numero: "035 671 015", motdepasse: "gend2026", role: "gendarmerie", nom: "Brigade Territoriale PNR", service: "Brigade Territoriale Pointe-Noire", corps: "Gendarmerie", couleur: "#1B6B3A" },
+  { id: "CTL-001", identifiant: "frontieres-congo@policenationale.cg", numero: "035 671 016", motdepasse: "frontiere2026", role: "controle", nom: "Controle Voyageurs et Frontieres", service: "Poste Frontalier Aeroport", corps: "Police", couleur: "#0EA5E9" },
+  { id: "OPJ-001", identifiant: "opj.malanda@policenationale.cg", numero: "035 671 017", motdepasse: "enquete2026", role: "opj", nom: "Inspecteur Principal MALANDA Christian", service: "DCPJ Brazzaville", corps: "Police", couleur: "#9F1239", nomOfficier: "MALANDA Christian", matricule: "PNB-10234" }
 ];
 
 var LOGO_POLICE_B64 = "logo_police.png";
@@ -9387,7 +9387,8 @@ var NAV_ICON = {
   casier: Fingerprint,
   dossiers360: Users,
   visioconf: Video,
-  planifvisio: CalendarCheck
+  planifvisio: CalendarCheck,
+  appels: Radio
 };
 
 var NAV_BY_ROLE = {
@@ -9412,7 +9413,8 @@ var NAV_BY_ROLE = {
     { id: "casier", label: "Casier Judiciaire" },
     { id: "dossiers360", label: "Dossiers 360° des Agents" },
     { id: "visioconf", label: "Videoconference" },
-    { id: "planifvisio", label: "Planificateur Visio" }
+    { id: "planifvisio", label: "Planificateur Visio" },
+    { id: "appels", label: "Appels SIPGN" }
   ],
   rh: [
     { id: "dashboard", label: "Tableau de bord" },
@@ -9423,7 +9425,8 @@ var NAV_BY_ROLE = {
     { id: "datascientist", label: "Data Scientist IA" },
     { id: "casier", label: "Casier Judiciaire" },
     { id: "visioconf", label: "Videoconference" },
-    { id: "planifvisio", label: "Planificateur Visio" }
+    { id: "planifvisio", label: "Planificateur Visio" },
+    { id: "appels", label: "Appels SIPGN" }
   ],
   commissariat: [
     { id: "dashboard", label: "Tableau de bord" },
@@ -9438,7 +9441,8 @@ var NAV_BY_ROLE = {
     { id: "datascientist", label: "Data Scientist IA" },
     { id: "casier", label: "Casier Judiciaire" },
     { id: "visioconf", label: "Videoconference" },
-    { id: "planifvisio", label: "Planificateur Visio" }
+    { id: "planifvisio", label: "Planificateur Visio" },
+    { id: "appels", label: "Appels SIPGN" }
   ],
   accidents: [
     { id: "dashboard", label: "Poste de Pilotage" },
@@ -9454,7 +9458,8 @@ var NAV_BY_ROLE = {
     { id: "datascientist", label: "Data Scientist IA" },
     { id: "casier", label: "Casier Judiciaire" },
     { id: "visioconf", label: "Videoconference" },
-    { id: "planifvisio", label: "Planificateur Visio" }
+    { id: "planifvisio", label: "Planificateur Visio" },
+    { id: "appels", label: "Appels SIPGN" }
   ],
   judiciaire: [
     { id: "dashboard", label: "Centre Nevralgique" },
@@ -9470,7 +9475,8 @@ var NAV_BY_ROLE = {
     { id: "datascientist", label: "Data Scientist IA" },
     { id: "casier", label: "Casier Judiciaire" },
     { id: "visioconf", label: "Videoconference" },
-    { id: "planifvisio", label: "Planificateur Visio" }
+    { id: "planifvisio", label: "Planificateur Visio" },
+    { id: "appels", label: "Appels SIPGN" }
   ],
   gendarmerie: [
     { id: "dashboard", label: "Tableau de bord" },
@@ -9485,7 +9491,8 @@ var NAV_BY_ROLE = {
     { id: "datascientist", label: "Data Scientist IA" },
     { id: "casier", label: "Casier Judiciaire" },
     { id: "visioconf", label: "Videoconference" },
-    { id: "planifvisio", label: "Planificateur Visio" }
+    { id: "planifvisio", label: "Planificateur Visio" },
+    { id: "appels", label: "Appels SIPGN" }
   ],
   controle: [
     { id: "dashboard", label: "Tableau de bord" },
@@ -9496,7 +9503,8 @@ var NAV_BY_ROLE = {
     { id: "datascientist", label: "Data Scientist IA" },
     { id: "casier", label: "Casier Judiciaire" },
     { id: "visioconf", label: "Videoconference" },
-    { id: "planifvisio", label: "Planificateur Visio" }
+    { id: "planifvisio", label: "Planificateur Visio" },
+    { id: "appels", label: "Appels SIPGN" }
   ],
   dl: [
     { id: "dashboard", label: "Tableau de bord 360°" },
@@ -9512,7 +9520,8 @@ var NAV_BY_ROLE = {
     { id: "datascientist", label: "Data Scientist IA" },
     { id: "casier", label: "Casier Judiciaire" },
     { id: "visioconf", label: "Videoconference" },
-    { id: "planifvisio", label: "Planificateur Visio" }
+    { id: "planifvisio", label: "Planificateur Visio" },
+    { id: "appels", label: "Appels SIPGN" }
   ],
   daf: [
     { id: "dashboard", label: "Tableau de bord" },
@@ -9526,7 +9535,8 @@ var NAV_BY_ROLE = {
     { id: "messagerie", label: "Messagerie" },
     { id: "casier", label: "Casier Judiciaire" },
     { id: "visioconf", label: "Videoconference" },
-    { id: "planifvisio", label: "Planificateur Visio" }
+    { id: "planifvisio", label: "Planificateur Visio" },
+    { id: "appels", label: "Appels SIPGN" }
   ],
   personnel: [
     { id: "dashboard", label: "Gestion des Effectifs" },
@@ -9543,7 +9553,8 @@ var NAV_BY_ROLE = {
     { id: "casier", label: "Casier Judiciaire" },
     { id: "dossiers360", label: "Dossiers 360° des Agents" },
     { id: "visioconf", label: "Videoconference" },
-    { id: "planifvisio", label: "Planificateur Visio" }
+    { id: "planifvisio", label: "Planificateur Visio" },
+    { id: "appels", label: "Appels SIPGN" }
   ],
   operations: [
     { id: "dashboard", label: "Tableau de bord" },
@@ -9557,7 +9568,8 @@ var NAV_BY_ROLE = {
     { id: "datascientist", label: "Data Scientist IA" },
     { id: "casier", label: "Casier Judiciaire" },
     { id: "visioconf", label: "Videoconference" },
-    { id: "planifvisio", label: "Planificateur Visio" }
+    { id: "planifvisio", label: "Planificateur Visio" },
+    { id: "appels", label: "Appels SIPGN" }
   ],
   interpol: [
     { id: "dashboard", label: "Tableau de bord" },
@@ -9568,7 +9580,8 @@ var NAV_BY_ROLE = {
     { id: "datascientist", label: "Data Scientist IA" },
     { id: "casier", label: "Casier Judiciaire" },
     { id: "visioconf", label: "Videoconference" },
-    { id: "planifvisio", label: "Planificateur Visio" }
+    { id: "planifvisio", label: "Planificateur Visio" },
+    { id: "appels", label: "Appels SIPGN" }
   ],
   navale: [
     { id: "dashboard", label: "Tableau de bord" },
@@ -9581,7 +9594,8 @@ var NAV_BY_ROLE = {
     { id: "messagerie", label: "Messagerie" },
     { id: "casier", label: "Casier Judiciaire" },
     { id: "visioconf", label: "Videoconference" },
-    { id: "planifvisio", label: "Planificateur Visio" }
+    { id: "planifvisio", label: "Planificateur Visio" },
+    { id: "appels", label: "Appels SIPGN" }
   ],
   renseignement: [
     { id: "dashboard", label: "Cockpit de Stabilite" },
@@ -9594,7 +9608,8 @@ var NAV_BY_ROLE = {
     { id: "datascientist", label: "Data Scientist IA" },
     { id: "casier", label: "Casier Judiciaire" },
     { id: "visioconf", label: "Videoconference" },
-    { id: "planifvisio", label: "Planificateur Visio" }
+    { id: "planifvisio", label: "Planificateur Visio" },
+    { id: "appels", label: "Appels SIPGN" }
   ],
   opj: [
     { id: "dashboard", label: "Mes Dossiers en Cours" },
@@ -9606,7 +9621,8 @@ var NAV_BY_ROLE = {
     { id: "messagerie", label: "Messagerie (SIPGN-Comm)" },
     { id: "casier", label: "Casier Judiciaire" },
     { id: "visioconf", label: "Videoconference" },
-    { id: "planifvisio", label: "Planificateur Visio" }
+    { id: "planifvisio", label: "Planificateur Visio" },
+    { id: "appels", label: "Appels SIPGN" }
   ]
 };
 
@@ -9848,6 +9864,8 @@ export default function App() {
     content = <VideoConference compte={compte} />;
   } else if (module === "planifvisio") {
     content = <PlanificateurVisio compte={compte} />;
+  } else if (module === "appels") {
+    content = <AppelsSystem compte={compte} />;
   } else if (compte.role === "direction") {
     content = <DashboardCFP compte={compte} onNavigate={setModule} />;
   } else if (compte.role === "daf") {
@@ -9972,3 +9990,325 @@ export default function App() {
     </div>
   );
 }
+// ============ SYSTEME D APPELS ============
+function AppelsSystem(props) {
+  var compte = props.compte;
+  var allComptes = COMPTES;
+
+  var appelEntrantState = useState(null);
+  var appelEntrant = appelEntrantState[0]; var setAppelEntrant = appelEntrantState[1];
+  var appelSortantState = useState(null);
+  var appelSortant = appelSortantState[0]; var setAppelSortant = appelSortantState[1];
+  var enAppelState = useState(false);
+  var enAppel = enAppelState[0]; var setEnAppel = enAppelState[1];
+  var dureeState = useState(0);
+  var duree = dureeState[0]; var setDuree = dureeState[1];
+  var presencesState = useState({});
+  var presences = presencesState[0]; var setPresences = presencesState[1];
+  var historiqueState = useState([]);
+  var historique = historiqueState[0]; var setHistorique = historiqueState[1];
+  var micState = useState(true); var mic = micState[0]; var setMic = micState[1];
+  var rechercheState = useState(""); var recherche = rechercheState[0]; var setRecherche = rechercheState[1];
+  var ongletState = useState("contacts"); var onglet = ongletState[0]; var setOnglet = ongletState[1];
+
+  // Enregistrer presence
+  useEffect(function() {
+    function majPresence() {
+      supabase.from("presences").upsert({
+        identifiant: compte.identifiant,
+        nom: compte.nom,
+        statut: "en_ligne",
+        derniere_activite: new Date().toISOString()
+      }, {onConflict: "identifiant"}).then(function(){});
+    }
+    majPresence();
+    var timer = setInterval(majPresence, 20000);
+
+    // Charger presences
+    function chargerPresences() {
+      supabase.from("presences").select("*").then(function(r) {
+        if(r.data) {
+          var map = {};
+          r.data.forEach(function(p) {
+            var diff = (new Date() - new Date(p.derniere_activite)) / 1000;
+            map[p.identifiant] = diff < 60 ? "en_ligne" : "hors_ligne";
+          });
+          setPresences(map);
+        }
+      });
+    }
+    chargerPresences();
+    var presTimer = setInterval(chargerPresences, 15000);
+
+    // Ecouter appels entrants
+    function verifierAppels() {
+      supabase.from("appels").select("*")
+        .eq("recepteur", compte.identifiant)
+        .eq("statut", "sonnerie")
+        .order("created_at", {ascending: false})
+        .limit(1)
+        .then(function(r) {
+          if(r.data && r.data.length > 0 && !enAppel) {
+            setAppelEntrant(r.data[0]);
+          }
+        });
+    }
+    var appelTimer = setInterval(verifierAppels, 3000);
+
+    return function() {
+      clearInterval(timer);
+      clearInterval(presTimer);
+      clearInterval(appelTimer);
+      supabase.from("presences").upsert({
+        identifiant: compte.identifiant,
+        nom: compte.nom,
+        statut: "hors_ligne",
+        derniere_activite: new Date().toISOString()
+      }, {onConflict: "identifiant"}).then(function(){});
+    };
+  }, []);
+
+  // Chrono appel
+  useEffect(function() {
+    if(enAppel) {
+      var t = setInterval(function() { setDuree(function(d) { return d+1; }); }, 1000);
+      return function() { clearInterval(t); };
+    } else {
+      setDuree(0);
+    }
+  }, [enAppel]);
+
+  function formatDuree(s) {
+    var m = Math.floor(s/60); var ss = s%60;
+    return (m<10?"0":"")+m+":"+(ss<10?"0":"")+ss;
+  }
+
+  function appeler(cible, typeAppel) {
+    var id = "APPEL-"+Date.now();
+    var nouvelAppel = {
+      id: id,
+      appelant: compte.identifiant,
+      appelant_nom: compte.nom,
+      recepteur: cible.identifiant,
+      statut: "sonnerie",
+      type: typeAppel || "audio"
+    };
+    supabase.from("appels").insert([nouvelAppel]).then(function(r) {
+      if(!r.error) {
+        setAppelSortant(Object.assign({}, nouvelAppel, {recepteur_nom: cible.nom, recepteur_couleur: cible.couleur}));
+        // Auto-annuler apres 30s
+        setTimeout(function() {
+          setAppelSortant(function(a) {
+            if(a && a.id === id) {
+              supabase.from("appels").update({statut:"manque"}).eq("id",id).then(function(){});
+              return null;
+            }
+            return a;
+          });
+        }, 30000);
+      }
+    });
+  }
+
+  function accepterAppel() {
+    if(!appelEntrant) return;
+    supabase.from("appels").update({statut:"en_cours"}).eq("id", appelEntrant.id).then(function(r) {
+      if(!r.error) {
+        setEnAppel(true);
+        setHistorique(function(prev) {
+          return [{
+            id: appelEntrant.id,
+            avec: appelEntrant.appelant_nom,
+            type: "entrant",
+            heure: new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),
+            statut: "accepte"
+          }].concat(prev);
+        });
+      }
+    });
+  }
+
+  function refuserAppel() {
+    if(!appelEntrant) return;
+    supabase.from("appels").update({statut:"refuse"}).eq("id", appelEntrant.id).then(function(){});
+    setAppelEntrant(null);
+  }
+
+  function raccrocher() {
+    var id = enAppel ? (appelEntrant ? appelEntrant.id : (appelSortant ? appelSortant.id : null)) : (appelSortant ? appelSortant.id : null);
+    if(id) {
+      supabase.from("appels").update({statut:"termine"}).eq("id", id).then(function(){});
+    }
+    setEnAppel(false);
+    setAppelEntrant(null);
+    setAppelSortant(null);
+  }
+
+  function annulerAppel() {
+    if(appelSortant) {
+      supabase.from("appels").update({statut:"annule"}).eq("id", appelSortant.id).then(function(){});
+      setAppelSortant(null);
+    }
+  }
+
+  var contactsFiltres = allComptes.filter(function(c) {
+    return c.identifiant !== compte.identifiant &&
+      (!recherche || c.nom.toLowerCase().indexOf(recherche.toLowerCase()) >= 0 || c.service.toLowerCase().indexOf(recherche.toLowerCase()) >= 0);
+  });
+
+  // Interface appel entrant
+  if(appelEntrant && !enAppel) {
+    return (
+      <div className="space-y-4">
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center">
+          <div className="bg-slate-900 rounded-3xl border border-slate-700 p-8 w-80 text-center space-y-6 shadow-2xl">
+            <div className="animate-pulse">
+              <div style={{background: "#1B6B3A33", color: "#1B6B3A"}} className="w-20 h-20 rounded-full flex items-center justify-center text-3xl font-black mx-auto mb-4">
+                {appelEntrant.appelant_nom.slice(0,2).toUpperCase()}
+              </div>
+              <p className="text-white font-black text-xl">{appelEntrant.appelant_nom}</p>
+              <p className="text-slate-400 text-sm mt-1">Appel entrant...</p>
+              <p className="text-green-400 text-xs mt-1">📞 {appelEntrant.type === "video" ? "Appel vidéo" : "Appel audio"}</p>
+            </div>
+            <div className="flex gap-6 justify-center">
+              <button onClick={refuserAppel} className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-lg">
+                <PhoneOff size={24} className="text-white"/>
+              </button>
+              <button onClick={accepterAppel} className="w-16 h-16 rounded-full bg-green-600 flex items-center justify-center shadow-lg animate-bounce">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div className="text-center text-slate-500 text-sm">Appel entrant de {appelEntrant.appelant_nom}...</div>
+      </div>
+    );
+  }
+
+  // Interface appel en cours
+  if(enAppel) {
+    var interlocuteur = appelEntrant ? appelEntrant.appelant_nom : (appelSortant ? appelSortant.recepteur_nom : "Inconnu");
+    return (
+      <div className="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center space-y-8">
+        <div className="text-center space-y-4">
+          <div style={{background: "#1B6B3A33", color: "#1B6B3A"}} className="w-28 h-28 rounded-full flex items-center justify-center text-4xl font-black mx-auto">
+            {interlocuteur.slice(0,2).toUpperCase()}
+          </div>
+          <p className="text-white font-black text-2xl">{interlocuteur}</p>
+          <p className="text-green-400 font-mono text-xl">{formatDuree(duree)}</p>
+          <p className="text-slate-500 text-sm">Appel en cours — chiffré</p>
+        </div>
+        <div className="flex gap-6">
+          <button onClick={function(){setMic(function(v){return !v;})}} style={{background: mic?"#1E293B":"#DC262633"}} className="w-14 h-14 rounded-full flex items-center justify-center border border-slate-700">
+            {mic ? <Mic size={20} className="text-white"/> : <MicOff size={20} className="text-red-400"/>}
+          </button>
+          <button onClick={raccrocher} className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-lg shadow-red-900/50">
+            <PhoneOff size={24} className="text-white"/>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Interface appel sortant
+  if(appelSortant) {
+    return (
+      <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center">
+        <div className="bg-slate-900 rounded-3xl border border-slate-700 p-8 w-80 text-center space-y-6 shadow-2xl">
+          <div style={{background: (appelSortant.recepteur_couleur||"#1B6B3A")+"33", color: appelSortant.recepteur_couleur||"#1B6B3A"}} className="w-20 h-20 rounded-full flex items-center justify-center text-3xl font-black mx-auto">
+            {(appelSortant.recepteur_nom||"").slice(0,2).toUpperCase()}
+          </div>
+          <div>
+            <p className="text-white font-black text-xl">{appelSortant.recepteur_nom}</p>
+            <p className="text-slate-400 text-sm mt-1 animate-pulse">Appel en cours...</p>
+          </div>
+          <button onClick={annulerAppel} className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-lg mx-auto">
+            <PhoneOff size={24} className="text-white"/>
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-black text-white">Appels SIPGN</h2>
+          <p className="text-slate-400 text-sm">Communications securisees entre agents</p>
+        </div>
+        <Chip color="#22C55E">
+          <span className="w-2 h-2 rounded-full bg-green-400 inline-block mr-1"></span>
+          En ligne
+        </Chip>
+      </div>
+
+      <div className="flex gap-2">
+        {[["contacts","👥 Contacts"],["historique","📋 Historique"]].map(function(o) {
+          return <button key={o[0]} onClick={function(){setOnglet(o[0]);}} style={{background:onglet===o[0]?"#1D4ED8":"#1E293B", color:onglet===o[0]?"#fff":"#94A3B8"}} className="px-4 py-2 rounded-lg text-xs font-bold">{o[1]}</button>;
+        })}
+      </div>
+
+      {onglet === "contacts" ? (
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2">
+            <Search size={14} className="text-slate-500"/>
+            <input value={recherche} onChange={function(e){setRecherche(e.target.value);}} placeholder="Rechercher un agent..." className="bg-transparent text-slate-300 text-xs outline-none w-full"/>
+          </div>
+          <div className="space-y-2">
+            {contactsFiltres.map(function(c) {
+              var estEnLigne = presences[c.identifiant] === "en_ligne";
+              return (
+                <div key={c.id} className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4 flex items-center gap-3">
+                  <div className="relative">
+                    <div style={{background:c.couleur+"33", color:c.couleur}} className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-black shrink-0">
+                      {c.nom.split(" ").slice(-2).map(function(w){return w[0];}).join("").slice(0,2)}
+                    </div>
+                    <div style={{background: estEnLigne?"#22C55E":"#64748B"}} className="w-3 h-3 rounded-full absolute bottom-0 right-0 border-2 border-slate-800"></div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-sm font-bold truncate">{c.nom}</p>
+                    <p className="text-slate-500 text-xs">{c.service}</p>
+                    <p style={{color: estEnLigne?"#22C55E":"#64748B"}} className="text-[10px] font-bold">{estEnLigne?"● En ligne":"○ Hors ligne"}</p>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <button onClick={function(){appeler(c,"audio");}} style={{background:"#22C55E22", color:"#22C55E"}} className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-green-700 hover:text-white" title="Appel audio">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+                    </button>
+                    <button onClick={function(){appeler(c,"video");}} style={{background:"#3B82F622", color:"#3B82F6"}} className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-blue-700 hover:text-white" title="Appel video">
+                      <Video size={15}/>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      ) : null}
+
+      {onglet === "historique" ? (
+        <div className="space-y-2">
+          {historique.length === 0 ? (
+            <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-8 text-center">
+              <p className="text-slate-500 text-sm">Aucun appel recent</p>
+            </div>
+          ) : historique.map(function(h) {
+            return (
+              <div key={h.id} className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4 flex items-center gap-3">
+                <div style={{background: h.type==="entrant"?"#22C55E22":"#3B82F622", color: h.type==="entrant"?"#22C55E":"#3B82F6"}} className="w-10 h-10 rounded-full flex items-center justify-center shrink-0">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
+                </div>
+                <div className="flex-1">
+                  <p className="text-white text-sm font-bold">{h.avec}</p>
+                  <p className="text-slate-500 text-xs">{h.type === "entrant" ? "Appel entrant" : "Appel sortant"} · {h.heure}</p>
+                </div>
+                <Chip color={h.statut==="accepte"?"#22C55E":"#DC2626"}>{h.statut}</Chip>
+              </div>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
