@@ -2,5 +2,5 @@ services:
   - type: web
     name: sipgn
     env: static
-    buildCommand: npm install && npm run build
+    buildCommand: ""
     staticPublishPath: ./dist
