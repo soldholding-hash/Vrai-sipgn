@@ -121,7 +121,7 @@ function LoginScreen(props) {
         </div>
         <div className="mt-4 bg-slate-900 border border-slate-800 rounded-xl p-3">
           <p className="text-slate-500 text-xs font-bold uppercase mb-2">Comptes de demonstration</p>
-          <div className="grid grid-cols-2 gap-1.5 text-xs">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">
             {COMPTES.map(function (c) {
               return (
                 <div key={c.id} className="flex items-center gap-1.5">
@@ -520,7 +520,7 @@ function Patrouilles(props) {
         <StatCard icon="🔵" label="En base" value={visibles.filter(function (p) { return p.statut === "base"; }).length} color="#64748B" />
       </div>
       {visibles.length === 0 ? <div className="bg-slate-800/90 rounded-2xl shadow-lg shadow-black/30 border border-slate-700 p-6 text-center text-slate-500 text-sm">Aucune patrouille rattachee.</div> : null}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {visibles.map(function (p) {
           var col = p.statut === "intervention" ? "#DC2626" : (p.statut === "terrain" ? "#22C55E" : "#64748B");
           return (
@@ -934,7 +934,7 @@ function Carrieres(props) {
           </select>
           <input value={recService} onChange={function(e){setRecService(e.target.value)}} placeholder="Service / Unite *" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
           <input value={recDiplome} onChange={function(e){setRecDiplome(e.target.value)}} placeholder="Diplome (optionnel)" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <input value={recPrenom} onChange={function(e){setRecPrenom(e.target.value)}} placeholder="Prenom *" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
             <input type="date" value={recDateNaissance} onChange={function(e){setRecDateNaissance(e.target.value)}} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
           </div>
@@ -942,7 +942,7 @@ function Carrieres(props) {
           <select value={recGradeIndex} onChange={function(e){setRecGradeIndex(parseInt(e.target.value,10))}} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm">
             {gradesDe(recCorps).map(function(g,i){ return <option key={i} value={i}>{g}</option>; })}
           </select>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <input value={recMatriculeMilitaire} onChange={function(e){setRecMatriculeMilitaire(e.target.value)}} placeholder="Matricule militaire" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
             <input value={recMatriculeSolde} onChange={function(e){setRecMatriculeSolde(e.target.value)}} placeholder="Matricule solde" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
           </div>
@@ -950,7 +950,7 @@ function Carrieres(props) {
           <input value={recEcoleFormation} onChange={function(e){setRecEcoleFormation(e.target.value)}} placeholder="Ecole de formation / Base commune" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
           <input value={recDiplomeMilitaire} onChange={function(e){setRecDiplomeMilitaire(e.target.value)}} placeholder="Diplome militaire" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
           <input value={recDernierDiplomeScolaire} onChange={function(e){setRecDernierDiplomeScolaire(e.target.value)}} placeholder="Dernier diplome scolaire" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <input value={recSalaire} onChange={function(e){setRecSalaire(e.target.value)}} placeholder="Salaire (FCFA)" className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
             <select value={recSituationFamiliale} onChange={function(e){setRecSituationFamiliale(e.target.value)}} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm">
               <option value="Celibataire">Celibataire</option>
@@ -1220,7 +1220,7 @@ function CalendrierOperationnel(props) {
             <label className="text-slate-400 text-xs font-bold uppercase">Titre</label>
             <input value={titre} onChange={function (e) { setTitre(e.target.value); }} placeholder="ex: Operation de controle" className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-slate-400 text-xs font-bold uppercase">Type</label>
               <select value={typeEvt} onChange={function (e) { setTypeEvt(e.target.value); }} className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm">
@@ -1900,7 +1900,7 @@ function ControleVoyageurs(props) {
                       </div>
                       {result.data.dangereux ? <Chip color="#DC2626">DANGEREUX</Chip> : null}
                     </div>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                       <div><p className="text-slate-500 uppercase">Nom</p><p className="text-white font-bold">{result.data.nom}</p></div>
                       <div><p className="text-slate-500 uppercase">Date de naissance</p><p className="text-white font-bold">{result.data.dateNaissance}</p></div>
                       <div><p className="text-slate-500 uppercase">Nationalite</p><p className="text-white font-bold">{result.data.nationalite}</p></div>
@@ -2033,7 +2033,7 @@ function ControleVoyageurs(props) {
                 </div>
                 {saisieFormOuvert === s.id ? (
                   <div className="mt-3 bg-slate-900 rounded-xl border border-slate-700 p-3 space-y-2">
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       <select value={nouveauStatut} onChange={function (e) { setNouveauStatut(e.target.value); }} className="bg-slate-800 border border-slate-700 rounded-lg px-2.5 py-2 text-white text-xs">
                         <option value="transfere_aux_scelles">Transferer aux scelles judiciaires</option>
                         <option value="restitue">Restituer au proprietaire</option>
@@ -2501,7 +2501,7 @@ function DataScientist(props) {
             <StatCard icon="🚗" label="Vehicules maintenance" value={VEHICULES_DATA.filter(function (v) { return v.statut === "maintenance"; }).length} color="#F59E0B" />
             <StatCard icon="🎖️" label="Departs retraite" value={AGENTS_DATA.filter(function (a) { return a.anciennete >= 28; }).length} color="#DC2626" />
           </div>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <button onClick={function () {
               var ctx = "Incidents: " + JSON.stringify(INCIDENTS_DATA.map(function (i) { return { type: i.type, gravite: i.gravite, lieu: i.lieu }; })) + " | Agents: " + AGENTS_DATA.length + " | Vehicules: " + VEHICULES_DATA.length + " dont " + VEHICULES_DATA.filter(function (v) { return v.statut === "maintenance"; }).length + " en maintenance | Gardes a vue: " + GARDES_VUE_DATA.length;
               callIA("prev", "Redige un rapport de prevision operationnelle a 1 MOIS pour la Police Nationale et Gendarmerie du Congo. Structure: 1) Evolution previsionnelle des incidents (types dominants, zones a risque) 2) Besoins logistiques urgents a 30 jours (vehicules, equipements) 3) Besoins RH a court terme (renforts necessaires) 4) Budget mensuel estime en FCFA (ordre de grandeur) 5) Risques critiques identifies. Sois chiffre et precis. Donnees: " + ctx);
@@ -2836,7 +2836,7 @@ function DataScientistDL(props) {
 
       {tab === "tendance" ? (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4"><p className="text-slate-500 text-xs">Taux disponibilite flotte</p><p className="text-white font-black text-3xl mt-1">{Math.round(VEHICULES_DATA.filter(function (v) { return v.statut !== "maintenance"; }).length / VEHICULES_DATA.length * 100)}%</p></div>
             <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4"><p className="text-slate-500 text-xs">Km moyen flotte</p><p className="text-white font-black text-3xl mt-1">{Math.round(VEHICULES_DATA.reduce(function (s, v) { return s + v.km; }, 0) / VEHICULES_DATA.length).toLocaleString("fr-FR")}</p></div>
           </div>
@@ -2974,7 +2974,7 @@ function DataScientistPersonnel(props) {
 
       {tab === "recrutement" ? (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4"><p className="text-slate-500 text-xs">Incidents / agent actif</p><p className="text-white font-black text-3xl mt-1">{(INCIDENTS_DATA.length / Math.max(AGENTS_DATA.filter(function(a){return a.statut==="actif";}).length, 1)).toFixed(1)}</p></div>
             <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4"><p className="text-slate-500 text-xs">Patrouilles / agent actif</p><p className="text-white font-black text-3xl mt-1">{(PATROUILLES_DATA.reduce(function(s,p){return s+p.effectif;},0) / Math.max(AGENTS_DATA.filter(function(a){return a.statut==="actif";}).length, 1)).toFixed(2)}</p></div>
           </div>
@@ -3172,7 +3172,7 @@ function DataScientistDAF(props) {
 
       {tab === "rapport" ? (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4"><p className="text-slate-500 text-xs">Budget total alloue</p><p className="text-white font-black text-2xl mt-1">{BUDGET_POSTES.reduce(function(s,p){return s+p.budget;},0)}M FCFA</p></div>
             <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4"><p className="text-slate-500 text-xs">Depenses reelles</p><p className="text-amber-400 font-black text-2xl mt-1">{BUDGET_POSTES.reduce(function(s,p){return s+p.reel;},0)}M FCFA</p></div>
           </div>
@@ -3189,7 +3189,7 @@ function DataScientistDAF(props) {
         <div className="space-y-4">
           <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4">
             <p className="text-white font-bold text-sm mb-2">Potentiel d economie identifie</p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               {BUDGET_POSTES.filter(function (p) { return p.reel > p.budget; }).map(function (p) {
                 var surcoût = p.reel - p.budget;
                 return (
@@ -3369,7 +3369,7 @@ function DataScientistCommissariat(props) {
             <p className="text-slate-500 text-xs">Selectionnez votre profil pour acceder a votre espace IA personnalise</p>
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {PROFILS.map(function (p) {
             return (
               <button key={p.id} onClick={function () { setProfil(p.id); setTab("t1"); ai1[1]({ loading: false, result: null }); ai2[1]({ loading: false, result: null }); ai3[1]({ loading: false, result: null }); }} className="bg-slate-800/90 rounded-2xl border border-slate-700 p-5 text-left hover:border-blue-600 transition-colors">
@@ -3544,7 +3544,7 @@ function DataScientistCommissariat(props) {
           ) : null}
           {tab === "t3" ? (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <StatCard icon="👮" label="Agents actifs Police" value={AGENTS_DATA.filter(function(a){return a.corps==="Police"&&a.statut==="actif";}).length} color="#003F87" />
                 <StatCard icon="🚨" label="Incidents actifs" value={INCIDENTS_DATA.filter(function(i){return i.statut==="en_cours";}).length} color="#DC2626" />
               </div>
@@ -3775,7 +3775,7 @@ function DataScientistCommissariat(props) {
                     ) : (
                       <div>
                         <div className="flex items-center gap-2 mb-3"><Siren size={20} className="text-red-400" /><p className="text-red-300 font-black">ALERTE — INDIVIDU RECHERCHE</p>{verified.data.dangereux?<Chip color="#DC2626">DANGEREUX</Chip>:null}</div>
-                        <div className="grid grid-cols-2 gap-2 text-xs">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                           <div><p className="text-slate-500 uppercase">Nom</p><p className="text-white font-bold">{verified.data.nom}</p></div>
                           <div><p className="text-slate-500 uppercase">Motif</p><p className="text-white font-bold">{verified.data.motif}</p></div>
                           <div><p className="text-slate-500 uppercase">Reference</p><p className="text-white font-bold font-mono">{verified.data.reference}</p></div>
@@ -4030,7 +4030,7 @@ function EtatMajor(props) {
 
       {tab === "planification" ? (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4"><p className="text-slate-500 text-xs">Operations planifiees</p><p className="text-white font-black text-3xl mt-1">{EVENTS_DATA.filter(function (e) { return e.statut === "planifie"; }).length}</p></div>
             <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4"><p className="text-slate-500 text-xs">Taux resolution incidents</p><p className="text-white font-black text-3xl mt-1">{Math.round(INCIDENTS_DATA.filter(function (i) { return i.statut === "cloture"; }).length / INCIDENTS_DATA.length * 100)}%</p></div>
           </div>
@@ -4464,7 +4464,7 @@ function DashboardCFP(props) {
       {detail === "effectifs" ? (
         <div className="bg-slate-800/90 rounded-2xl border border-green-800 p-5">
           <div className="flex items-center justify-between mb-3"><p className="text-green-300 font-black text-sm">Effectifs — Etat du personnel</p><button onClick={function () { setDetail(null); }} className="text-slate-500 hover:text-white text-xs border border-slate-700 px-2 py-1 rounded-lg">Fermer ✕</button></div>
-          <div className="grid grid-cols-2 gap-2 mb-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
             {[["Actifs", "actif", "#22C55E"], ["En conge", "conge", "#3B82F6"], ["En promotion", "proposition_promotion", "#F59E0B"], ["Sanction", "sanction", "#DC2626"]].map(function (s) {
               return (<div key={s[0]} className="border border-slate-700 rounded-xl p-3"><p className="text-slate-500 text-xs">{s[0]}</p><p style={{ color: s[2] }} className="font-black text-xl">{AGENTS_DATA.filter(function (a) { return a.statut === s[1]; }).length}</p></div>);
             })}
@@ -4736,7 +4736,7 @@ function DashboardDAF(props) {
       <div className="bg-slate-800/90 rounded-2xl shadow-lg shadow-black/30 border border-slate-700 p-5">
         <p className="text-white font-bold text-sm mb-1">Tresorerie operationnelle</p>
         <p className="text-slate-500 text-xs mb-3">Fonds disponibles pour missions urgentes et avances de caisse</p>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div className="bg-slate-950 rounded-xl p-4 border border-green-800"><p className="text-slate-500 text-xs uppercase">Missions urgentes</p><p className="text-green-400 font-black text-2xl mt-1">{TRESORERIE_URGENCE.toLocaleString("fr-FR")} FCFA</p></div>
           <div className="bg-slate-950 rounded-xl p-4 border border-blue-800"><p className="text-slate-500 text-xs uppercase">Avances de caisse</p><p className="text-blue-400 font-black text-2xl mt-1">{TRESORERIE_AVANCES.toLocaleString("fr-FR")} FCFA</p></div>
         </div>
@@ -4914,7 +4914,7 @@ function BudgetPrevisionsDAF(props) {
         <div className="space-y-4">
           <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-5">
             <p className="text-white font-bold text-sm mb-3">Simuler l impact d une variation de cout</p>
-            <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
               <div>
                 <label className="text-slate-400 text-xs font-bold uppercase">Poste budgetaire</label>
                 <select value={posteSim} onChange={function (e) { setPosteSim(e.target.value); }} className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm">
@@ -5810,7 +5810,7 @@ function EDossierPersonnel(props) {
                 <div><p className="text-white font-black text-lg">{agent.nom}</p><p className="text-slate-400 text-sm">{gradeLabel(agent)} — {agent.service}</p><p className="text-slate-500 text-xs font-mono">{agent.matricule}</p></div>
                 <div className="flex items-center gap-1.5"><CorpsBadge corps={agent.corps} /><Chip color={STATUT_CARRIERE_COLOR[agent.statut]}>{STATUT_CARRIERE_LABEL[agent.statut]}</Chip></div>
               </div>
-              <div className="grid grid-cols-2 gap-2 mt-3 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3 text-xs">
                 <div><p className="text-slate-500 uppercase">Naissance</p><p className="text-slate-300">{profil.dateNaissance} — {profil.lieuNaissance}</p></div>
                 <div><p className="text-slate-500 uppercase">Situation</p><p className="text-slate-300">{profil.situationFamiliale}</p></div>
                 <div><p className="text-slate-500 uppercase">Diplome</p><p className="text-slate-300">{agent.diplome}</p></div>
@@ -6498,7 +6498,7 @@ function DataScientistDPJ(props) {
 
       {tab === "ressources" ? (
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <StatCard icon={<Users size={18} />} label="OPJ disponibles" value={AGENTS_DATA.filter(function (a) { return a.service === "DCPJ Brazzaville" && a.statut === "actif"; }).length} color="#3B82F6" />
             <StatCard icon="📁" label="Dossiers actifs" value={ENQUETES_DATA.filter(function (e) { return e.statut === "en_cours"; }).length} color="#F59E0B" />
           </div>
@@ -6653,7 +6653,7 @@ function ConstatNumerique(props) {
       <div className="bg-slate-800/90 rounded-2xl shadow-lg shadow-black/30 border border-purple-800 p-4">
         <p className="text-purple-300 text-xs font-black uppercase mb-1">2. Geolocalisation precise (obligatoire)</p>
         <p className="text-slate-500 text-xs mb-2">Sans ce champ, la soumission du constat est bloquee.</p>
-        <div className="grid grid-cols-2 gap-2 mb-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-2">
           <input value={gpsLat[0]} onChange={function (e) { gpsLat[1](e.target.value); }} placeholder="Latitude (ex: -4.2634)" className="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
           <input value={gpsLng[0]} onChange={function (e) { gpsLng[1](e.target.value); }} placeholder="Longitude (ex: 15.2429)" className="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm" />
         </div>
@@ -7244,7 +7244,7 @@ function ChaineTransmissionDRG(props) {
             })}
           </div>
           <textarea value={noteTexte} onChange={function (e) { setNoteTexte(e.target.value); }} rows={6} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm resize-none" placeholder="Points cles a integrer dans la note (facultatif — l IA peut rediger a partir des donnees seules)..." />
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div>
               <p className="text-slate-500 text-xs mb-1">Indice de Confidentialite</p>
               <select value={confidentialite} onChange={function (e) { setConfidentialite(e.target.value); }} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm">
@@ -7273,7 +7273,7 @@ function ChaineTransmissionDRG(props) {
           <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-5 space-y-3">
             <p className="text-white font-bold text-sm">Transfert Securise — Haute Autorite</p>
             <p className="text-slate-500 text-xs">Envoi crypte vers les tablettes des autorites locales ou gouvernementales</p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
                 <p className="text-slate-500 text-xs mb-1">Destinataire</p>
                 <select value={destinataire} onChange={function (e) { setDestinataire(e.target.value); }} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm">
@@ -8268,7 +8268,7 @@ function Dossiers360Agents(props) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4 space-y-2.5">
                   {[["Date de naissance", profil.dateNaissance], ["Region", profil.lieuNaissance], ["Diplome", agent.diplome], ["Score evaluation", scoreEval !== null ? scoreEval + ".0/20" : "—"], ["Anciennete totale", agent.anciennete + " ans"], ["Formations", formationsSpec.length + " specialisation(s)"]].map(function (row, i) {
                     return (
@@ -8411,7 +8411,7 @@ function CasierJudiciaire(props) {
       </div>
 
       {onglet === "recherche" ? (
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-3">
             <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4 space-y-3">
               <p className="text-white font-bold text-sm">Recherche par identite</p>
@@ -8911,7 +8911,7 @@ function PlanificateurVisio(props) {
               ) : null}
               <div>
                 <p className="text-slate-400 text-xs font-bold uppercase mb-2">Participants ({selReu.participants.length})</p>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   {selReu.participants.map(function(pid){
                     var ci = getCompteInfo(pid);
                     var isAnim = pid === selReu.animateur;
@@ -8947,7 +8947,7 @@ function PlanificateurVisio(props) {
             <p className="text-white font-black text-lg">Planifier une nouvelle reunion</p>
             <button onClick={function(){setVue("agenda"); setShowForm(false);}} className="text-slate-500 hover:text-white font-bold">✕ Annuler</button>
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="col-span-2">
               <label className="text-slate-400 text-xs font-bold uppercase">Titre de la reunion *</label>
               <input value={form.titre} onChange={function(e){setForm(function(p){return Object.assign({},p,{titre:e.target.value});});}} placeholder="ex: Point securite hebdomadaire" className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm"/>
@@ -8956,7 +8956,7 @@ function PlanificateurVisio(props) {
               <label className="text-slate-400 text-xs font-bold uppercase">Date *</label>
               <input type="date" value={form.date} onChange={function(e){setForm(function(p){return Object.assign({},p,{date:e.target.value});});}} className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm"/>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <div>
                 <label className="text-slate-400 text-xs font-bold uppercase">Debut *</label>
                 <input type="time" value={form.heureDebut} onChange={function(e){setForm(function(p){return Object.assign({},p,{heureDebut:e.target.value});});}} className="w-full mt-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm"/>
@@ -9262,7 +9262,7 @@ function VideoConference(props) {
       </div>
 
       {onglet==="salles" ? (
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {salles.map(function(salle){
             var peutRejoindre = salle.statut !== "en_cours" || salle.participants.indexOf(compte.identifiant) >= 0 || true;
             return (
@@ -10176,7 +10176,7 @@ function AppelsSystem(props) {
     return (
       <div className="space-y-4">
         <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center">
-          <div className="bg-slate-900 rounded-3xl border border-slate-700 p-8 w-80 text-center space-y-6 shadow-2xl">
+          <div className="bg-slate-900 rounded-3xl border border-slate-700 p-8 w-[90vw] max-w-xs text-center space-y-6 shadow-2xl">
             <div className="animate-pulse">
               <div style={{background: "#1B6B3A33", color: "#1B6B3A"}} className="w-20 h-20 rounded-full flex items-center justify-center text-3xl font-black mx-auto mb-4">
                 {appelEntrant.appelant_nom.slice(0,2).toUpperCase()}
@@ -10229,7 +10229,7 @@ function AppelsSystem(props) {
   if(appelSortant) {
     return (
       <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center">
-        <div className="bg-slate-900 rounded-3xl border border-slate-700 p-8 w-80 text-center space-y-6 shadow-2xl">
+        <div className="bg-slate-900 rounded-3xl border border-slate-700 p-8 w-[90vw] max-w-xs text-center space-y-6 shadow-2xl">
           <div style={{background: (appelSortant.recepteur_couleur||"#1B6B3A")+"33", color: appelSortant.recepteur_couleur||"#1B6B3A"}} className="w-20 h-20 rounded-full flex items-center justify-center text-3xl font-black mx-auto">
             {(appelSortant.recepteur_nom||"").slice(0,2).toUpperCase()}
           </div>
