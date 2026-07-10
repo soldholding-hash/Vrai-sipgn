@@ -10262,7 +10262,7 @@ function AppelsSystem(props) {
                   if (touche === "⌫") {
                     setNumeroCompose(function(n) { return n.slice(0, -1); });
                   } else if (touche === "OK") {
-                    var cibleTrouvee = allComptes.filter(function(c) { return c.numero === numeroCompose; })[0];
+                    var cibleTrouvee = allComptes.filter(function(c) { return c.numero.replace(/\s/g, "") === numeroCompose.replace(/\s/g, ""); })[0];
                     if (cibleTrouvee) {
                       appeler(cibleTrouvee, "audio");
                       setNumeroCompose("");
@@ -10276,7 +10276,7 @@ function AppelsSystem(props) {
               );
             })}
           </div>
-          {numeroCompose && allComptes.filter(function(c) { return c.numero === numeroCompose; }).length === 0 ? (
+          {numeroCompose && allComptes.filter(function(c) { return c.numero.replace(/\s/g, "") === numeroCompose.replace(/\s/g, ""); }).length === 0 ? (
             <p className="text-slate-500 text-xs text-center">Aucun agent avec ce numero</p>
           ) : null}
         </div>
