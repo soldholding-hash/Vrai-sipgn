@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js"
 var supabase=createClient("https://lvstphnennbiwwubaepw.supabase.co","sb_publishable_IVEjS49BS6I9F2czR_UnvQ_f_fuykvY",{global:{headers:{"apikey":"sb_publishable_IVEjS49BS6I9F2czR_UnvQ_f_fuykvY","Authorization":"Bearer sb_publishable_IVEjS49BS6I9F2czR_UnvQ_f_fuykvY"}}})
 import { useState, useEffect, useRef } from "react";
-import { LayoutDashboard, CalendarDays, FileWarning, Lock, Car, Truck, FileText, Users, Search, Bell, MessageSquare, LogOut, Siren, ShieldCheck, Clock, Fingerprint, ShieldAlert, Building2, Package, ClipboardCheck, Shuffle, CalendarCheck, GraduationCap, BookOpen, Video, VideoOff, Mic, MicOff, Phone, PhoneOff, PhoneIncoming, MonitorPlay, Radio } from "lucide-react";
+import { LayoutDashboard, CalendarDays, FileWarning, Lock, Car, Truck, FileText, Users, Search, Bell, MessageSquare, LogOut, Siren, ShieldCheck, Clock, Fingerprint, ShieldAlert, Building2, Package, ClipboardCheck, Shuffle, CalendarCheck, GraduationCap, BookOpen, Video, VideoOff, Mic, MicOff, Phone, PhoneOff, PhoneIncoming, MonitorPlay, Radio, Menu, X } from "lucide-react";
 import { BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend, LineChart, Line, Treemap } from "recharts";
 
 var COMPTES = [
@@ -9736,6 +9736,9 @@ export default function App() {
   var msgNonLusState = useState(0);
   var msgNonLus = msgNonLusState[0];
   var setMsgNonLus = msgNonLusState[1];
+  var sidebarOpenState = useState(false);
+  var sidebarOpen = sidebarOpenState[0];
+  var setSidebarOpen = sidebarOpenState[1];
 
   useEffect(function () {
     if (compte) {
@@ -9916,6 +9919,9 @@ export default function App() {
         </div>
       ) : null}
       <div className="bg-slate-900 border-b border-slate-800 flex items-center px-4 py-2.5 gap-4">
+        <button onClick={function () { setSidebarOpen(function (v) { return !v; }); }} className="md:hidden w-8 h-8 rounded-lg bg-slate-950 border border-slate-800 flex items-center justify-center text-slate-400 hover:text-white shrink-0">
+          <Menu size={16} />
+        </button>
         <div className="flex items-center gap-2.5">
           <Ecusson size={30} />
           <div>
@@ -9958,15 +9964,23 @@ export default function App() {
           <LogOut size={15} />
         </button>
       </div>
-      <div className="flex flex-1 overflow-hidden">
-        <aside className="w-56 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0">
-          <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest px-4 pt-4 pb-1">Navigation</p>
-          <nav className="flex-1 p-3 pt-1">
+      <div className="flex flex-1 overflow-hidden relative">
+        {sidebarOpen ? (
+          <div onClick={function () { setSidebarOpen(false); }} className="fixed inset-0 bg-black/60 z-30 md:hidden"></div>
+        ) : null}
+        <aside className={"fixed md:static inset-y-0 left-0 z-40 w-64 md:w-56 bg-slate-900 border-r border-slate-800 flex flex-col shrink-0 transform transition-transform duration-200 md:translate-x-0 " + (sidebarOpen ? "translate-x-0" : "-translate-x-full")}>
+          <div className="flex items-center justify-between px-4 pt-4 pb-1 md:block">
+            <p className="text-slate-600 text-[10px] font-bold uppercase tracking-widest">Navigation</p>
+            <button onClick={function () { setSidebarOpen(false); }} className="md:hidden w-6 h-6 rounded flex items-center justify-center text-slate-500 hover:text-white">
+              <X size={14} />
+            </button>
+          </div>
+          <nav className="flex-1 p-3 pt-1 overflow-y-auto">
             {nav.map(function (item) {
               var isActive = module === item.id;
               var IconComp = NAV_ICON[item.id] ? NAV_ICON[item.id] : LayoutDashboard;
               return (
-                <button key={item.id} onClick={function () { setModule(item.id); }} style={{ background: isActive ? compte.couleur + "26" : "transparent", color: isActive ? "#fff" : "#94A3B8", borderLeft: isActive ? "3px solid " + compte.couleur : "3px solid transparent" }} className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-semibold mb-0.5 flex items-center gap-2.5">
+                <button key={item.id} onClick={function () { setModule(item.id); setSidebarOpen(false); }} style={{ background: isActive ? compte.couleur + "26" : "transparent", color: isActive ? "#fff" : "#94A3B8", borderLeft: isActive ? "3px solid " + compte.couleur : "3px solid transparent" }} className="w-full text-left px-2.5 py-2 rounded-lg text-xs font-semibold mb-0.5 flex items-center gap-2.5">
                   <IconComp size={15} style={{ color: isActive ? compte.couleur : "#64748B" }} />
                   {item.label}
                 </button>
