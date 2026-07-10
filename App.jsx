@@ -10010,6 +10010,7 @@ function AppelsSystem(props) {
   var micState = useState(true); var mic = micState[0]; var setMic = micState[1];
   var rechercheState = useState(""); var recherche = rechercheState[0]; var setRecherche = rechercheState[1];
   var ongletState = useState("contacts"); var onglet = ongletState[0]; var setOnglet = ongletState[1];
+  var numeroComposeState = useState(""); var numeroCompose = numeroComposeState[0]; var setNumeroCompose = numeroComposeState[1];
 
   // Enregistrer presence
   useEffect(function() {
@@ -10244,10 +10245,42 @@ function AppelsSystem(props) {
       </div>
 
       <div className="flex gap-2">
-        {[["contacts","👥 Contacts"],["historique","📋 Historique"]].map(function(o) {
+        {[["contacts","👥 Contacts"],["clavier","🔢 Clavier"],["historique","📋 Historique"]].map(function(o) {
           return <button key={o[0]} onClick={function(){setOnglet(o[0]);}} style={{background:onglet===o[0]?"#1D4ED8":"#1E293B", color:onglet===o[0]?"#fff":"#94A3B8"}} className="px-4 py-2 rounded-lg text-xs font-bold">{o[1]}</button>;
         })}
       </div>
+
+      {onglet === "clavier" ? (
+        <div className="space-y-4">
+          <div className="bg-slate-900 border border-slate-700 rounded-xl px-4 py-4 text-center">
+            <input value={numeroCompose} readOnly placeholder="Composer un numero..." className="bg-transparent text-white text-2xl font-bold text-center outline-none w-full tracking-widest"/>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {["1","2","3","4","5","6","7","8","9","⌫","0","OK"].map(function(touche) {
+              return (
+                <button key={touche} onClick={function() {
+                  if (touche === "⌫") {
+                    setNumeroCompose(function(n) { return n.slice(0, -1); });
+                  } else if (touche === "OK") {
+                    var cibleTrouvee = allComptes.filter(function(c) { return c.numero === numeroCompose; })[0];
+                    if (cibleTrouvee) {
+                      appeler(cibleTrouvee, "audio");
+                      setNumeroCompose("");
+                    }
+                  } else {
+                    setNumeroCompose(function(n) { return (n + touche).slice(0, 20); });
+                  }
+                }} style={{background: touche==="OK"?"#22C55E":"#1E293B", color: touche==="OK"?"#fff":"#E2E8F0"}} className="py-4 rounded-xl text-lg font-bold hover:opacity-80">
+                  {touche}
+                </button>
+              );
+            })}
+          </div>
+          {numeroCompose && allComptes.filter(function(c) { return c.numero === numeroCompose; }).length === 0 ? (
+            <p className="text-slate-500 text-xs text-center">Aucun agent avec ce numero</p>
+          ) : null}
+        </div>
+      ) : null}
 
       {onglet === "contacts" ? (
         <div className="space-y-3">
