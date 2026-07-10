@@ -10009,7 +10009,7 @@ function AppelsSystem(props) {
   var historique = historiqueState[0]; var setHistorique = historiqueState[1];
   var micState = useState(true); var mic = micState[0]; var setMic = micState[1];
   var rechercheState = useState(""); var recherche = rechercheState[0]; var setRecherche = rechercheState[1];
-  var ongletState = useState("contacts"); var onglet = ongletState[0]; var setOnglet = ongletState[1];
+  var ongletState = useState("clavier"); var onglet = ongletState[0]; var setOnglet = ongletState[1];
   var numeroComposeState = useState(""); var numeroCompose = numeroComposeState[0]; var setNumeroCompose = numeroComposeState[1];
 
   // Enregistrer presence
@@ -10245,7 +10245,7 @@ function AppelsSystem(props) {
       </div>
 
       <div className="flex gap-2">
-        {[["contacts","👥 Contacts"],["clavier","🔢 Clavier"],["historique","📋 Historique"]].map(function(o) {
+        {[["clavier","🔢 Clavier"],["historique","📋 Historique"]].map(function(o) {
           return <button key={o[0]} onClick={function(){setOnglet(o[0]);}} style={{background:onglet===o[0]?"#1D4ED8":"#1E293B", color:onglet===o[0]?"#fff":"#94A3B8"}} className="px-4 py-2 rounded-lg text-xs font-bold">{o[1]}</button>;
         })}
       </div>
@@ -10282,42 +10282,6 @@ function AppelsSystem(props) {
         </div>
       ) : null}
 
-      {onglet === "contacts" ? (
-        <div className="space-y-3">
-          <div className="flex items-center gap-2 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2">
-            <Search size={14} className="text-slate-500"/>
-            <input value={recherche} onChange={function(e){setRecherche(e.target.value);}} placeholder="Rechercher un agent..." className="bg-transparent text-slate-300 text-xs outline-none w-full"/>
-          </div>
-          <div className="space-y-2">
-            {contactsFiltres.map(function(c) {
-              var estEnLigne = presences[c.identifiant] === "en_ligne";
-              return (
-                <div key={c.id} className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4 flex items-center gap-3">
-                  <div className="relative">
-                    <div style={{background:c.couleur+"33", color:c.couleur}} className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-black shrink-0">
-                      {c.nom.split(" ").slice(-2).map(function(w){return w[0];}).join("").slice(0,2)}
-                    </div>
-                    <div style={{background: estEnLigne?"#22C55E":"#64748B"}} className="w-3 h-3 rounded-full absolute bottom-0 right-0 border-2 border-slate-800"></div>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-white text-sm font-bold truncate">{c.nom}</p>
-                    <p className="text-slate-500 text-xs">{c.service}</p>
-                    <p style={{color: estEnLigne?"#22C55E":"#64748B"}} className="text-[10px] font-bold">{estEnLigne?"● En ligne":"○ Hors ligne"}</p>
-                  </div>
-                  <div className="flex gap-2 shrink-0">
-                    <button onClick={function(){appeler(c,"audio");}} style={{background:"#22C55E22", color:"#22C55E"}} className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-green-700 hover:text-white" title="Appel audio">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
-                    </button>
-                    <button onClick={function(){appeler(c,"video");}} style={{background:"#3B82F622", color:"#3B82F6"}} className="w-9 h-9 rounded-full flex items-center justify-center hover:bg-blue-700 hover:text-white" title="Appel video">
-                      <Video size={15}/>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      ) : null}
 
       {onglet === "historique" ? (
         <div className="space-y-2">
