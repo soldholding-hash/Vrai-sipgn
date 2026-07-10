@@ -6,6 +6,9 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: false,
-    chunkSizeWarningLimit: 2000
+    chunkSizeWarningLimit: 2000,
+    rollupOptions: {
+      input: 'erp.html'
+    }
   }
 })
