@@ -10031,6 +10031,7 @@ function AppelsSystem(props) {
   var repertoireState = useState([]); var repertoire = repertoireState[0]; var setRepertoire = repertoireState[1];
   var nouveauNomState = useState(""); var nouveauNom = nouveauNomState[0]; var setNouveauNom = nouveauNomState[1];
   var nouveauNumeroState = useState(""); var nouveauNumero = nouveauNumeroState[0]; var setNouveauNumero = nouveauNumeroState[1];
+  var debugStatusState = useState(""); var debugStatus = debugStatusState[0]; var setDebugStatus = debugStatusState[1];
 
   // Enregistrer presence
   useEffect(function() {
@@ -10116,6 +10117,22 @@ function AppelsSystem(props) {
       setDuree(0);
     }
   }, [enAppel]);
+
+  // Diagnostic connexion (ICE) pendant un appel
+  useEffect(function() {
+    var actif = enAppel || appelSortant || appelEntrant;
+    if (!actif) { setDebugStatus(""); return; }
+    var diagTimer = setInterval(function() {
+      if (pcRef.current) {
+        var ice = pcRef.current.iceConnectionState;
+        var conn = pcRef.current.connectionState;
+        setDebugStatus("Micro: OK — ICE: " + ice + " — Connexion: " + conn);
+      } else {
+        setDebugStatus("En attente du micro / connexion...");
+      }
+    }, 1000);
+    return function() { clearInterval(diagTimer); };
+  }, [enAppel, appelSortant, appelEntrant]);
 
   // Charger historique depuis Supabase
   function chargerHistorique() {
@@ -10226,7 +10243,7 @@ function AppelsSystem(props) {
             }
             envoyerOffreQuandPret();
           });
-        }).catch(function(){});
+        }).catch(function(err){ setDebugStatus("Erreur micro: " + (err && err.name ? err.name : String(err))); });
         // Auto-annuler apres 30s
         setTimeout(function() {
           setAppelSortant(function(a) {
@@ -10290,7 +10307,7 @@ function AppelsSystem(props) {
           }
           envoyerReponseQuandPrete();
         });
-      }).catch(function(){});
+      }).catch(function(err){ setDebugStatus("Erreur micro: " + (err && err.name ? err.name : String(err))); });
     });
   }
 
@@ -10365,6 +10382,7 @@ function AppelsSystem(props) {
           <p className="text-white font-black text-2xl">{interlocuteur}</p>
           <p className="text-green-400 font-mono text-xl">{formatDuree(duree)}</p>
           <p className="text-slate-500 text-sm">Appel en cours — chiffré</p>
+          <p className="text-amber-400 text-xs font-mono">{debugStatus}</p>
         </div>
         <div className="flex gap-6">
           <button onClick={function(){setMic(function(v){return !v;})}} style={{background: mic?"#1E293B":"#DC262633"}} className="w-14 h-14 rounded-full flex items-center justify-center border border-slate-700">
@@ -10389,6 +10407,7 @@ function AppelsSystem(props) {
           <div>
             <p className="text-white font-black text-xl">{appelSortant.recepteur_nom}</p>
             <p className="text-slate-400 text-sm mt-1 animate-pulse">Appel en cours...</p>
+            <p className="text-amber-400 text-xs font-mono mt-2">{debugStatus}</p>
           </div>
           <button onClick={annulerAppel} className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center shadow-lg mx-auto">
             <PhoneOff size={24} className="text-white"/>
