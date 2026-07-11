@@ -10132,13 +10132,15 @@ function AppelsSystem(props) {
     var actif = enAppel || appelSortant || appelEntrant;
     if (!actif) { setDebugStatus(""); return; }
     var diagTimer = setInterval(function() {
-      if (pcRef.current) {
-        var ice = pcRef.current.iceConnectionState;
-        var conn = pcRef.current.connectionState;
-        setDebugStatus("Micro: OK — ICE: " + ice + " — Connexion: " + conn);
-      } else {
-        setDebugStatus("En attente du micro / connexion...");
-      }
+      setDebugStatus(function(prev) {
+        if (prev && prev.indexOf("Erreur micro") === 0) { return prev; }
+        if (pcRef.current) {
+          var ice = pcRef.current.iceConnectionState;
+          var conn = pcRef.current.connectionState;
+          return "Micro: OK — ICE: " + ice + " — Connexion: " + conn;
+        }
+        return "En attente du micro / connexion...";
+      });
     }, 1000);
     return function() { clearInterval(diagTimer); };
   }, [enAppel, appelSortant, appelEntrant]);
