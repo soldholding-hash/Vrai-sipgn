@@ -10034,6 +10034,15 @@ function AppelsSystem(props) {
   var debugStatusState = useState(""); var debugStatus = debugStatusState[0]; var setDebugStatus = debugStatusState[1];
 
   // Enregistrer presence
+  var iceServersRef = useRef(null);
+
+  useEffect(function() {
+    fetch("https://sipgn.metered.live/api/v1/turn/credentials?apiKey=EkNvXhS5n9vhb9jMh6jrefLVVRYT7faDxJ1WW64KCOP1Zhy2")
+      .then(function(r) { return r.json(); })
+      .then(function(servers) { iceServersRef.current = servers; })
+      .catch(function() {});
+  }, []);
+
   useEffect(function() {
     function majPresence() {
       supabase.from("presences").upsert({
@@ -10220,12 +10229,7 @@ function AppelsSystem(props) {
         setAppelSortant(Object.assign({}, nouvelAppel, {recepteur_nom: cible.nom, recepteur_couleur: cible.couleur}));
         navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream) {
           localStreamRef.current = stream;
-          var pc = new RTCPeerConnection({iceServers:[
-          {urls:"stun:stun.l.google.com:19302"},
-          {urls:"turn:openrelay.metered.ca:80", username:"openrelayproject", credential:"openrelayproject"},
-          {urls:"turn:openrelay.metered.ca:443", username:"openrelayproject", credential:"openrelayproject"},
-          {urls:"turn:openrelay.metered.ca:443?transport=tcp", username:"openrelayproject", credential:"openrelayproject"}
-        ]});
+          var pc = new RTCPeerConnection({iceServers: iceServersRef.current || [{urls:"stun:stun.l.google.com:19302"}]});
           pcRef.current = pc;
           stream.getTracks().forEach(function(t) { pc.addTrack(t, stream); });
           pc.ontrack = function(e) {
@@ -10271,12 +10275,7 @@ function AppelsSystem(props) {
       if (!ligneAppel || !ligneAppel.offer_sdp) { return; }
       navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream) {
         localStreamRef.current = stream;
-        var pc = new RTCPeerConnection({iceServers:[
-          {urls:"stun:stun.l.google.com:19302"},
-          {urls:"turn:openrelay.metered.ca:80", username:"openrelayproject", credential:"openrelayproject"},
-          {urls:"turn:openrelay.metered.ca:443", username:"openrelayproject", credential:"openrelayproject"},
-          {urls:"turn:openrelay.metered.ca:443?transport=tcp", username:"openrelayproject", credential:"openrelayproject"}
-        ]});
+        var pc = new RTCPeerConnection({iceServers: iceServersRef.current || [{urls:"stun:stun.l.google.com:19302"}]});
         pcRef.current = pc;
         stream.getTracks().forEach(function(t) { pc.addTrack(t, stream); });
         pc.ontrack = function(e) {
