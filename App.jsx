@@ -10344,12 +10344,12 @@ function AppelsSystem(props) {
             <input value={numeroCompose} readOnly placeholder="Composer un numero..." className="bg-transparent text-white text-2xl font-bold text-center outline-none w-full tracking-widest"/>
           </div>
           <div className="grid grid-cols-3 gap-3">
-            {["1","2","3","4","5","6","7","8","9","⌫","0","OK"].map(function(touche) {
+            {["1","2","3","4","5","6","7","8","9","⌫","0","Appeler"].map(function(touche) {
               return (
                 <button key={touche} onClick={function() {
                   if (touche === "⌫") {
                     setNumeroCompose(function(n) { return n.slice(0, -1); });
-                  } else if (touche === "OK") {
+                  } else if (touche === "Appeler") {
                     var cibleTrouvee = allComptes.filter(function(c) { return c.numero.replace(/\s/g, "") === numeroCompose.replace(/\s/g, ""); })[0];
                     if (cibleTrouvee) {
                       appeler(cibleTrouvee, "audio");
@@ -10358,7 +10358,7 @@ function AppelsSystem(props) {
                   } else {
                     setNumeroCompose(function(n) { return (n + touche).slice(0, 20); });
                   }
-                }} style={{background: touche==="OK"?"#22C55E":"#1E293B", color: touche==="OK"?"#fff":"#E2E8F0"}} className="py-4 rounded-xl text-lg font-bold hover:opacity-80">
+                }} style={{background: touche==="Appeler"?"#22C55E":"#1E293B", color: touche==="Appeler"?"#fff":"#E2E8F0"}} className="py-4 rounded-xl text-lg font-bold hover:opacity-80">
                   {touche}
                 </button>
               );
