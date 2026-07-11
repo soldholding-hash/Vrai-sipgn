@@ -10114,6 +10114,39 @@ function AppelsSystem(props) {
     }
   }, [enAppel]);
 
+  // Charger historique depuis Supabase
+  function chargerHistorique() {
+    supabase.from("appels")
+      .select("*")
+      .or("appelant.eq." + compte.identifiant + ",recepteur.eq." + compte.identifiant)
+      .order("created_at", {ascending: false})
+      .limit(50)
+      .then(function(r) {
+        if (!r.data) { return; }
+        var mapped = r.data.map(function(row) {
+          var estSortant = row.appelant === compte.identifiant;
+          var nomAvec = row.appelant_nom;
+          if (estSortant) {
+            var cibleTrouvee = allComptes.filter(function(cc) { return cc.identifiant === row.recepteur; })[0];
+            nomAvec = cibleTrouvee ? cibleTrouvee.nom : row.recepteur;
+          }
+          return {
+            id: row.id,
+            avec: nomAvec,
+            type: estSortant ? "sortant" : "entrant",
+            heure: row.created_at ? new Date(row.created_at).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}) : "",
+            statut: row.statut
+          };
+        });
+        setHistorique(mapped);
+      });
+  }
+
+  useEffect(function() {
+    if (onglet === "historique") { chargerHistorique(); }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onglet]);
+
   function formatDuree(s) {
     var m = Math.floor(s/60); var ss = s%60;
     return (m<10?"0":"")+m+":"+(ss<10?"0":"")+ss;
@@ -10387,7 +10420,7 @@ function AppelsSystem(props) {
                   <p className="text-white text-sm font-bold">{h.avec}</p>
                   <p className="text-slate-500 text-xs">{h.type === "entrant" ? "Appel entrant" : "Appel sortant"} · {h.heure}</p>
                 </div>
-                <Chip color={h.statut==="accepte"?"#22C55E":"#DC2626"}>{h.statut}</Chip>
+                <Chip color={(h.statut==="termine"||h.statut==="en_cours")?"#22C55E":(h.statut==="sonnerie"?"#64748B":"#DC2626")}>{h.statut}</Chip>
               </div>
             );
           })}
