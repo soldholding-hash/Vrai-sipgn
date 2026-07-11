@@ -10203,7 +10203,12 @@ function AppelsSystem(props) {
         setAppelSortant(Object.assign({}, nouvelAppel, {recepteur_nom: cible.nom, recepteur_couleur: cible.couleur}));
         navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream) {
           localStreamRef.current = stream;
-          var pc = new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
+          var pc = new RTCPeerConnection({iceServers:[
+          {urls:"stun:stun.l.google.com:19302"},
+          {urls:"turn:openrelay.metered.ca:80", username:"openrelayproject", credential:"openrelayproject"},
+          {urls:"turn:openrelay.metered.ca:443", username:"openrelayproject", credential:"openrelayproject"},
+          {urls:"turn:openrelay.metered.ca:443?transport=tcp", username:"openrelayproject", credential:"openrelayproject"}
+        ]});
           pcRef.current = pc;
           stream.getTracks().forEach(function(t) { pc.addTrack(t, stream); });
           pc.ontrack = function(e) {
@@ -10247,7 +10252,12 @@ function AppelsSystem(props) {
       if (!ligneAppel || !ligneAppel.offer_sdp) { return; }
       navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream) {
         localStreamRef.current = stream;
-        var pc = new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
+        var pc = new RTCPeerConnection({iceServers:[
+          {urls:"stun:stun.l.google.com:19302"},
+          {urls:"turn:openrelay.metered.ca:80", username:"openrelayproject", credential:"openrelayproject"},
+          {urls:"turn:openrelay.metered.ca:443", username:"openrelayproject", credential:"openrelayproject"},
+          {urls:"turn:openrelay.metered.ca:443?transport=tcp", username:"openrelayproject", credential:"openrelayproject"}
+        ]});
         pcRef.current = pc;
         stream.getTracks().forEach(function(t) { pc.addTrack(t, stream); });
         pc.ontrack = function(e) {
