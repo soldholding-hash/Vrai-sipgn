@@ -10133,6 +10133,7 @@ function AppelsSystem(props) {
           return {
             id: row.id,
             avec: nomAvec,
+            correspondantId: estSortant ? row.recepteur : row.appelant,
             type: estSortant ? "sortant" : "entrant",
             heure: row.created_at ? new Date(row.created_at).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}) : "",
             statut: row.statut
@@ -10412,7 +10413,10 @@ function AppelsSystem(props) {
             </div>
           ) : historique.map(function(h) {
             return (
-              <div key={h.id} className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4 flex items-center gap-3">
+              <div key={h.id} onClick={function() {
+                var cibleTrouvee = allComptes.filter(function(cc) { return cc.identifiant === h.correspondantId; })[0];
+                if (cibleTrouvee) { setOnglet("clavier"); appeler(cibleTrouvee, "audio"); }
+              }} className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4 flex items-center gap-3 cursor-pointer hover:bg-slate-700/90 active:scale-[0.98] transition">
                 <div style={{background: h.type==="entrant"?"#22C55E22":"#3B82F622", color: h.type==="entrant"?"#22C55E":"#3B82F6"}} className="w-10 h-10 rounded-full flex items-center justify-center shrink-0">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8c1.4 2.8 3.8 5.1 6.6 6.6l2.2-2.2c.3-.3.7-.4 1-.2 1.1.4 2.3.6 3.6.6.6 0 1 .4 1 1V20c0 .6-.4 1-1 1-9.4 0-17-7.6-17-17 0-.6.4-1 1-1h3.5c.6 0 1 .4 1 1 0 1.3.2 2.5.6 3.6.1.3 0 .7-.2 1L6.6 10.8z"/></svg>
                 </div>
