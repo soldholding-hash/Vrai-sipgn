@@ -10011,6 +10011,9 @@ function AppelsSystem(props) {
 
   var appelEntrantState = useState(null);
   var appelEntrant = appelEntrantState[0]; var setAppelEntrant = appelEntrantState[1];
+  var pcRef = useRef(null);
+  var localStreamRef = useRef(null);
+  var remoteAudioRef = useRef(null);
   var appelSortantState = useState(null);
   var appelSortant = appelSortantState[0]; var setAppelSortant = appelSortantState[1];
   var enAppelState = useState(false);
@@ -10070,10 +10073,28 @@ function AppelsSystem(props) {
     }
     var appelTimer = setInterval(verifierAppels, 3000);
 
+    // Ecouter reponse de l'appel sortant (WebRTC answer)
+    function verifierReponseAppelant() {
+      setAppelSortant(function(a) {
+        if (!a || !pcRef.current || pcRef.current.remoteDescription) { return a; }
+        supabase.from("appels").select("statut,answer_sdp").eq("id", a.id).limit(1).then(function(r) {
+          var row = r.data && r.data[0];
+          if (row && row.answer_sdp && pcRef.current && !pcRef.current.remoteDescription) {
+            pcRef.current.setRemoteDescription(JSON.parse(row.answer_sdp)).then(function() {
+              setEnAppel(true);
+            });
+          }
+        });
+        return a;
+      });
+    }
+    var reponseTimer = setInterval(verifierReponseAppelant, 1500);
+
     return function() {
       clearInterval(timer);
       clearInterval(presTimer);
       clearInterval(appelTimer);
+      clearInterval(reponseTimer);
       supabase.from("presences").upsert({
         identifiant: compte.identifiant,
         nom: compte.nom,
@@ -10111,11 +10132,34 @@ function AppelsSystem(props) {
     supabase.from("appels").insert([nouvelAppel]).then(function(r) {
       if(!r.error) {
         setAppelSortant(Object.assign({}, nouvelAppel, {recepteur_nom: cible.nom, recepteur_couleur: cible.couleur}));
+        navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream) {
+          localStreamRef.current = stream;
+          var pc = new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
+          pcRef.current = pc;
+          stream.getTracks().forEach(function(t) { pc.addTrack(t, stream); });
+          pc.ontrack = function(e) {
+            if (remoteAudioRef.current) { remoteAudioRef.current.srcObject = e.streams[0]; }
+          };
+          pc.createOffer().then(function(offer) {
+            return pc.setLocalDescription(offer);
+          }).then(function() {
+            function envoyerOffreQuandPret() {
+              if (pc.iceGatheringState === "complete") {
+                supabase.from("appels").update({offer_sdp: JSON.stringify(pc.localDescription)}).eq("id", id).then(function(){});
+              } else {
+                setTimeout(envoyerOffreQuandPret, 300);
+              }
+            }
+            envoyerOffreQuandPret();
+          });
+        }).catch(function(){});
         // Auto-annuler apres 30s
         setTimeout(function() {
           setAppelSortant(function(a) {
             if(a && a.id === id) {
               supabase.from("appels").update({statut:"manque"}).eq("id",id).then(function(){});
+              if (pcRef.current) { pcRef.current.close(); pcRef.current = null; }
+              if (localStreamRef.current) { localStreamRef.current.getTracks().forEach(function(t){t.stop();}); localStreamRef.current = null; }
               return null;
             }
             return a;
@@ -10127,19 +10171,47 @@ function AppelsSystem(props) {
 
   function accepterAppel() {
     if(!appelEntrant) return;
-    supabase.from("appels").update({statut:"en_cours"}).eq("id", appelEntrant.id).then(function(r) {
-      if(!r.error) {
-        setEnAppel(true);
-        setHistorique(function(prev) {
-          return [{
-            id: appelEntrant.id,
-            avec: appelEntrant.appelant_nom,
-            type: "entrant",
-            heure: new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),
-            statut: "accepte"
-          }].concat(prev);
+    var idAppel = appelEntrant.id;
+    var nomAppelant = appelEntrant.appelant_nom;
+    supabase.from("appels").select("*").eq("id", idAppel).limit(1).then(function(rSel) {
+      var ligneAppel = rSel.data && rSel.data[0];
+      if (!ligneAppel || !ligneAppel.offer_sdp) { return; }
+      navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream) {
+        localStreamRef.current = stream;
+        var pc = new RTCPeerConnection({iceServers:[{urls:"stun:stun.l.google.com:19302"}]});
+        pcRef.current = pc;
+        stream.getTracks().forEach(function(t) { pc.addTrack(t, stream); });
+        pc.ontrack = function(e) {
+          if (remoteAudioRef.current) { remoteAudioRef.current.srcObject = e.streams[0]; }
+        };
+        pc.setRemoteDescription(JSON.parse(ligneAppel.offer_sdp)).then(function() {
+          return pc.createAnswer();
+        }).then(function(answer) {
+          return pc.setLocalDescription(answer);
+        }).then(function() {
+          function envoyerReponseQuandPrete() {
+            if (pc.iceGatheringState === "complete") {
+              supabase.from("appels").update({statut:"en_cours", answer_sdp: JSON.stringify(pc.localDescription)}).eq("id", idAppel).then(function(r) {
+                if(!r.error) {
+                  setEnAppel(true);
+                  setHistorique(function(prev) {
+                    return [{
+                      id: idAppel,
+                      avec: nomAppelant,
+                      type: "entrant",
+                      heure: new Date().toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}),
+                      statut: "accepte"
+                    }].concat(prev);
+                  });
+                }
+              });
+            } else {
+              setTimeout(envoyerReponseQuandPrete, 300);
+            }
+          }
+          envoyerReponseQuandPrete();
         });
-      }
+      }).catch(function(){});
     });
   }
 
@@ -10154,6 +10226,8 @@ function AppelsSystem(props) {
     if(id) {
       supabase.from("appels").update({statut:"termine"}).eq("id", id).then(function(){});
     }
+    if (pcRef.current) { pcRef.current.close(); pcRef.current = null; }
+    if (localStreamRef.current) { localStreamRef.current.getTracks().forEach(function(t){t.stop();}); localStreamRef.current = null; }
     setEnAppel(false);
     setAppelEntrant(null);
     setAppelSortant(null);
@@ -10319,6 +10393,7 @@ function AppelsSystem(props) {
           })}
         </div>
       ) : null}
+      <audio ref={remoteAudioRef} autoPlay />
     </div>
   );
 }
