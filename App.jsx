@@ -10234,8 +10234,10 @@ function AppelsSystem(props) {
           pc.createOffer().then(function(offer) {
             return pc.setLocalDescription(offer);
           }).then(function() {
+            var tentativesOffre = 0;
             function envoyerOffreQuandPret() {
-              if (pc.iceGatheringState === "complete") {
+              tentativesOffre++;
+              if (pc.iceGatheringState === "complete" || tentativesOffre > 13) {
                 supabase.from("appels").update({offer_sdp: JSON.stringify(pc.localDescription)}).eq("id", id).then(function(){});
               } else {
                 setTimeout(envoyerOffreQuandPret, 300);
@@ -10285,8 +10287,10 @@ function AppelsSystem(props) {
         }).then(function(answer) {
           return pc.setLocalDescription(answer);
         }).then(function() {
+          var tentativesReponse = 0;
           function envoyerReponseQuandPrete() {
-            if (pc.iceGatheringState === "complete") {
+            tentativesReponse++;
+            if (pc.iceGatheringState === "complete" || tentativesReponse > 13) {
               supabase.from("appels").update({statut:"en_cours", answer_sdp: JSON.stringify(pc.localDescription)}).eq("id", idAppel).then(function(r) {
                 if(!r.error) {
                   setEnAppel(true);
