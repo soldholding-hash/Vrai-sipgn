@@ -10039,8 +10039,14 @@ function AppelsSystem(props) {
   useEffect(function() {
     fetch("https://sipgn.metered.live/api/v1/turn/credentials?apiKey=EkNvXhS5n9vhb9jMh6jrefLVVRYT7faDxJ1WW64KCOP1Zhy2")
       .then(function(r) { return r.json(); })
-      .then(function(servers) { iceServersRef.current = servers; })
-      .catch(function() {});
+      .then(function(servers) {
+        if (Array.isArray(servers) && servers.length > 0) {
+          iceServersRef.current = servers;
+        } else {
+          iceServersRef.current = null;
+        }
+      })
+      .catch(function() { iceServersRef.current = null; });
   }, []);
 
   useEffect(function() {
