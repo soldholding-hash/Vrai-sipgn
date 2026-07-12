@@ -10014,6 +10014,8 @@ function AppelsSystem(props) {
   var pcRef = useRef(null);
   var localStreamRef = useRef(null);
   var remoteAudioRef = useRef(null);
+  var ringtoneCtxRef = useRef(null);
+  var ringtoneOscRef = useRef(null);
   var appelSortantState = useState(null);
   var appelSortant = appelSortantState[0]; var setAppelSortant = appelSortantState[1];
   var enAppelState = useState(false);
@@ -10129,6 +10131,50 @@ function AppelsSystem(props) {
       setDuree(0);
     }
   }, [enAppel]);
+
+  function jouerSonnerie() {
+    if (ringtoneCtxRef.current) { return; }
+    try {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      var ctx = new AC();
+      ringtoneCtxRef.current = ctx;
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.frequency.value = 800;
+      osc.type = "sine";
+      gain.gain.value = 0;
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start();
+      ringtoneOscRef.current = osc;
+      var t = ctx.currentTime;
+      for (var i = 0; i < 60; i++) {
+        gain.gain.setValueAtTime(0.18, t + i * 1.2);
+        gain.gain.setValueAtTime(0.18, t + i * 1.2 + 0.35);
+        gain.gain.setValueAtTime(0, t + i * 1.2 + 0.4);
+      }
+    } catch (e) {}
+  }
+
+  function arreterSonnerie() {
+    if (ringtoneOscRef.current) {
+      try { ringtoneOscRef.current.stop(); } catch (e) {}
+      ringtoneOscRef.current = null;
+    }
+    if (ringtoneCtxRef.current) {
+      try { ringtoneCtxRef.current.close(); } catch (e) {}
+      ringtoneCtxRef.current = null;
+    }
+  }
+
+  useEffect(function() {
+    if (appelEntrant && !enAppel) {
+      jouerSonnerie();
+    } else {
+      arreterSonnerie();
+    }
+    return function() { arreterSonnerie(); };
+  }, [appelEntrant, enAppel]);
 
   // Diagnostic connexion (ICE) pendant un appel
   useEffect(function() {
