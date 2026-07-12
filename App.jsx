@@ -10037,16 +10037,13 @@ function AppelsSystem(props) {
   var iceServersRef = useRef(null);
 
   useEffect(function() {
-    fetch("https://sipgn.metered.live/api/v1/turn/credentials?apiKey=EkNvXhS5n9vhb9jMh6jrefLVVRYT7faDxJ1WW64KCOP1Zhy2")
-      .then(function(r) { return r.json(); })
-      .then(function(servers) {
-        if (Array.isArray(servers) && servers.length > 0) {
-          iceServersRef.current = servers;
-        } else {
-          iceServersRef.current = null;
-        }
-      })
-      .catch(function() { iceServersRef.current = null; });
+    iceServersRef.current = [
+      { urls: "stun:stun.relay.metered.ca:80" },
+      { urls: "turn:global.relay.metered.ca:80", username: "f18a700b861adb4c5790a4de", credential: "E4PQOCLWhXQ01wLY" },
+      { urls: "turn:global.relay.metered.ca:80?transport=tcp", username: "f18a700b861adb4c5790a4de", credential: "E4PQOCLWhXQ01wLY" },
+      { urls: "turn:global.relay.metered.ca:443", username: "f18a700b861adb4c5790a4de", credential: "E4PQOCLWhXQ01wLY" },
+      { urls: "turns:global.relay.metered.ca:443?transport=tcp", username: "f18a700b861adb4c5790a4de", credential: "E4PQOCLWhXQ01wLY" }
+    ];
   }, []);
 
   useEffect(function() {
