@@ -10275,9 +10275,24 @@ function AppelsSystem(props) {
     if(!appelEntrant) return;
     var idAppel = appelEntrant.id;
     var nomAppelant = appelEntrant.appelant_nom;
-    supabase.from("appels").select("*").eq("id", idAppel).limit(1).then(function(rSel) {
-      var ligneAppel = rSel.data && rSel.data[0];
-      if (!ligneAppel || !ligneAppel.offer_sdp) { return; }
+    var tentativesAcceptation = 0;
+    function chercherOffre() {
+      tentativesAcceptation++;
+      supabase.from("appels").select("*").eq("id", idAppel).limit(1).then(function(rSel) {
+        var ligneAppel = rSel.data && rSel.data[0];
+        if (!ligneAppel || !ligneAppel.offer_sdp) {
+          if (tentativesAcceptation < 6) {
+            setDebugStatus("En attente de l'offre de l'appelant...");
+            setTimeout(chercherOffre, 800);
+          } else {
+            setDebugStatus("Erreur: offre jamais recue, reessayez l'appel.");
+          }
+          return;
+        }
+        demarrerReponse(ligneAppel);
+      });
+    }
+    function demarrerReponse(ligneAppel) {
       navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream) {
         localStreamRef.current = stream;
         var pc = new RTCPeerConnection({iceServers: iceServersRef.current || [{urls:"stun:stun.l.google.com:19302"}]});
@@ -10316,7 +10331,8 @@ function AppelsSystem(props) {
           envoyerReponseQuandPrete();
         });
       }).catch(function(err){ setDebugStatus("Erreur micro: " + (err && err.name ? err.name : String(err))); });
-    });
+    }
+    chercherOffre();
   }
 
   function refuserAppel() {
