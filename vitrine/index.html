@@ -294,7 +294,6 @@
     .contact-grid{grid-template-columns:1fr;}
     .footer-top{grid-template-columns:1fr 1fr;}
     .stats-inner{grid-template-columns:1fr 1fr;}
-    .nav-links a:not(.btn-connexion){display:none;}
   }
   @media(max-width:600px){
     .missions-grid{grid-template-columns:1fr;}
@@ -311,6 +310,17 @@
   .nav-dropdown-menu a:last-child { border-bottom: none; }
   .nav-dropdown-menu a:hover { color: var(--vert); background: rgba(255,255,255,0.03); }
   @media (max-width: 900px) { .nav-dropdown-menu { position: static; margin-top: 6px; box-shadow: none; border: none; background: rgba(255,255,255,0.03); } }
+  .nav-toggle-checkbox { display:none; }
+  .nav-toggle-label { display:none; flex-direction:column; gap:5px; cursor:pointer; z-index:60; padding:8px; }
+  .nav-toggle-label span { width:26px; height:2px; background:#fff; display:block; border-radius:2px; }
+  @media(max-width:900px){
+    .nav-toggle-label{ display:flex; }
+    .nav-links{ display:flex; flex-direction:column; align-items:flex-start; gap:0; position:fixed; top:0; right:-100%; width:78%; max-width:320px; height:100vh; background:#0B1622; padding:90px 24px 24px; transition:right .3s ease; z-index:55; box-shadow:-10px 0 40px rgba(0,0,0,.5); overflow-y:auto; }
+    .nav-toggle-checkbox:checked ~ .nav-links{ right:0; }
+    .nav-links a{ display:block; width:100%; padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.08); font-size:14px; color:#fff; }
+    .nav-dropdown{ width:100%; }
+    .nav-dropdown summary{ padding:14px 0; border-bottom:1px solid rgba(255,255,255,0.08); width:100%; }
+  }
 </style>
 <style>
 @media(max-width:768px){
@@ -341,6 +351,8 @@
         <span>République du Congo</span>
       </div>
     </a>
+    <input type="checkbox" id="navToggle" class="nav-toggle-checkbox" />
+    <label for="navToggle" class="nav-toggle-label"><span></span><span></span><span></span></label>
     <div class="nav-links">
       <a href="#commandement">Commandement</a>
       <a href="#actualites">Actualités</a>
