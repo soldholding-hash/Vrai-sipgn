@@ -302,6 +302,15 @@
     .footer-top{grid-template-columns:1fr;}
     .hero-title{font-size:32px;}
   }
+  .nav-dropdown { position: relative; }
+  .nav-dropdown summary { cursor: pointer; list-style: none; color: rgba(255,255,255,0.85); font-size: 13px; letter-spacing: 0.03em; }
+  .nav-dropdown summary::-webkit-details-marker { display: none; }
+  .nav-dropdown summary:hover, .nav-dropdown[open] summary { color: var(--vert); }
+  .nav-dropdown-menu { position: absolute; top: 100%; left: 0; margin-top: 12px; background: #0B1622; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; min-width: 270px; padding: 8px 0; box-shadow: 0 12px 30px rgba(0,0,0,0.4); z-index: 50; }
+  .nav-dropdown-menu a { display: block; padding: 12px 20px; color: rgba(255,255,255,0.85); font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.06); text-decoration: none; }
+  .nav-dropdown-menu a:last-child { border-bottom: none; }
+  .nav-dropdown-menu a:hover { color: var(--vert); background: rgba(255,255,255,0.03); }
+  @media (max-width: 900px) { .nav-dropdown-menu { position: static; margin-top: 6px; box-shadow: none; border: none; background: rgba(255,255,255,0.03); } }
 </style>
 <style>
 @media(max-width:768px){
@@ -335,7 +344,17 @@
     <div class="nav-links">
       <a href="#commandement">Commandement</a>
       <a href="#actualites">Actualités</a>
-      <a href="#missions">Missions</a>
+      <details class="nav-dropdown">
+        <summary>Nous découvrir</summary>
+        <div class="nav-dropdown-menu">
+          <a href="#missions">Nos missions</a>
+          <a href="organisation.html">Notre organisation</a>
+          <a href="histoire.html">Histoire de la police nationale</a>
+          <a href="corps-grades.html">Les corps et grades</a>
+          <a href="deontologie.html">Déontologie et contrôle</a>
+          <a href="ecoles-enp.html">Les écoles nationales de police (ENP)</a>
+        </div>
+      </details>
       <a href="#communiques">Communiqués</a>
       <a href="#contact">Contact</a>
     </div>
