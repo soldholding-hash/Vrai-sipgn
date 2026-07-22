@@ -7140,6 +7140,7 @@ function DataScientistAccidents(props) {
   var dossierNum = useState("");
   var dossierLieu = useState("");
   var dossierDate = useState("");
+  var vitesseAutorisee = useState("");
   var causesA = useState({});
   var causesB = useState({});
   var graviteState = useState("materiel");
@@ -7318,10 +7319,11 @@ function DataScientistAccidents(props) {
         <div className="space-y-4">
           <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4">
             <p className="text-white font-bold text-sm mb-3">Identification du dossier</p>
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 gap-2">
               <input type="text" value={dossierNum[0]} onChange={function (e) { dossierNum[1](e.target.value); }} className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" placeholder="N. dossier (ex: BZV-...)" />
               <input type="text" value={dossierLieu[0]} onChange={function (e) { dossierLieu[1](e.target.value); }} className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" placeholder="Lieu (ex: Carrefour Moungali)" />
               <input type="date" value={dossierDate[0]} onChange={function (e) { dossierDate[1](e.target.value); }} className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" />
+              <input type="number" value={vitesseAutorisee[0]} onChange={function (e) { vitesseAutorisee[1](e.target.value); }} className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" placeholder="Vitesse autorisee (km/h, ex: 50)" />
             </div>
           </div>
 
@@ -7346,7 +7348,7 @@ function DataScientistAccidents(props) {
                     {REFERENTIEL_CAUSES[cat].map(function (c) {
                       return (
                         <label key={c.id} className="flex items-start gap-2 mb-2 text-[11px] text-slate-300">
-                          <input type="checkbox" checked={!!causesA[0][c.id]} onChange={function (e) { causesA[1](function (p) { var n = {}; for (var k in p) { n[k] = p[k]; } if (e.target.checked) { n[c.id] = c; } else { delete n[c.id]; } return n; }); }} className="mt-0.5" />
+                          <input type="checkbox" checked={!!causesA[0][c.id]} onChange={function (e) { causesA[1](function (p) { var n = {}; for (var k in p) { n[k] = p[k]; } if (e.target.checked) { n[c.id] = { id: c.id, label: c.label, article: c.article, classement: c.classement, poids: c.poids, cat: cat }; } else { delete n[c.id]; } return n; }); }} className="mt-0.5" />
                           <span>{c.label} <span className="text-slate-600">({c.article})</span></span>
                         </label>
                       );
@@ -7357,7 +7359,7 @@ function DataScientistAccidents(props) {
                     {REFERENTIEL_CAUSES[cat].map(function (c) {
                       return (
                         <label key={c.id} className="flex items-start gap-2 mb-2 text-[11px] text-slate-300">
-                          <input type="checkbox" checked={!!causesB[0][c.id]} onChange={function (e) { causesB[1](function (p) { var n = {}; for (var k in p) { n[k] = p[k]; } if (e.target.checked) { n[c.id] = c; } else { delete n[c.id]; } return n; }); }} className="mt-0.5" />
+                          <input type="checkbox" checked={!!causesB[0][c.id]} onChange={function (e) { causesB[1](function (p) { var n = {}; for (var k in p) { n[k] = p[k]; } if (e.target.checked) { n[c.id] = { id: c.id, label: c.label, article: c.article, classement: c.classement, poids: c.poids, cat: cat }; } else { delete n[c.id]; } return n; }); }} className="mt-0.5" />
                           <span>{c.label} <span className="text-slate-600">({c.article})</span></span>
                         </label>
                       );
@@ -7381,18 +7383,33 @@ function DataScientistAccidents(props) {
             var pointNoir = lieuOccurrences >= 3;
 
             var qualif = QUALIF_PENALE[graviteState[0]];
-
             var dateAff = dossierDate[0] ? new Date(dossierDate[0]).toLocaleDateString("fr-FR") : "[date non precisee]";
+
             var texte = "";
             texte += "NOTE DE SYNTHESE — BUREAU DE CONTROLE DES ACCIDENTS\n";
             texte += "========================================================\n";
             texte += "Dossier n. : " + (dossierNum[0] || "[a completer]") + "\n";
             texte += "Lieu : " + (dossierLieu[0] || "[a completer]") + "\n";
             texte += "Date : " + dateAff + "\n";
-            texte += "Qualification : " + qualif.label + "\n\n";
-            texte += "I. RESUME DES FAITS\n";
-            texte += "Accident de la circulation survenu le " + dateAff + " a " + (dossierLieu[0] || "[lieu]") + ". Analyse cinematique et factuelle du Bureau de Controle des Accidents.\n\n";
-            texte += "II. CAUSES RETENUES\n";
+            texte += "Qualification : " + qualif.label + "\n";
+
+            texte += "\nI. DONNEES TECHNIQUES ET CINEMATIQUES\n";
+            if (resultats[0]) {
+              texte += "Vitesse estimee Vehicule A a l impact : " + resultats[0].vA_impact_kmh.toFixed(1) + " km/h" + (vitesseAutorisee[0] ? (resultats[0].vA_impact_kmh > parseFloat(vitesseAutorisee[0]) ? " — DEPASSEMENT (limite: " + vitesseAutorisee[0] + " km/h)" : " (dans la limite de " + vitesseAutorisee[0] + " km/h)") : "") + "\n";
+              texte += "Vitesse estimee Vehicule B a l impact : " + resultats[0].vB_impact_kmh.toFixed(1) + " km/h" + (vitesseAutorisee[0] ? (resultats[0].vB_impact_kmh > parseFloat(vitesseAutorisee[0]) ? " — DEPASSEMENT (limite: " + vitesseAutorisee[0] + " km/h)" : " (dans la limite de " + vitesseAutorisee[0] + " km/h)") : "") + "\n";
+              texte += "Trace de freinage Vehicule A : " + (vA[0].freinage || "non relevee") + " m — Vehicule B : " + (vB[0].freinage || "non relevee") + " m\n";
+              texte += "Point de choc initial (POI) : " + (resultats[0].poi || "non precise") + "\n";
+              texte += "Angle d impact estime : " + (resultats[0].angle ? resultats[0].angle + "°" : "non precise") + "\n";
+              texte += "Delta-V Vehicule A : " + resultats[0].deltaVA_kmh.toFixed(1) + " km/h — Delta-V Vehicule B : " + resultats[0].deltaVB_kmh.toFixed(1) + " km/h\n";
+            } else {
+              texte += "Aucune reconstitution physique enregistree (voir onglet Reconstitution pour calculer vitesses et Delta-V).\n";
+              if (vitesseAutorisee[0]) { texte += "Vitesse autorisee sur le troncon : " + vitesseAutorisee[0] + " km/h\n"; }
+            }
+
+            texte += "\nII. RESUME DES FAITS\n";
+            texte += "Accident de la circulation survenu le " + dateAff + " a " + (dossierLieu[0] || "[lieu]") + ". Analyse cinematique et factuelle du Bureau de Controle des Accidents.\n";
+
+            texte += "\nIII. CAUSES RETENUES\n";
             texte += "Vehicule A :\n";
             if (listA.length === 0) { texte += "  - Aucune cause retenue a charge du vehicule A.\n"; }
             listA.forEach(function (c) { texte += "  - " + c.label + " (" + c.article + " — " + c.classement + ")\n"; });
@@ -7400,20 +7417,50 @@ function DataScientistAccidents(props) {
             if (listB.length === 0) { texte += "  - Aucune cause retenue a charge du vehicule B.\n"; }
             listB.forEach(function (c) { texte += "  - " + c.label + " (" + c.article + " — " + c.classement + ")\n"; });
 
-            texte += "II bis. QUALIFICATION JURIDIQUE RETENUE\n";
+            texte += "\nImputabilite des facteurs :\n";
+            var catLabels = { comportemental: "Facteur humain (comportemental)", vehicule: "Facteur materiel (etat du vehicule)", environnemental: "Facteur infrastructure — responsabilite collectivite/voirie" };
+            var toutesCauses = listA.concat(listB);
+            ["comportemental", "vehicule", "environnemental"].forEach(function (cat) {
+              var causesCat = toutesCauses.filter(function (c) { return c.cat === cat; });
+              if (causesCat.length > 0) { texte += "  - " + catLabels[cat] + " : " + causesCat.map(function (c) { return c.label; }).join(", ") + "\n"; }
+            });
+
+            texte += "\nIV. QUALIFICATION JURIDIQUE RETENUE\n";
             texte += "Regime applicable : " + qualif.base + "\n";
             if (qualif.aggravants) { texte += "Circonstances aggravantes possibles : " + qualif.aggravants + "\n"; }
-            texte += "\nIII. REPARTITION DES RESPONSABILITES (suggestion)\n";
+
+            texte += "\nV. REPARTITION DES RESPONSABILITES (suggestion)\n";
             texte += "Vehicule A : " + respA + "% — Vehicule B : " + respB + "%\n";
             texte += "(Estimation ponderee sur base du referentiel juridique. A confirmer par le Bureau de Controle des Accidents.)\n";
+
+            var mesures = [];
+            listA.forEach(function (c) {
+              if (c.id === "alcool") { mesures.push("Retrait / retention administrative immediate du permis de conduire — Vehicule A"); mesures.push("Arrestation / mandat d amener pour conduite sous emprise — Vehicule A"); }
+              if (c.id === "freinage" || c.id === "controle_technique") { mesures.push("Immobilisation et mise en fourriere du Vehicule A (" + c.label + ")"); }
+            });
+            listB.forEach(function (c) {
+              if (c.id === "alcool") { mesures.push("Retrait / retention administrative immediate du permis de conduire — Vehicule B"); mesures.push("Arrestation / mandat d amener pour conduite sous emprise — Vehicule B"); }
+              if (c.id === "freinage" || c.id === "controle_technique") { mesures.push("Immobilisation et mise en fourriere du Vehicule B (" + c.label + ")"); }
+            });
+            if (graviteState[0] === "fuite") { mesures.push("Mandat d amener / recherche active pour delit de fuite"); }
+
+            texte += "\nVI. MESURES CONSERVATOIRES ET SANCTIONS PROPOSEES\n";
+            if (mesures.length === 0) { texte += "Aucune mesure conservatoire immediate identifiee sur la base des causes retenues.\n"; }
+            mesures.forEach(function (m) { texte += "  - " + m + "\n"; });
+
+            var penal = graviteState[0] === "blessures" || graviteState[0] === "deces" || graviteState[0] === "fuite" || toutesCauses.some(function (c) { return c.classement === "Delit penal"; });
+            texte += "\nVII. ORIENTATION PROCEDURALE\n";
+            texte += penal ? "Dossier transmis au Parquet / Procureur de la Republique — Procedure Judiciaire (delictuelle).\n" : "Dossier traite en Procedure Administrative / Contraventionnelle (Bureau de Controle des Accidents).\n";
+
             if (pointNoir) {
-              texte += "\nIV. ALERTE POINT NOIR\n";
+              texte += "\nVIII. ALERTE POINT NOIR\n";
               texte += "Ce lieu (" + dossierLieu[0] + ") apparait dans " + lieuOccurrences + " dossiers recents. Suggestion : signaler au Ministere / services des Travaux Publics pour amenagement routier (feu tricolore, ralentisseur, signalisation).\n";
             }
+
             texte += "\n----------------------------------------\n";
             texte += "Bureau de Controle des Accidents (BCA) — SIPGN\n";
 
-            setNoteGeneree({ texte: texte, respA: respA, respB: respB, listA: listA, listB: listB, pointNoir: pointNoir, lieuOccurrences: lieuOccurrences });
+            setNoteGeneree({ texte: texte, respA: respA, respB: respB, listA: listA, listB: listB, pointNoir: pointNoir, lieuOccurrences: lieuOccurrences, mesures: mesures, penal: penal });
           }} className="bg-amber-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2">🔧 Analyser les causes et rediger la note</button>
 
           {noteGeneree ? (
