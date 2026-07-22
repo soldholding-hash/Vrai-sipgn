@@ -7137,6 +7137,44 @@ function DataScientistAccidents(props) {
   var poiDesc = useState("");
   var resultatsState = useState(null);
   var resultats = resultatsState; var setResultats = resultatsState[1];
+  var dossierNum = useState("");
+  var dossierLieu = useState("");
+  var dossierDate = useState("");
+  var causesA = useState({});
+  var causesB = useState({});
+  var graviteState = useState("materiel");
+  var noteGenereeState = useState(null); var noteGeneree = noteGenereeState[0]; var setNoteGeneree = noteGenereeState[1];
+  var REFERENTIEL_CAUSES = {
+    comportemental: [
+      { id: "vitesse", label: "Vitesse excessive / inadaptee", article: "Art. 16 Code CEMAC", classement: "Contrav. 4e classe", poids: 30 },
+      { id: "priorite", label: "Non-respect de la priorite (Stop, feux, intersections)", article: "Art. 18 Code CEMAC", classement: "Contrav. 4e classe", poids: 35 },
+      { id: "depassement", label: "Depassement dangereux", article: "Art. 14 Code CEMAC / Art. 19 CR", classement: "Contrav. 4e classe", poids: 30 },
+      { id: "sens", label: "Circulation en sens interdit", article: "Art. 12 Code CEMAC", classement: "Contrav. 4e classe", poids: 30 },
+      { id: "maitrise", label: "Defaut de maitrise du vehicule", article: "Art. 90, 91 Code CEMAC", classement: "Contrav. 4e classe", poids: 25 },
+      { id: "telephone", label: "Inattention / usage du telephone au volant", article: "Art. 13 Code CEMAC", classement: "Contrav. 3e classe", poids: 20 },
+      { id: "alcool", label: "Alcoolemie / substances", article: "Conduite sous Emprise (CEI)", classement: "Delit penal", poids: 40 }
+    ],
+    vehicule: [
+      { id: "freinage", label: "Pneumatiques lisses / defaillance freinage", article: "Art. 71 & 75 Code CEMAC", classement: "Mise en fourriere immediate", poids: 25 },
+      { id: "eclairage", label: "Defaut eclairage / signalisation vehicule", article: "Art. 24, 26, 70 Code CEMAC", classement: "Amende 3e classe", poids: 15 },
+      { id: "controle_technique", label: "Absence / peremption controle technique", article: "Art. 17 (2°) Loi n. 7-2004", classement: "Amende forfaitaire 50 000 FCFA", poids: 15 },
+      { id: "equipements", label: "Absence triangle / extincteur / ceinture", article: "Art. 39 bis & 57 CR", classement: "Amende 4e classe 25 000 FCFA", poids: 10 },
+      { id: "surcharge", label: "Surcharge / depassement gabarit", article: "Art. 17 (3°) Loi n. 7-2004", classement: "Amende par tonne excedentaire", poids: 20 }
+    ],
+    environnemental: [
+      { id: "eclairage_public", label: "Eclairage public deficient", article: "Facteur aggravant (non imputable au conducteur)", classement: "A charge collectivite / voirie", poids: 15 },
+      { id: "chaussee", label: "Chaussee glissante / degradee", article: "Facteur aggravant (non imputable au conducteur)", classement: "A charge collectivite / voirie", poids: 15 },
+      { id: "signalisation_masquee", label: "Signalisation masquee", article: "Facteur aggravant (non imputable au conducteur)", classement: "A charge collectivite / voirie", poids: 15 },
+      { id: "marquage", label: "Absence de marquage au sol", article: "Facteur aggravant (non imputable au conducteur)", classement: "A charge collectivite / voirie", poids: 10 }
+    ]
+  };
+
+  var QUALIF_PENALE = {
+    materiel: { label: "Degats materiels uniquement", base: "Contraventionnel (voir causes ci-dessus)" },
+    blessures: { label: "Blessures involontaires (ITT / infirmite)", base: "Delit penal — Code Penal Congolais", aggravants: "Manquement delibere a une obligation de securite, conduite sous emprise toxique" },
+    deces: { label: "Homicide involontaire (deces)", base: "Delit penal — Code Penal Congolais", aggravants: "Alcool / stupefiants, defaut de permis, exces de vitesse majeur" },
+    fuite: { label: "Delit de fuite associe", base: "Delit penal — cumul direct avec homicide/blessures involontaires" }
+  };
   var SYS = "Tu es l assistant IA du Bureau de Controle Accidents de la Police Nationale du Congo. Reponds en francais, technique et operationnel.";
 
   function callIA(setter, prompt) { setter({ loading: true, result: null }); fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1000, system: SYS, messages: [{ role: "user", content: prompt }] }) }).then(function (r) { return r.json(); }).then(function (d) { setter({ loading: false, result: d.content && d.content[0] ? d.content[0].text : "Erreur." }); }).catch(function () { setter({ loading: false, result: "Erreur." }); }); }
@@ -7279,14 +7317,128 @@ function DataScientistAccidents(props) {
       {tab === "causes" ? (
         <div className="space-y-4">
           <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4">
-            <p className="text-white font-bold text-sm mb-2">Dossiers recents — base d analyse</p>
-            <div className="space-y-1">{ACCIDENTS_DATA.slice(0, 5).map(function (a) { return (<div key={a.id} className="flex items-center justify-between text-xs border-b border-slate-800 pb-1"><span className="text-slate-300 font-mono">{a.id}</span><span className="text-slate-500">{a.lieu}</span></div>); })}</div>
+            <p className="text-white font-bold text-sm mb-3">Identification du dossier</p>
+            <div className="grid grid-cols-3 gap-2">
+              <input type="text" value={dossierNum[0]} onChange={function (e) { dossierNum[1](e.target.value); }} className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" placeholder="N. dossier (ex: BZV-...)" />
+              <input type="text" value={dossierLieu[0]} onChange={function (e) { dossierLieu[1](e.target.value); }} className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" placeholder="Lieu (ex: Carrefour Moungali)" />
+              <input type="date" value={dossierDate[0]} onChange={function (e) { dossierDate[1](e.target.value); }} className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" />
+            </div>
           </div>
+
+          <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4">
+            <p className="text-white font-bold text-sm mb-2">Gravite de l accident</p>
+            <select value={graviteState[0]} onChange={function (e) { graviteState[1](e.target.value); }} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs">
+              <option value="materiel">Degats materiels uniquement</option>
+              <option value="blessures">Blessures involontaires (ITT / infirmite)</option>
+              <option value="deces">Homicide involontaire (deces)</option>
+              <option value="fuite">Delit de fuite associe</option>
+            </select>
+          </div>
+
+          {["comportemental", "vehicule", "environnemental"].map(function (cat) {
+            var titres = { comportemental: "🧍 Facteurs comportementaux", vehicule: "🚗 Etat du vehicule", environnemental: "🛣️ Facteurs environnementaux" };
+            return (
+              <div key={cat} className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4">
+                <p className="text-white font-bold text-sm mb-3">{titres[cat]}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-amber-500 text-xs font-bold mb-2">Vehicule A</p>
+                    {REFERENTIEL_CAUSES[cat].map(function (c) {
+                      return (
+                        <label key={c.id} className="flex items-start gap-2 mb-2 text-[11px] text-slate-300">
+                          <input type="checkbox" checked={!!causesA[0][c.id]} onChange={function (e) { causesA[1](function (p) { var n = {}; for (var k in p) { n[k] = p[k]; } if (e.target.checked) { n[c.id] = c; } else { delete n[c.id]; } return n; }); }} className="mt-0.5" />
+                          <span>{c.label} <span className="text-slate-600">({c.article})</span></span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                  <div>
+                    <p className="text-amber-500 text-xs font-bold mb-2">Vehicule B</p>
+                    {REFERENTIEL_CAUSES[cat].map(function (c) {
+                      return (
+                        <label key={c.id} className="flex items-start gap-2 mb-2 text-[11px] text-slate-300">
+                          <input type="checkbox" checked={!!causesB[0][c.id]} onChange={function (e) { causesB[1](function (p) { var n = {}; for (var k in p) { n[k] = p[k]; } if (e.target.checked) { n[c.id] = c; } else { delete n[c.id]; } return n; }); }} className="mt-0.5" />
+                          <span>{c.label} <span className="text-slate-600">({c.article})</span></span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
           <button onClick={function () {
-            var ctx = JSON.stringify(ACCIDENTS_DATA.map(function (a) { return { lieu: a.lieu, gravite: a.gravite, delitFuite: a.delitFuite, date: a.dateCreation }; }));
-            callIA(ai2[1], "Analyse les causes recurrentes des accidents de la circulation a Brazzaville sur base de ces dossiers: " + ctx + ". 1) Identifie les causes recurrentes probables (signalisation defectueuse, etat de la chaussee, eclairage, comportement) par zone 2) Redige un PROJET DE NOTE OFFICIELLE adresse au Directeur de la Logistique et aux services des Travaux Publics, signalant les points noirs identifies et demandant les corrections necessaires (signalisation, eclairage, marquage au sol). La note doit etre formelle et structuree (Objet, Constat, Demande, Signature Bureau Controle Accidents).");
+            var listA = [];for (var k in causesA[0]) { listA.push(causesA[0][k]); }
+            var listB = [];for (var k2 in causesB[0]) { listB.push(causesB[0][k2]); }
+            var poidsA = listA.reduce(function (s, c) { return s + c.poids; }, 0);
+            var poidsB = listB.reduce(function (s, c) { return s + c.poids; }, 0);
+            var total = poidsA + poidsB;
+            var respA = total > 0 ? Math.round((poidsA / total) * 100) : 0;
+            var respB = total > 0 ? 100 - respA : 0;
+
+            var lieuOccurrences = ACCIDENTS_DATA.filter(function (a) { return dossierLieu[0] && a.lieu && a.lieu.toLowerCase().indexOf(dossierLieu[0].toLowerCase()) !== -1; }).length;
+            var pointNoir = lieuOccurrences >= 3;
+
+            var qualif = QUALIF_PENALE[graviteState[0]];
+
+            var dateAff = dossierDate[0] ? new Date(dossierDate[0]).toLocaleDateString("fr-FR") : "[date non precisee]";
+            var texte = "";
+            texte += "NOTE DE SYNTHESE — BUREAU DE CONTROLE DES ACCIDENTS\n";
+            texte += "========================================================\n";
+            texte += "Dossier n. : " + (dossierNum[0] || "[a completer]") + "\n";
+            texte += "Lieu : " + (dossierLieu[0] || "[a completer]") + "\n";
+            texte += "Date : " + dateAff + "\n";
+            texte += "Qualification : " + qualif.label + "\n\n";
+            texte += "I. RESUME DES FAITS\n";
+            texte += "Accident de la circulation survenu le " + dateAff + " a " + (dossierLieu[0] || "[lieu]") + ". Analyse cinematique et factuelle du Bureau de Controle des Accidents.\n\n";
+            texte += "II. CAUSES RETENUES\n";
+            texte += "Vehicule A :\n";
+            if (listA.length === 0) { texte += "  - Aucune cause retenue a charge du vehicule A.\n"; }
+            listA.forEach(function (c) { texte += "  - " + c.label + " (" + c.article + " — " + c.classement + ")\n"; });
+            texte += "Vehicule B :\n";
+            if (listB.length === 0) { texte += "  - Aucune cause retenue a charge du vehicule B.\n"; }
+            listB.forEach(function (c) { texte += "  - " + c.label + " (" + c.article + " — " + c.classement + ")\n"; });
+            if (qualif.aggravants) { texte += "\nCirconstances aggravantes possibles : " + qualif.aggravants + "\n"; }
+            texte += "\nIII. REPARTITION DES RESPONSABILITES (suggestion)\n";
+            texte += "Vehicule A : " + respA + "% — Vehicule B : " + respB + "%\n";
+            texte += "(Estimation ponderee sur base du referentiel juridique. A confirmer par le Bureau de Controle des Accidents.)\n";
+            if (pointNoir) {
+              texte += "\nIV. ALERTE POINT NOIR\n";
+              texte += "Ce lieu (" + dossierLieu[0] + ") apparait dans " + lieuOccurrences + " dossiers recents. Suggestion : signaler au Ministere / services des Travaux Publics pour amenagement routier (feu tricolore, ralentisseur, signalisation).\n";
+            }
+            texte += "\n----------------------------------------\n";
+            texte += "Bureau de Controle des Accidents (BCA) — SIPGN\n";
+
+            setNoteGeneree({ texte: texte, respA: respA, respB: respB, listA: listA, listB: listB, pointNoir: pointNoir, lieuOccurrences: lieuOccurrences });
           }} className="bg-amber-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2">🔧 Analyser les causes et rediger la note</button>
-          <AIBloc state={ai2[0]} />
+
+          {noteGeneree ? (
+            <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4 space-y-3">
+              <p className="text-white font-bold text-sm">Resultats de l analyse</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-slate-900 rounded-lg p-3 text-center">
+                  <p className="text-slate-500 text-[10px]">Responsabilite Vehicule A</p>
+                  <p className="text-amber-400 font-bold text-2xl">{noteGeneree.respA}%</p>
+                </div>
+                <div className="bg-slate-900 rounded-lg p-3 text-center">
+                  <p className="text-slate-500 text-[10px]">Responsabilite Vehicule B</p>
+                  <p className="text-amber-400 font-bold text-2xl">{noteGeneree.respB}%</p>
+                </div>
+              </div>
+              {noteGeneree.pointNoir ? (
+                <div className="bg-red-900/30 border border-red-700 rounded-lg p-3">
+                  <p className="text-red-400 font-bold text-xs">⚠️ Point noir detecte</p>
+                  <p className="text-red-300 text-[11px] mt-1">Ce lieu apparait dans {noteGeneree.lieuOccurrences} dossiers recents. Amenagement routier a suggerer.</p>
+                </div>
+              ) : null}
+              <div className="bg-slate-900 rounded-lg p-3">
+                <p className="text-slate-400 text-xs font-bold mb-2">Note de synthese</p>
+                <pre className="text-slate-300 text-[10px] whitespace-pre-wrap font-mono">{noteGeneree.texte}</pre>
+              </div>
+              <button onClick={function () { navigator.clipboard.writeText(noteGeneree.texte); }} className="bg-slate-700 text-white px-4 py-2 rounded-xl text-xs font-bold">📋 Copier la note</button>
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>
