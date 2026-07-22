@@ -345,8 +345,9 @@ Total effectif: `+f+" agents.";l(S)}function y(){navigator.clipboard&&o&&navigat
 `}),K+=`Vehicule B :
 `,R.length===0&&(K+=`  - Aucune cause retenue a charge du vehicule B.
 `),R.forEach(function(re){K+="  - "+re.label+" ("+re.article+" — "+re.classement+`)
-`}),V.aggravants&&(K+=`
-Circonstances aggravantes possibles : `+V.aggravants+`
+`}),K+=`II bis. QUALIFICATION JURIDIQUE RETENUE
+`,K+="Regime applicable : "+V.base+`
+`,V.aggravants&&(K+="Circonstances aggravantes possibles : "+V.aggravants+`
 `),K+=`
 III. REPARTITION DES RESPONSABILITES (suggestion)
 `,K+="Vehicule A : "+$+"% — Vehicule B : "+U+`%
