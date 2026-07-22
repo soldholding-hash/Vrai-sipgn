@@ -7399,7 +7399,10 @@ function DataScientistAccidents(props) {
             texte += "Vehicule B :\n";
             if (listB.length === 0) { texte += "  - Aucune cause retenue a charge du vehicule B.\n"; }
             listB.forEach(function (c) { texte += "  - " + c.label + " (" + c.article + " — " + c.classement + ")\n"; });
-            if (qualif.aggravants) { texte += "\nCirconstances aggravantes possibles : " + qualif.aggravants + "\n"; }
+
+            texte += "II bis. QUALIFICATION JURIDIQUE RETENUE\n";
+            texte += "Regime applicable : " + qualif.base + "\n";
+            if (qualif.aggravants) { texte += "Circonstances aggravantes possibles : " + qualif.aggravants + "\n"; }
             texte += "\nIII. REPARTITION DES RESPONSABILITES (suggestion)\n";
             texte += "Vehicule A : " + respA + "% — Vehicule B : " + respB + "%\n";
             texte += "(Estimation ponderee sur base du referentiel juridique. A confirmer par le Bureau de Controle des Accidents.)\n";
