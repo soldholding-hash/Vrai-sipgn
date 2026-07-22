@@ -7130,6 +7130,13 @@ function DataScientistAccidents(props) {
   var descInput = useState("");
   var ai1 = useState({ loading: false, result: null });
   var ai2 = useState({ loading: false, result: null });
+  var vA = useState({ freinage: "", masse: "1200", vitesseDeclaree: "", mu: "0.75" });
+  var vB = useState({ freinage: "", masse: "1000", vitesseDeclaree: "", mu: "0.75" });
+  var muEtat = useState("sec");
+  var angleImpact = useState("");
+  var poiDesc = useState("");
+  var resultatsState = useState(null);
+  var resultats = resultatsState; var setResultats = resultatsState[1];
   var SYS = "Tu es l assistant IA du Bureau de Controle Accidents de la Police Nationale du Congo. Reponds en francais, technique et operationnel.";
 
   function callIA(setter, prompt) { setter({ loading: true, result: null }); fetch("https://api.anthropic.com/v1/messages", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ model: "claude-sonnet-4-6", max_tokens: 1000, system: SYS, messages: [{ role: "user", content: prompt }] }) }).then(function (r) { return r.json(); }).then(function (d) { setter({ loading: false, result: d.content && d.content[0] ? d.content[0].text : "Erreur." }); }).catch(function () { setter({ loading: false, result: "Erreur." }); }); }
@@ -7145,11 +7152,126 @@ function DataScientistAccidents(props) {
       {tab === "reconstitution" ? (
         <div className="space-y-4">
           <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-5">
-            <p className="text-white font-bold text-sm mb-1">Reconstitution 3D — Analyse des photos</p>
-            <p className="text-slate-500 text-xs mb-3">Decrivez la scene (position des vehicules, traces de freinage, degats) pour une estimation IA</p>
-            <textarea value={descInput[0]} onChange={function (e) { descInput[1](e.target.value); }} rows={4} className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm resize-none mb-2" placeholder="Ex: Vehicule A heurte de plein fouet vehicule B a l arret, traces de freinage de 15m, degats avant importants sur A..." />
-            <button onClick={function () { if (descInput[0].trim()) { callIA(ai1[1], "Tu es expert en reconstitution d accidents de la route. Sur base de cette description de scene, suggere: 1) Trajectoire probable des vehicules avant impact 2) Vitesse probable au moment de l impact (fourchette en km/h avec justification physique) 3) Point de choc estime 4) Responsabilites probables. Description: " + descInput[0]); } }} className="bg-amber-700 text-white px-4 py-2 rounded-xl text-xs font-bold">🎬 Lancer l analyse de reconstitution</button>
-            <AIBloc state={ai1[0]} />
+            <p className="text-white font-bold text-sm mb-1">Reconstitution — Analyse Physique &amp; Cinematique</p>
+            <p className="text-slate-500 text-xs mb-4">Estimation de la vitesse d impact, du Delta-V et de la coherence des traces de freinage a partir des releves terrain</p>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-slate-900 rounded-xl border border-slate-700 p-3">
+                <p className="text-amber-500 font-bold text-xs mb-2">🚗 Vehicule A</p>
+                <label className="text-slate-500 text-[10px] block mb-1">Distance de freinage (m)</label>
+                <input type="number" value={vA[0].freinage} onChange={function (e) { vA[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.freinage = e.target.value; return c; }); }} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs mb-2" placeholder="Ex: 15" />
+                <label className="text-slate-500 text-[10px] block mb-1">Masse du vehicule (kg)</label>
+                <input type="number" value={vA[0].masse} onChange={function (e) { vA[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.masse = e.target.value; return c; }); }} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs mb-2" placeholder="Ex: 1200" />
+                <label className="text-slate-500 text-[10px] block mb-1">Vitesse declaree (km/h, optionnel)</label>
+                <input type="number" value={vA[0].vitesseDeclaree} onChange={function (e) { vA[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.vitesseDeclaree = e.target.value; return c; }); }} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" placeholder="Ex: 60" />
+              </div>
+              <div className="bg-slate-900 rounded-xl border border-slate-700 p-3">
+                <p className="text-amber-500 font-bold text-xs mb-2">🚙 Vehicule B</p>
+                <label className="text-slate-500 text-[10px] block mb-1">Distance de freinage (m)</label>
+                <input type="number" value={vB[0].freinage} onChange={function (e) { vB[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.freinage = e.target.value; return c; }); }} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs mb-2" placeholder="Ex: 0" />
+                <label className="text-slate-500 text-[10px] block mb-1">Masse du vehicule (kg)</label>
+                <input type="number" value={vB[0].masse} onChange={function (e) { vB[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.masse = e.target.value; return c; }); }} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs mb-2" placeholder="Ex: 1000" />
+                <label className="text-slate-500 text-[10px] block mb-1">Vitesse declaree (km/h, optionnel)</label>
+                <input type="number" value={vB[0].vitesseDeclaree} onChange={function (e) { vB[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.vitesseDeclaree = e.target.value; return c; }); }} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" placeholder="Ex: 0 (arret)" />
+              </div>
+            </div>
+
+            <div className="mt-3">
+              <label className="text-slate-500 text-[10px] block mb-1">Etat de la chaussee</label>
+              <select value={muEtat[0]} onChange={function (e) { var val = e.target.value; muEtat[1](val); var presets = { sec: "0.75", mouille: "0.45", verglas: "0.15", gravier: "0.55" }; vA[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.mu = presets[val]; return c; }); vB[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.mu = presets[val]; return c; }); }} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs">
+                <option value="sec">Sec (μ ≈ 0.75)</option>
+                <option value="mouille">Mouille (μ ≈ 0.45)</option>
+                <option value="verglas">Verglas / gel (μ ≈ 0.15)</option>
+                <option value="gravier">Gravier / terre (μ ≈ 0.55)</option>
+              </select>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3 mt-3">
+              <div>
+                <label className="text-slate-500 text-[10px] block mb-1">Angle d impact estime (degres)</label>
+                <input type="number" value={angleImpact[0]} onChange={function (e) { angleImpact[1](e.target.value); }} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" placeholder="Ex: 90 (choc lateral en T)" />
+              </div>
+              <div>
+                <label className="text-slate-500 text-[10px] block mb-1">Point de choc (repere sur chaussee)</label>
+                <input type="text" value={poiDesc[0]} onChange={function (e) { poiDesc[1](e.target.value); }} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" placeholder="Ex: 12m apres le panneau stop" />
+              </div>
+            </div>
+
+            <button onClick={function () {
+              var g = 9.81;
+              var muA = parseFloat(vA[0].mu) || 0.75;
+              var muB = parseFloat(vB[0].mu) || 0.75;
+              var dA = parseFloat(vA[0].freinage) || 0;
+              var dB = parseFloat(vB[0].freinage) || 0;
+              var mA = parseFloat(vA[0].masse) || 0;
+              var mB = parseFloat(vB[0].masse) || 0;
+              var vDecA = parseFloat(vA[0].vitesseDeclaree) || 0;
+              var vDecB = parseFloat(vB[0].vitesseDeclaree) || 0;
+
+              var vA_impact_ms = dA > 0 ? Math.sqrt(2 * muA * g * dA) : 0;
+              var vB_impact_ms = dB > 0 ? Math.sqrt(2 * muB * g * dB) : 0;
+
+              var vA_choc = vDecA > 0 ? vDecA / 3.6 : vA_impact_ms;
+              var vB_choc = vDecB > 0 ? vDecB / 3.6 : vB_impact_ms;
+
+              var vApresChoc_ms = (mA + mB) > 0 ? (mA * vA_choc + mB * vB_choc) / (mA + mB) : 0;
+              var deltaVA_ms = Math.abs(vA_choc - vApresChoc_ms);
+              var deltaVB_ms = Math.abs(vB_choc - vApresChoc_ms);
+
+              var dTheoA = vDecA > 0 ? Math.pow(vDecA / 3.6, 2) / (2 * muA * g) : null;
+              var dTheoB = vDecB > 0 ? Math.pow(vDecB / 3.6, 2) / (2 * muB * g) : null;
+              var ecartA = dTheoA !== null && dA > 0 ? (((dTheoA - dA) / dA) * 100) : null;
+              var ecartB = dTheoB !== null && dB > 0 ? (((dTheoB - dB) / dB) * 100) : null;
+
+              setResultats({
+                vA_impact_kmh: vA_impact_ms * 3.6,
+                vB_impact_kmh: vB_impact_ms * 3.6,
+                deltaVA_kmh: deltaVA_ms * 3.6,
+                deltaVB_kmh: deltaVB_ms * 3.6,
+                vApresChoc_kmh: vApresChoc_ms * 3.6,
+                dTheoA: dTheoA,
+                dTheoB: dTheoB,
+                ecartA: ecartA,
+                ecartB: ecartB,
+                angle: angleImpact[0],
+                poi: poiDesc[0]
+              });
+            }} className="bg-amber-700 text-white px-4 py-2 rounded-xl text-xs font-bold mt-4">📐 Calculer la reconstitution physique</button>
+
+            {resultats[0] ? (
+              <div className="mt-4 bg-slate-900 rounded-xl border border-slate-700 p-4 space-y-3">
+                <p className="text-white font-bold text-xs mb-2">Resultats de l analyse cinematique</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="bg-slate-800 rounded-lg p-2">
+                    <p className="text-slate-500 text-[10px]">Vitesse Vehicule A a l impact</p>
+                    <p className="text-amber-400 font-bold text-lg">{resultats[0].vA_impact_kmh.toFixed(1)} km/h</p>
+                  </div>
+                  <div className="bg-slate-800 rounded-lg p-2">
+                    <p className="text-slate-500 text-[10px]">Vitesse Vehicule B a l impact</p>
+                    <p className="text-amber-400 font-bold text-lg">{resultats[0].vB_impact_kmh.toFixed(1)} km/h</p>
+                  </div>
+                  <div className="bg-slate-800 rounded-lg p-2">
+                    <p className="text-slate-500 text-[10px]">Delta-V Vehicule A</p>
+                    <p className="text-white font-bold text-sm">{resultats[0].deltaVA_kmh.toFixed(1)} km/h</p>
+                  </div>
+                  <div className="bg-slate-800 rounded-lg p-2">
+                    <p className="text-slate-500 text-[10px]">Delta-V Vehicule B</p>
+                    <p className="text-white font-bold text-sm">{resultats[0].deltaVB_kmh.toFixed(1)} km/h</p>
+                  </div>
+                  <div className="bg-slate-800 rounded-lg p-2">
+                    <p className="text-slate-500 text-[10px]">Vitesse commune post-choc (approx)</p>
+                    <p className="text-white font-bold text-sm">{resultats[0].vApresChoc_kmh.toFixed(1)} km/h</p>
+                  </div>
+                  <div className="bg-slate-800 rounded-lg p-2">
+                    <p className="text-slate-500 text-[10px]">Angle d impact / Point de choc</p>
+                    <p className="text-white font-bold text-sm">{resultats[0].angle || "-"}° — {resultats[0].poi || "non precise"}</p>
+                  </div>
+                </div>
+                {resultats[0].ecartA !== null ? (<div className="text-[11px] text-slate-400 border-t border-slate-700 pt-2">Coherence Vehicule A : freinage theorique {resultats[0].dTheoA.toFixed(1)}m vs releve terrain — ecart {resultats[0].ecartA.toFixed(0)}%</div>) : null}
+                {resultats[0].ecartB !== null ? (<div className="text-[11px] text-slate-400">Coherence Vehicule B : freinage theorique {resultats[0].dTheoB.toFixed(1)}m vs releve terrain — ecart {resultats[0].ecartB.toFixed(0)}%</div>) : null}
+                <p className="text-[10px] text-slate-600 italic pt-2 border-t border-slate-700">Estimation theorique basee sur les formules physiques standards (freinage, conservation de la quantite de mouvement). A confirmer par expertise complementaire si necessaire.</p>
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}
