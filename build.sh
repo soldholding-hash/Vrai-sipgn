@@ -2,7 +2,6 @@
 # Build SIPGN
 npm run build
 # Renommer ERP
-mv dist/index.html dist/erp.html
 # Copier site vitrine
 cp vitrine/index.html dist/index.html
 # Ajouter CSS Tailwind a l ERP
