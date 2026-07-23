@@ -2858,6 +2858,9 @@ function DataScientistPersonnel(props) {
   var tabState = useState("matching");
   var tab = tabState[0]; var setTab = tabState[1];
   var mAI = useState({ loading: false, result: null });
+  var promoRecherche = useState({ corps: "Police", gradeIndex: "0", ancienneteMin: "3", noteMin: "12" });
+  var promoResultatsState = useState(null); var promoResultats = promoResultatsState[0]; var setPromoResultats = promoResultatsState[1];
+  var promoValidesState = useState({}); var promoValides = promoValidesState[0]; var setPromoValides = promoValidesState[1];
   var postesState = useState([
     { id: "P1", intitule: "Chef de Brigade Accidents - Kombo", service: "Bureau Controle Accidents", corps: "Indifferent", ancienneteMin: 5, competencesReq: { armes: 30, secourisme: 70, criminalistique: 60, informatique: 40, langues: 20 } },
     { id: "P2", intitule: "Enqueteur DCPJ", service: "DCPJ Brazzaville", corps: "Police", ancienneteMin: 3, competencesReq: { armes: 40, secourisme: 30, criminalistique: 85, informatique: 60, langues: 30 } },
@@ -2913,7 +2916,7 @@ function DataScientistPersonnel(props) {
     { tranche: "26+ ans", police: AGENTS_DATA.filter(function (a) { return a.corps === "Police" && a.anciennete >= 26; }).length, gend: AGENTS_DATA.filter(function (a) { return a.corps === "Gendarmerie" && a.anciennete >= 26; }).length }
   ];
 
-  var TABS = [["matching", "Matching Competences", "🎯"], ["pyramide", "Pyramide des Ages", "📊"], ["recrutement", "Prevision Recrutement", "👥"], ["hauts", "Hauts Potentiels", "⭐"]];
+  var TABS = [["matching", "Matching Competences", "🎯"], ["pyramide", "Pyramide des Ages", "📊"], ["recrutement", "Prevision Recrutement", "👥"], ["hauts", "Hauts Potentiels", "⭐"], ["promotions", "Promotions Trimestrielles", "📈"]];
 
   return (
     <div className="space-y-4">
@@ -3231,6 +3234,91 @@ function DataScientistPersonnel(props) {
             callIA(hAI[1], "Identifie les hauts potentiels parmi les agents de la Police et Gendarmerie du Congo pour integration dans des unites d elite ou des postes de commandement. Pour les 5 meilleurs profils identifies: 1) Nom et justification de la selection (grade, anciennete, service) 2) Poste de commandement recommande 3) Formation elite recommandee (ex: INTERPOL, Informatique Forensique, Brigade Canine, Commandement) 4) Plan d evolution de carriere sur 3 ans. Agents: " + ctx);
           }} className="bg-pink-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2">⭐ Identifier les hauts potentiels et unites d elite</button>
           <AIBloc state={hAI[0]} />
+        </div>
+      ) : null}
+
+      {tab === "promotions" ? (
+        <div className="space-y-4">
+          <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4">
+            <p className="text-white font-bold text-sm mb-1">📈 Recherche d agents eligibles a la promotion</p>
+            <p className="text-slate-500 text-[10px] mb-3">Definissez les criteres du trimestre pour identifier les agents pouvant acceder au grade superieur.</p>
+            <div className="grid grid-cols-2 gap-2 mb-2">
+              <select value={promoRecherche[0].corps} onChange={function (e) { promoRecherche[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.corps = e.target.value; c.gradeIndex = "0"; return c; }); }} className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs">
+                <option value="Police">Police</option>
+                <option value="Gendarmerie">Gendarmerie</option>
+              </select>
+              <select value={promoRecherche[0].gradeIndex} onChange={function (e) { promoRecherche[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.gradeIndex = e.target.value; return c; }); }} className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs">
+                {(promoRecherche[0].corps === "Police" ? GRADES_POLICE : GRADES_GENDARMERIE).map(function (g, i) {
+                  return <option key={i} value={i}>{g}</option>;
+                })}
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              <div>
+                <label className="text-slate-500 text-[10px] block mb-1">Anciennete min. dans le grade (ans)</label>
+                <input type="number" value={promoRecherche[0].ancienneteMin} onChange={function (e) { promoRecherche[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.ancienneteMin = e.target.value; return c; }); }} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" />
+              </div>
+              <div>
+                <label className="text-slate-500 text-[10px] block mb-1">Note minimale requise (/20)</label>
+                <input type="number" value={promoRecherche[0].noteMin} onChange={function (e) { promoRecherche[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.noteMin = e.target.value; return c; }); }} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" />
+              </div>
+            </div>
+            <button onClick={function () {
+              var critereGrade = parseInt(promoRecherche[0].gradeIndex);
+              var critereAnciennete = parseFloat(promoRecherche[0].ancienneteMin) || 0;
+              var critereNote = parseFloat(promoRecherche[0].noteMin) || 0;
+              var eligibles = AGENTS_DATA.filter(function (a) {
+                if (a.corps !== promoRecherche[0].corps) { return false; }
+                if (a.gradeIndex !== critereGrade) { return false; }
+                if (a.statut === "sanction" || a.statut === "suspension" || a.statut === "retraite") { return false; }
+                if (a.anciennete < critereAnciennete) { return false; }
+                var profil = AGENT_PROFILS_MAP[a.id];
+                if (!profil || profil.evaluations.length === 0) { return false; }
+                var noteMoy = profil.evaluations.reduce(function (s, e) { return s + e.note; }, 0) / profil.evaluations.length;
+                if (noteMoy < critereNote) { return false; }
+                return true;
+              }).map(function (a) {
+                var profil = AGENT_PROFILS_MAP[a.id];
+                var noteMoy = profil.evaluations.reduce(function (s, e) { return s + e.note; }, 0) / profil.evaluations.length;
+                var dejaSignale = a.statut === "proposition_promotion";
+                return { agent: a, profil: profil, noteMoy: noteMoy, dejaSignale: dejaSignale };
+              }).sort(function (x, y) { return y.noteMoy - x.noteMoy; });
+              setPromoResultats(eligibles);
+            }} className="bg-pink-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold">🔎 Rechercher les agents eligibles</button>
+          </div>
+
+          {promoResultats ? (
+            <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4">
+              <p className="text-white font-bold text-sm mb-3">Resultats — {promoResultats.length} agent(s) eligible(s)</p>
+              {promoResultats.length === 0 ? (<p className="text-slate-500 text-xs italic">Aucun agent ne correspond a ces criteres.</p>) : null}
+              {promoResultats.map(function (r) {
+                var estValide = !!promoValides[r.agent.id];
+                var grades = gradesDe(r.agent.corps);
+                var gradeSuivant = grades[Math.min(r.agent.gradeIndex + 1, grades.length - 1)];
+                return (
+                  <div key={r.agent.id} className="bg-slate-900 rounded-lg p-3 mb-2">
+                    <div className="flex items-center justify-between mb-1">
+                      <p className="text-white text-xs font-bold">{r.agent.nom} {r.dejaSignale ? <span className="text-amber-400 text-[10px] font-normal">(deja signale)</span> : null}</p>
+                      <p className="text-green-400 font-bold text-sm">{r.noteMoy.toFixed(1)}/20</p>
+                    </div>
+                    <p className="text-slate-500 text-[10px] mb-1">{gradeLabel(r.agent)} → <span className="text-pink-400">{gradeSuivant}</span> — {r.agent.service} — {r.agent.anciennete} ans</p>
+                    <div className="text-[10px] text-slate-400 mb-2">
+                      {r.profil.evaluations.map(function (ev, i) {
+                        return <div key={i}>{ev.annee} : {ev.note}/20 — {ev.commentaire}</div>;
+                      })}
+                    </div>
+                    {estValide ? (
+                      <p className="text-green-400 text-[11px] font-bold">✅ Promotion validee — {gradeSuivant}</p>
+                    ) : (
+                      <button onClick={function () {
+                        setPromoValides(function (prev) { var c = {}; for (var k in prev) { c[k] = prev[k]; } c[r.agent.id] = true; return c; });
+                      }} className="bg-pink-700 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold">⬆️ Accéder au grade superieur</button>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>
