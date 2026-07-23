@@ -3242,14 +3242,11 @@ function DataScientistPersonnel(props) {
           <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4">
             <p className="text-white font-bold text-sm mb-1">📈 Recherche d agents eligibles a la promotion</p>
             <p className="text-slate-500 text-[10px] mb-3">Definissez les criteres du trimestre pour identifier les agents pouvant acceder au grade superieur.</p>
-            <div className="grid grid-cols-2 gap-2 mb-2">
-              <select value={promoRecherche[0].corps} onChange={function (e) { promoRecherche[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.corps = e.target.value; c.gradeIndex = "0"; return c; }); }} className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs">
-                <option value="Police">Police</option>
-                <option value="Gendarmerie">Gendarmerie</option>
-              </select>
-              <select value={promoRecherche[0].gradeIndex} onChange={function (e) { promoRecherche[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.gradeIndex = e.target.value; return c; }); }} className="bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs">
-                {(promoRecherche[0].corps === "Police" ? GRADES_POLICE : GRADES_GENDARMERIE).map(function (g, i) {
-                  return <option key={i} value={i}>{g}</option>;
+            <div className="mb-2">
+              <label className="text-slate-500 text-[10px] block mb-1">Niveau de grade recherche</label>
+              <select value={promoRecherche[0].gradeIndex} onChange={function (e) { promoRecherche[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.gradeIndex = e.target.value; return c; }); }} className="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs">
+                {GRADES_POLICE.map(function (g, i) {
+                  return <option key={i} value={i}>{g} (Police) / {GRADES_GENDARMERIE[i]} (Gendarmerie)</option>;
                 })}
               </select>
             </div>
@@ -3268,7 +3265,6 @@ function DataScientistPersonnel(props) {
               var critereAnciennete = parseFloat(promoRecherche[0].ancienneteMin) || 0;
               var critereNote = parseFloat(promoRecherche[0].noteMin) || 0;
               var eligibles = AGENTS_DATA.filter(function (a) {
-                if (a.corps !== promoRecherche[0].corps) { return false; }
                 if (a.gradeIndex !== critereGrade) { return false; }
                 if (a.statut === "sanction" || a.statut === "suspension" || a.statut === "retraite") { return false; }
                 if (a.anciennete < critereAnciennete) { return false; }
