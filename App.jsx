@@ -2890,6 +2890,22 @@ function DataScientistPersonnel(props) {
   var promoEnAttente = AGENTS_DATA.filter(function (a) { return a.statut === "proposition_promotion"; });
   if (promoEnAttente.length > 0) { alertesRH.push({ niveau: "attention", titre: promoEnAttente.length + " promotion(s) en attente de validation", message: promoEnAttente.map(function (a) { return a.nom; }).join(", ") }); }
 
+  var departsCritiques = AGENTS_DATA.filter(function (a) { return a.anciennete >= 28 && a.statut !== "retraite"; });
+  var planSuccession = departsCritiques.map(function (depart) {
+    var profilDepart = AGENT_PROFILS_MAP[depart.id];
+    var candidats = AGENTS_DATA.filter(function (a) { return a.id !== depart.id && a.statut === "actif" && a.gradeIndex < depart.gradeIndex; });
+    var scored = candidats.map(function (c) {
+      var profilC = AGENT_PROFILS_MAP[c.id];
+      var memeService = c.service === depart.service ? 30 : 0;
+      var memeCorps = c.corps === depart.corps ? 15 : 0;
+      var ecartGrade = Math.max(0, 10 - (depart.gradeIndex - c.gradeIndex)) * 3;
+      var competenceMoy = profilC ? (profilC.competences.armes + profilC.competences.secourisme + profilC.competences.criminalistique + profilC.competences.informatique + profilC.competences.langues) / 5 : 0;
+      var score = Math.min(100, Math.round(memeService + memeCorps + ecartGrade + competenceMoy * 0.3));
+      return { agent: c, score: score, memeService: c.service === depart.service };
+    }).sort(function (x, y) { return y.score - x.score; }).slice(0, 2);
+    return { depart: depart, successeurs: scored };
+  });
+
   var pyramideData = [
     { tranche: "0-5 ans", police: AGENTS_DATA.filter(function (a) { return a.corps === "Police" && a.anciennete <= 5; }).length, gend: AGENTS_DATA.filter(function (a) { return a.corps === "Gendarmerie" && a.anciennete <= 5; }).length },
     { tranche: "6-15 ans", police: AGENTS_DATA.filter(function (a) { return a.corps === "Police" && a.anciennete >= 6 && a.anciennete <= 15; }).length, gend: AGENTS_DATA.filter(function (a) { return a.corps === "Gendarmerie" && a.anciennete >= 6 && a.anciennete <= 15; }).length },
@@ -3141,6 +3157,75 @@ function DataScientistPersonnel(props) {
               })}
             </div>
           </div>
+          <div className="bg-slate-800/90 rounded-2xl border border-red-800 p-4">
+            <p className="text-white font-bold text-sm mb-1">🚨 Plan de succession — Departs critiques</p>
+            <p className="text-slate-500 text-[10px] mb-3">Agents a 28 ans d anciennete ou plus. Detection automatique et proposition de tuilage.</p>
+            {departsCritiques.length === 0 ? (<p className="text-slate-500 text-xs italic">Aucun depart critique detecte actuellement.</p>) : null}
+            {planSuccession.map(function (ps) {
+              return (
+                <div key={ps.depart.id} className="bg-slate-900 rounded-lg p-3 mb-2">
+                  <p className="text-red-400 text-xs font-bold">{ps.depart.nom} — {gradeLabel(ps.depart)}</p>
+                  <p className="text-slate-500 text-[10px] mb-2">{ps.depart.service} — {ps.depart.anciennete} ans de service — Depart imminent</p>
+                  {ps.successeurs.length === 0 ? (<p className="text-slate-500 text-[10px] italic">Aucun successeur potentiel identifie.</p>) : null}
+                  {ps.successeurs.map(function (s, idx) {
+                    return (
+                      <div key={s.agent.id} className="flex items-center justify-between border-t border-slate-800 pt-1.5 mt-1.5">
+                        <div>
+                          <p className="text-white text-[11px] font-semibold">{idx === 0 ? "🎯 Successeur recommande : " : "Alternative : "}{s.agent.nom}</p>
+                          <p className="text-slate-500 text-[10px]">{gradeLabel(s.agent)} — {s.agent.anciennete} ans{s.memeService ? " — meme service" : ""} — Compatibilite {s.score}%</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {ps.successeurs.length > 0 ? (
+                    <button onClick={function () {
+                      var succ = ps.successeurs[0].agent;
+                      var texte = "PLAN DE TUILAGE — TRANSFERT DE COMPETENCES\n";
+                      texte += "========================================================\n";
+                      texte += "Agent sortant : " + ps.depart.nom + " (" + gradeLabel(ps.depart) + ")\n";
+                      texte += "Service : " + ps.depart.service + "\n";
+                      texte += "Anciennete : " + ps.depart.anciennete + " ans — Depart a la retraite imminent\n\n";
+                      texte += "Successeur propose : " + succ.nom + " (" + gradeLabel(succ) + ")\n";
+                      texte += "Anciennete actuelle : " + succ.anciennete + " ans\n";
+                      texte += "Compatibilite : " + ps.successeurs[0].score + "%\n\n";
+                      texte += "Recommandation : periode de tuilage de 6 a 12 mois avant le depart effectif.\n";
+                      texte += "Le successeur propose est invite a etre associe progressivement aux dossiers et responsabilites de l agent sortant.\n";
+                      texte += "----------------------------------------\n";
+                      texte += "Direction des Operations du Personnel (DOP) — SIPGN\n";
+                      navigator.clipboard.writeText(texte);
+                    }} className="bg-slate-700 text-white px-3 py-1 rounded-lg text-[10px] font-bold mt-2">📋 Copier le plan de tuilage</button>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+          {promoEnAttente.length > 0 ? (
+            <div className="bg-slate-800/90 rounded-2xl border border-amber-800 p-4">
+              <p className="text-white font-bold text-sm mb-2">Vivier de remplacement — Promotions en attente</p>
+              {promoEnAttente.map(function (a) {
+                return (
+                  <div key={a.id} className="flex items-center justify-between border-b border-slate-800 pb-1.5 mb-1.5">
+                    <div>
+                      <p className="text-white text-xs font-semibold">{a.nom}</p>
+                      <p className="text-slate-500 text-[10px]">{gradeLabel(a)} — {a.service} — {a.anciennete} ans</p>
+                    </div>
+                    <button onClick={function () {
+                      var texte = "PROCEDURE DE PROMOTION (PROJET)\n";
+                      texte += "========================================================\n";
+                      texte += "Agent : " + a.nom + " (" + a.matricule + ")\n";
+                      texte += "Grade actuel : " + gradeLabel(a) + "\n";
+                      texte += "Service : " + a.service + "\n";
+                      texte += "Anciennete : " + a.anciennete + " ans\n\n";
+                      texte += "Le Directeur du Personnel est invite a valider cette procedure de promotion.\n";
+                      texte += "----------------------------------------\n";
+                      texte += "Direction des Operations du Personnel (DOP) — SIPGN\n";
+                      navigator.clipboard.writeText(texte);
+                    }} className="bg-amber-700 text-white px-3 py-1 rounded-lg text-[10px] font-bold shrink-0">🚀 Lancer la procedure</button>
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
           <button onClick={function () {
             var ctx = JSON.stringify(AGENTS_DATA.map(function (a) { return { nom: a.nom, corps: a.corps, grade: gradeLabel(a), anciennete: a.anciennete, statut: a.statut, service: a.service }; }));
             callIA(hAI[1], "Identifie les hauts potentiels parmi les agents de la Police et Gendarmerie du Congo pour integration dans des unites d elite ou des postes de commandement. Pour les 5 meilleurs profils identifies: 1) Nom et justification de la selection (grade, anciennete, service) 2) Poste de commandement recommande 3) Formation elite recommandee (ex: INTERPOL, Informatique Forensique, Brigade Canine, Commandement) 4) Plan d evolution de carriere sur 3 ans. Agents: " + ctx);
