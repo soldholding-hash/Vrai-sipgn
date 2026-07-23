@@ -2858,6 +2858,14 @@ function DataScientistPersonnel(props) {
   var tabState = useState("matching");
   var tab = tabState[0]; var setTab = tabState[1];
   var mAI = useState({ loading: false, result: null });
+  var postesState = useState([
+    { id: "P1", intitule: "Chef de Brigade Accidents - Kombo", service: "Bureau Controle Accidents", corps: "Indifferent", ancienneteMin: 5, competencesReq: { armes: 30, secourisme: 70, criminalistique: 60, informatique: 40, langues: 20 } },
+    { id: "P2", intitule: "Enqueteur DCPJ", service: "DCPJ Brazzaville", corps: "Police", ancienneteMin: 3, competencesReq: { armes: 40, secourisme: 30, criminalistique: 85, informatique: 60, langues: 30 } },
+    { id: "P3", intitule: "Officier Brigade Navale", service: "Gendarmerie Navale / Police Navale", corps: "Indifferent", ancienneteMin: 8, competencesReq: { armes: 80, secourisme: 60, criminalistique: 30, informatique: 20, langues: 30 } }
+  ]);
+  var postes = postesState[0]; var setPostes = postesState[1];
+  var nouveauPoste = useState({ intitule: "", service: "", corps: "Indifferent", ancienneteMin: "0", armes: "50", secourisme: "50", criminalistique: "50", informatique: "50", langues: "50" });
+  var matchingResultatsState = useState(null); var matchingResultats = matchingResultatsState[0]; var setMatchingResultats = matchingResultatsState[1];
   var pAI = useState({ loading: false, result: null });
   var rAI = useState({ loading: false, result: null });
   var hAI = useState({ loading: false, result: null });
@@ -2918,6 +2926,55 @@ function DataScientistPersonnel(props) {
             <StatCard icon="🎖️" label="Eligible retraite" value={AGENTS_DATA.filter(function (a) { return a.anciennete >= 28; }).length} color="#DC2626" />
           </div>
           <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4">
+            <p className="text-white font-bold text-sm mb-3">Postes a pourvoir ({postes.length})</p>
+            <div className="space-y-2 mb-3">
+              {postes.map(function (p) {
+                return (
+                  <div key={p.id} className="bg-slate-900 rounded-lg p-3 flex items-center justify-between">
+                    <div>
+                      <p className="text-white text-xs font-bold">{p.intitule}</p>
+                      <p className="text-slate-500 text-[10px]">{p.service} — {p.corps} — Anciennete min: {p.ancienneteMin} ans</p>
+                    </div>
+                    <button onClick={function () { setPostes(function (prev) { return prev.filter(function (x) { return x.id !== p.id; }); }); }} className="text-red-400 text-xs">✕</button>
+                  </div>
+                );
+              })}
+            </div>
+            <details>
+              <summary className="text-pink-400 text-xs font-bold cursor-pointer mb-2">+ Ajouter un poste</summary>
+              <div className="bg-slate-900 rounded-lg p-3 space-y-2 mt-2">
+                <input type="text" value={nouveauPoste[0].intitule} onChange={function (e) { nouveauPoste[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.intitule = e.target.value; return c; }); }} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" placeholder="Intitule du poste (ex: Chef de Brigade - Kombo)" />
+                <input type="text" value={nouveauPoste[0].service} onChange={function (e) { nouveauPoste[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.service = e.target.value; return c; }); }} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" placeholder="Service / unite" />
+                <div className="grid grid-cols-2 gap-2">
+                  <select value={nouveauPoste[0].corps} onChange={function (e) { nouveauPoste[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.corps = e.target.value; return c; }); }} className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs">
+                    <option value="Indifferent">Indifferent</option>
+                    <option value="Police">Police</option>
+                    <option value="Gendarmerie">Gendarmerie</option>
+                  </select>
+                  <input type="number" value={nouveauPoste[0].ancienneteMin} onChange={function (e) { nouveauPoste[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c.ancienneteMin = e.target.value; return c; }); }} className="bg-slate-800 border border-slate-700 rounded-lg px-2 py-1.5 text-white text-xs" placeholder="Anciennete min (ans)" />
+                </div>
+                <p className="text-slate-500 text-[10px] mt-2">Ponderation des competences requises (0-100)</p>
+                <div className="grid grid-cols-5 gap-1">
+                  {["armes", "secourisme", "criminalistique", "informatique", "langues"].map(function (comp) {
+                    return (
+                      <div key={comp}>
+                        <label className="text-slate-600 text-[9px] block">{comp}</label>
+                        <input type="number" min="0" max="100" value={nouveauPoste[0][comp]} onChange={function (e) { nouveauPoste[1](function (p) { var c = {}; for (var k in p) { c[k] = p[k]; } c[comp] = e.target.value; return c; }); }} className="w-full bg-slate-800 border border-slate-700 rounded-lg px-1 py-1 text-white text-[10px]" />
+                      </div>
+                    );
+                  })}
+                </div>
+                <button onClick={function () {
+                  var np = nouveauPoste[0];
+                  if (!np.intitule.trim()) { return; }
+                  var poste = { id: "P" + Date.now(), intitule: np.intitule, service: np.service, corps: np.corps, ancienneteMin: parseInt(np.ancienneteMin) || 0, competencesReq: { armes: parseInt(np.armes) || 50, secourisme: parseInt(np.secourisme) || 50, criminalistique: parseInt(np.criminalistique) || 50, informatique: parseInt(np.informatique) || 50, langues: parseInt(np.langues) || 50 } };
+                  setPostes(function (prev) { return prev.concat([poste]); });
+                  nouveauPoste[1]({ intitule: "", service: "", corps: "Indifferent", ancienneteMin: "0", armes: "50", secourisme: "50", criminalistique: "50", informatique: "50", langues: "50" });
+                }} className="bg-pink-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold mt-2">+ Ajouter ce poste</button>
+              </div>
+            </details>
+          </div>
+          <div className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4">
             <p className="text-white font-bold text-sm mb-3">Agents disponibles pour affectation</p>
             <div className="space-y-1.5 max-h-52 overflow-auto">
               {AGENTS_DATA.filter(function (a) { return a.statut === "actif"; }).map(function (a) {
@@ -2935,11 +2992,85 @@ function DataScientistPersonnel(props) {
             </div>
           </div>
           <button onClick={function () {
-            var ctx = JSON.stringify(AGENTS_DATA.map(function (a) { return { nom: a.nom, corps: a.corps, grade: gradeLabel(a), anciennete: a.anciennete, statut: a.statut, service: a.service }; }));
-            var ops = "Incidents actifs necessitant des specialistes: Vol a main armee (x2), Trafic stupefiants (x2), Faux documents, Tentative evasion | Unites en sous-effectif: DCPJ, Brigade PNR";
-            callIA(mAI[1], "Effectue un matching competences-poste pour la Police et Gendarmerie du Congo. Base sur les grades, anciennete et services actuels des agents: 1) Identifie les 3 meilleurs profils pour renforcer la DCPJ (enquetes criminelles) 2) Propose un matching pour la Brigade Navale (profils maritimes) 3) Identifie les agents sous-utilises dans leur poste actuel 4) Recommande des mutations strategiques pour optimiser le dispositif. Agents: " + ctx + " | Besoins operationnels: " + ops);
+            var agentsActifs = AGENTS_DATA.filter(function (a) { return a.statut === "actif"; });
+            var resultatsParPoste = postes.map(function (poste) {
+              var scores = agentsActifs.map(function (a) {
+                var profil = AGENT_PROFILS_MAP[a.id];
+                if (!profil) { return null; }
+                var comp = profil.competences;
+                var req = poste.competencesReq;
+                var sommeEcarts = 0; var sommePoids = 0;
+                ["armes", "secourisme", "criminalistique", "informatique", "langues"].forEach(function (k) {
+                  var poids = req[k];
+                  var ecart = Math.max(0, 100 - Math.abs(comp[k] - req[k]));
+                  sommeEcarts += ecart * (poids / 100);
+                  sommePoids += (poids / 100);
+                });
+                var scoreCompetences = sommePoids > 0 ? (sommeEcarts / sommePoids) : 0;
+
+                var corpsOk = poste.corps === "Indifferent" || a.corps === poste.corps;
+                var ancienneteOk = a.anciennete >= poste.ancienneteMin;
+                var bonusService = a.service === poste.service ? 8 : (profil.historiqueAffectations.some(function (h) { return h.service === poste.service; }) ? 5 : 0);
+                var bonusGrade = a.gradeIndex >= 6 ? 5 : 0;
+
+                var score = scoreCompetences * 0.7 + (ancienneteOk ? 15 : 0) + (corpsOk ? 5 : -20) + bonusService + bonusGrade;
+                score = Math.max(0, Math.min(100, Math.round(score)));
+
+                var motifs = [];
+                if (a.anciennete >= poste.ancienneteMin) { motifs.push(a.anciennete + " ans d anciennete"); }
+                var meilleuresComp = Object.keys(req).sort(function (x, y) { return req[y] - req[x]; }).slice(0, 2);
+                meilleuresComp.forEach(function (k) { if (comp[k] >= req[k] - 10) { motifs.push("competence " + k + " forte (" + comp[k] + "/100)"); } });
+                if (bonusService > 0) { motifs.push("experience anterieure dans un service similaire"); }
+                if (!corpsOk) { motifs.push("ATTENTION: corps " + a.corps + " different du corps requis (" + poste.corps + ")"); }
+                if (!ancienneteOk) { motifs.push("ATTENTION: anciennete insuffisante (min. " + poste.ancienneteMin + " ans requis)"); }
+
+                return { agent: a, score: score, motifs: motifs, grade: gradeLabel(a) };
+              }).filter(function (s) { return s !== null; }).sort(function (x, y) { return y.score - x.score; }).slice(0, 3);
+              return { poste: poste, top3: scores };
+            });
+            setMatchingResultats(resultatsParPoste);
           }} className="bg-pink-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2">🎯 Lancer le matching competences-poste</button>
-          <AIBloc state={mAI[0]} />
+
+          {matchingResultats ? (
+            <div className="space-y-3">
+              {matchingResultats.map(function (r) {
+                return (
+                  <div key={r.poste.id} className="bg-slate-800/90 rounded-2xl border border-slate-700 p-4">
+                    <p className="text-white font-bold text-sm mb-1">📌 {r.poste.intitule}</p>
+                    <p className="text-slate-500 text-[10px] mb-3">{r.poste.service} — {r.poste.corps} — Anciennete min: {r.poste.ancienneteMin} ans</p>
+                    {r.top3.length === 0 ? (<p className="text-slate-500 text-xs italic">Aucun agent actif disponible pour evaluation.</p>) : null}
+                    {r.top3.map(function (s, idx) {
+                      var couleur = s.score >= 70 ? "#22C55E" : s.score >= 50 ? "#F59E0B" : "#DC2626";
+                      return (
+                        <div key={s.agent.id} className="bg-slate-900 rounded-lg p-3 mb-2">
+                          <div className="flex items-center justify-between mb-1">
+                            <p className="text-white text-xs font-bold">#{idx + 1} {s.agent.nom} <span className="text-slate-500 font-normal">({s.grade})</span></p>
+                            <p className="font-bold text-sm" style={{ color: couleur }}>{s.score}%</p>
+                          </div>
+                          <p className="text-slate-400 text-[10px]">{s.motifs.join(" — ")}</p>
+                          <button onClick={function () {
+                            var texte = "NOTE DE SERVICE — ORDRE DE MUTATION (PROJET)\n";
+                            texte += "========================================================\n";
+                            texte += "Poste : " + r.poste.intitule + "\n";
+                            texte += "Service d affectation : " + r.poste.service + "\n";
+                            texte += "Agent propose : " + s.agent.nom + " (" + s.agent.matricule + ")\n";
+                            texte += "Grade : " + s.grade + " — Corps : " + s.agent.corps + "\n";
+                            texte += "Anciennete : " + s.agent.anciennete + " ans\n";
+                            texte += "Score de compatibilite : " + s.score + "%\n";
+                            texte += "Motif : " + s.motifs.join(", ") + "\n\n";
+                            texte += "Le Directeur du Personnel est invite a valider ou amender cette proposition.\n";
+                            texte += "----------------------------------------\n";
+                            texte += "Direction des Operations du Personnel (DOP) — SIPGN\n";
+                            navigator.clipboard.writeText(texte);
+                          }} className="bg-slate-700 text-white px-3 py-1 rounded-lg text-[10px] font-bold mt-2">📋 Valider l affectation (copier note de service)</button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          ) : null}
         </div>
       ) : null}
 
