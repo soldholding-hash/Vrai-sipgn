@@ -1361,7 +1361,7 @@ function Notes(props) {
   var contenuN = useState("");
   var prioN = useState("information");
 
-  var peutPublier = compte.role === "direction" || compte.role === "rh" || compte.role === "operations" || compte.role === "dl" || compte.role === "daf" || compte.role === "interpol";
+  var peutPublier = compte.role === "communication" || compte.role === "direction" || compte.role === "rh" || compte.role === "operations" || compte.role === "dl" || compte.role === "daf" || compte.role === "interpol";
 
   var visibles = notes.filter(function (n) { return estDestinataire(compte, n); });
   if (filter !== "tous") {
@@ -10403,6 +10403,7 @@ var NAV_ICON = {
   dossiers: FileText,
   assistance: BookOpen,
   casier: Fingerprint,
+  communication: MonitorPlay,
   dossiers360: Users,
   visioconf: Video,
   planifvisio: CalendarCheck,
@@ -10410,6 +10411,14 @@ var NAV_ICON = {
 };
 
 var NAV_BY_ROLE = {
+  communication: [
+    { id: "communication", label: "Communication & Medias" },
+    { id: "dashboard", label: "Tableau de bord" },
+    { id: "calendrier", label: "Calendrier" },
+    { id: "notes", label: "Notes de Service" },
+    { id: "messagerie", label: "Messagerie" },
+    { id: "appels", label: "Appels SIPGN" }
+  ],
   direction: [
     { id: "dashboard", label: "Tableau de bord" },
     { id: "territorial", label: "Commandement Territorial" },
@@ -10819,6 +10828,8 @@ export default function App() {
     content = <ControleVoyageurs compte={compte} />;
   } else if (module === "datascientist") {
     content = <DataScientistRouter compte={compte} />;
+  } else if (module === "communication") {
+    content = <ModuleCommunication compte={compte} />;
   } else if (module === "budget") {
     content = <GestionBudget compte={compte} />;
   } else if (module === "etatmajor") {
