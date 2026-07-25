@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 # Build SIPGN
 npm run build
 # Renommer ERP

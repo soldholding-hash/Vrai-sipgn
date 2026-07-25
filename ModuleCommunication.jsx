@@ -1,0 +1,1567 @@
+// =====================================================================
+// SIPGN — MODULE DIRECTION DE LA COMMUNICATION ET DES MEDIAS (DCM)
+// Republique du Congo — Commandement des Forces de Police
+// ---------------------------------------------------------------------
+// Integration :
+//   1) Ajouter le compte DCOM-001 dans le tableau COMPTES de App.jsx
+//   2) Ajouter la ligne de routage dans DataScientistRouter
+//   3) Importer ce fichier :  import { ModuleCommunication } from "./ModuleCommunication.jsx";
+//      (ou concatener le contenu dans App.jsx si la chaine de build ne
+//       gere qu'un seul fichier — voir NOTE_BUILD en fin de fichier)
+//
+// Dependances : React (useState, useEffect, useRef), Tailwind.
+// Aucune librairie externe supplementaire.
+// =====================================================================
+
+import React, { useState, useEffect, useRef } from "react";
+
+// ---------------------------------------------------------------------
+// CONFIGURATION DES SERVICES DISTANTS
+// ---------------------------------------------------------------------
+// ENDPOINT_IA  : ton proxy Node/Express (sipgn-ia-backend) qui relaie
+//                vers l'API Anthropic. Le navigateur ne peut pas appeler
+//                l'API directement (CORS + la cle ne doit jamais sortir).
+// ENDPOINT_STUDIO : worker de rendu video (ffmpeg + transcription +
+//                vision). Tant qu'il n'est pas deploye, le studio bascule
+//                automatiquement en mode simulation.
+// ---------------------------------------------------------------------
+var ENDPOINT_IA = "https://sipgn-ia-backend.onrender.com/api/ia";
+var ENDPOINT_STUDIO = "https://sipgn-ia-backend.onrender.com/api/studio";
+
+var COULEUR_DCM = "#DB2777";
+
+// ---------------------------------------------------------------------
+// APPEL IA — passerelle unique vers le backend
+// ---------------------------------------------------------------------
+// Contrat attendu cote backend :
+//   POST /api/ia
+//   body : { systeme: string, message: string, max_tokens: number }
+//   200  : { texte: string }
+// En cas d'echec (backend hors ligne, credits epuises, reseau coupe),
+// la fonction leve une erreur que chaque outil rattrape pour afficher
+// un message explicite plutot qu'un ecran vide.
+// ---------------------------------------------------------------------
+function appelIA(systeme, message, maxTokens) {
+  return fetch(ENDPOINT_IA, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      systeme: systeme,
+      message: message,
+      max_tokens: maxTokens ? maxTokens : 1200
+    })
+  }).then(function (r) {
+    if (!r.ok) { throw new Error("Le service d'analyse a repondu " + r.status + "."); }
+    return r.json();
+  }).then(function (d) {
+    if (!d || !d.texte) { throw new Error("Reponse vide du service d'analyse."); }
+    return d.texte;
+  });
+}
+
+var TON_REGALIEN =
+  "Tu rediges pour la Direction de la Communication et des Medias de la Force Publique " +
+  "de la Republique du Congo (Police Nationale et Gendarmerie Nationale). " +
+  "Registre institutionnel et regalien : phrases affirmatives, voix active, aucune familiarite, " +
+  "aucune emphase commerciale, aucun superlatif. Tu ne inventes jamais un fait, un chiffre, " +
+  "un grade ou un nom : si une donnee manque, tu inseres un marqueur [A COMPLETER]. " +
+  "Tu ecris en francais de Republique du Congo.";
+
+// ---------------------------------------------------------------------
+// DONNEES DE REFERENCE
+// ---------------------------------------------------------------------
+var SOURCES_VEILLE = [
+  { id: "SRC-01", nom: "Les Depeches de Brazzaville", type: "presse", actif: true },
+  { id: "SRC-02", nom: "Radio Congo", type: "radio", actif: true },
+  { id: "SRC-03", nom: "Telé Congo", type: "television", actif: true },
+  { id: "SRC-04", nom: "VOX Congo", type: "presse", actif: true },
+  { id: "SRC-05", nom: "Facebook — mentions publiques", type: "social", actif: true },
+  { id: "SRC-06", nom: "X / Twitter — mentions publiques", type: "social", actif: true },
+  { id: "SRC-07", nom: "Agence Congolaise d'Information", type: "agence", actif: false }
+];
+
+var LANGUES = [
+  { code: "ln", nom: "Lingala" },
+  { code: "kg", nom: "Kituba" },
+  { code: "tk", nom: "Teke" },
+  { code: "en", nom: "Anglais" },
+  { code: "pt", nom: "Portugais" }
+];
+
+var CIRCUIT_ETAPES = [
+  { cle: "redaction", label: "Redaction DCM", acteur: "communication-congo@sipgn.cg" },
+  { cle: "commandement", label: "Visa Commandement", acteur: "cfp-congo@policenationale.cg" },
+  { cle: "cabinet", label: "Validation Cabinet", acteur: "cabinet-congo@sipgn.cg" },
+  { cle: "publie", label: "Publie", acteur: "communication-congo@sipgn.cg" }
+];
+
+// Archives de demonstration pour la mediatheque. En production, ces
+// entrees proviennent de la table Supabase `mediatheque`.
+var ASSETS_DEMO = [
+  { id: "MED-0412", type: "photo", titre: "Ceremonie de promotion — Madingou", date: "2026-06-14", lieu: "Madingou, Bouenza", tags: ["ceremonie", "galons", "gendarmerie", "exterieur", "jour"], sensible: false, duree: null },
+  { id: "MED-0418", type: "video", titre: "Patrouille fluviale — Police Navale", date: "2026-06-09", lieu: "Fleuve Congo, Brazzaville", tags: ["navale", "embarcation", "fleuve", "patrouille"], sensible: false, duree: "04:12" },
+  { id: "MED-0421", type: "photo", titre: "Saisie de stupefiants — Port de Brazzaville", date: "2026-06-18", lieu: "Port autonome, Brazzaville", tags: ["saisie", "stupefiants", "port", "scelles"], sensible: true, duree: null },
+  { id: "MED-0425", type: "video", titre: "Point de presse du Commandement", date: "2026-06-20", lieu: "QG CFP, Brazzaville", tags: ["presse", "conference", "interieur", "pupitre"], sensible: false, duree: "18:47" },
+  { id: "MED-0430", type: "photo", titre: "Controle routier — Avenue de la Paix", date: "2026-06-21", lieu: "Brazzaville", tags: ["circulation", "controle", "vehicule", "plaque"], sensible: true, duree: null },
+  { id: "MED-0433", type: "video", titre: "Formation des eleves gendarmes", date: "2026-05-28", lieu: "Ecole de Gendarmerie, Brazzaville", tags: ["formation", "eleves", "instruction", "terrain"], sensible: false, duree: "07:33" },
+  { id: "MED-0437", type: "photo", titre: "Remise de vehicules a la Logistique", date: "2026-06-05", lieu: "Brazzaville", tags: ["logistique", "vehicule", "dotation", "ceremonie"], sensible: false, duree: null },
+  { id: "MED-0441", type: "video", titre: "Operation frontaliere — Aeroport Maya-Maya", date: "2026-06-16", lieu: "Aeroport Maya-Maya", tags: ["frontiere", "aeroport", "controle", "voyageurs"], sensible: true, duree: "11:05" }
+];
+
+// ---------------------------------------------------------------------
+// PETITS COMPOSANTS PARTAGES
+// ---------------------------------------------------------------------
+function CarteDCM(props) {
+  return (
+    <div className="bg-slate-800 border border-slate-700 rounded-2xl p-4">
+      {props.titre ? (
+        <div className="flex items-start justify-between gap-3 mb-3">
+          <div>
+            <h3 className="text-white font-bold text-sm uppercase tracking-widest">{props.titre}</h3>
+            {props.sousTitre ? <p className="text-slate-500 text-xs mt-0.5">{props.sousTitre}</p> : null}
+          </div>
+          {props.action ? props.action : null}
+        </div>
+      ) : null}
+      {props.children}
+    </div>
+  );
+}
+
+function BoutonAction(props) {
+  var actif = !props.disabled;
+  return (
+    <button
+      onClick={props.onClick}
+      disabled={props.disabled}
+      className={
+        "px-3.5 py-2 rounded-xl font-bold text-xs uppercase tracking-wide transition " +
+        (actif
+          ? "text-white"
+          : "bg-slate-700 text-slate-500 cursor-not-allowed")
+      }
+      style={actif ? { background: props.couleur ? props.couleur : COULEUR_DCM } : {}}
+    >
+      {props.children}
+    </button>
+  );
+}
+
+function BadgeSentiment(props) {
+  var s = props.sentiment;
+  var map = {
+    positif: { c: "#16A34A", t: "Positif" },
+    neutre: { c: "#64748B", t: "Neutre" },
+    negatif: { c: "#DC2626", t: "Negatif" }
+  };
+  var v = map[s] ? map[s] : map.neutre;
+  return (
+    <span
+      style={{ background: v.c + "1A", color: v.c, border: "1px solid " + v.c + "45" }}
+      className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-bold uppercase"
+    >
+      <span style={{ background: v.c }} className="w-1.5 h-1.5 rounded-full"></span>
+      {v.t}
+    </span>
+  );
+}
+
+function Barre(props) {
+  var pct = Math.max(0, Math.min(100, props.valeur));
+  return (
+    <div className="w-full bg-slate-900 rounded-full h-2 overflow-hidden">
+      <div
+        className="h-2 rounded-full transition-all duration-500"
+        style={{ width: pct + "%", background: props.couleur ? props.couleur : COULEUR_DCM }}
+      ></div>
+    </div>
+  );
+}
+
+function ZoneErreur(props) {
+  if (!props.message) { return null; }
+  return (
+    <div className="bg-red-950/60 border border-red-800 rounded-xl px-3 py-2.5 mt-3">
+      <p className="text-red-300 text-xs font-semibold">{props.message}</p>
+      <p className="text-red-400/70 text-xs mt-1">
+        Verifiez que le service d'analyse repond a l'adresse {ENDPOINT_IA}, puis relancez.
+      </p>
+    </div>
+  );
+}
+
+function EtatVide(props) {
+  return (
+    <div className="border border-dashed border-slate-700 rounded-xl py-8 px-4 text-center">
+      <p className="text-slate-400 text-sm font-semibold">{props.titre}</p>
+      {props.aide ? <p className="text-slate-600 text-xs mt-1">{props.aide}</p> : null}
+    </div>
+  );
+}
+
+function horodatage() {
+  var d = new Date();
+  function p(n) { return n < 10 ? "0" + n : "" + n; }
+  return p(d.getDate()) + "/" + p(d.getMonth() + 1) + "/" + d.getFullYear() + " a " + p(d.getHours()) + "h" + p(d.getMinutes());
+}
+
+// =====================================================================
+// 1. VEILLE, ANALYSE SEMANTIQUE ET SOCIAL LISTENING
+// =====================================================================
+function OngletVeille(props) {
+  var srcState = useState(SOURCES_VEILLE);
+  var sources = srcState[0];
+  var setSources = srcState[1];
+
+  var corpusState = useState("");
+  var corpus = corpusState[0];
+  var setCorpus = corpusState[1];
+
+  var resState = useState(null);
+  var resultat = resState[0];
+  var setResultat = resState[1];
+
+  var chargeState = useState(false);
+  var chargement = chargeState[0];
+  var setChargement = chargeState[1];
+
+  var errState = useState("");
+  var erreur = errState[0];
+  var setErreur = errState[1];
+
+  function basculerSource(id) {
+    setSources(sources.map(function (s) {
+      return s.id === id ? Object.assign({}, s, { actif: !s.actif }) : s;
+    }));
+  }
+
+  function analyser() {
+    if (!corpus.trim()) { return; }
+    setChargement(true);
+    setErreur("");
+    setResultat(null);
+
+    var systeme =
+      "Tu es l'analyste de veille de la Direction de la Communication de la Force Publique " +
+      "de la Republique du Congo. Tu analyses des extraits de presse et de reseaux sociaux " +
+      "concernant la Police Nationale et la Gendarmerie Nationale. " +
+      "Tu reponds UNIQUEMENT par un objet JSON valide, sans texte avant ni apres, sans balises Markdown. " +
+      "Schema exact : {\"global\":\"positif|neutre|negatif\", \"scores\":{\"positif\":number, \"neutre\":number, \"negatif\":number}, " +
+      "\"themes\":[{\"nom\":string, \"sentiment\":\"positif|neutre|negatif\", \"occurrences\":number}], " +
+      "\"signaux\":[{\"niveau\":\"attention|vigilance|critique\", \"resume\":string}], " +
+      "\"recommandation\":string}. " +
+      "Les trois scores sont des pourcentages entiers dont la somme fait 100.";
+
+    appelIA(systeme, "Extraits a analyser :\n\n" + corpus, 1600)
+      .then(function (txt) {
+        var propre = txt.replace(/```json/g, "").replace(/```/g, "").trim();
+        var obj = JSON.parse(propre);
+        setResultat(obj);
+        setChargement(false);
+      })
+      .catch(function (e) {
+        setErreur("L'analyse n'a pas abouti : " + e.message);
+        setChargement(false);
+      });
+  }
+
+  return (
+    <div className="space-y-4">
+      <CarteDCM titre="Sources surveillees" sousTitre="Flux integres au perimetre de veille">
+        <div className="flex flex-wrap gap-2">
+          {sources.map(function (s) {
+            return (
+              <button
+                key={s.id}
+                onClick={function () { basculerSource(s.id); }}
+                className={
+                  "px-3 py-1.5 rounded-lg text-xs font-bold border transition " +
+                  (s.actif
+                    ? "bg-pink-950/40 border-pink-700 text-pink-300"
+                    : "bg-slate-900 border-slate-700 text-slate-500")
+                }
+              >
+                {s.nom}
+                <span className="ml-2 opacity-60 uppercase">{s.type}</span>
+              </button>
+            );
+          })}
+        </div>
+        <p className="text-slate-500 text-xs mt-3">
+          {sources.filter(function (s) { return s.actif; }).length} source(s) active(s).
+          La collecte automatique s'appuie sur les flux RSS et les API publiques configurees cote serveur.
+        </p>
+      </CarteDCM>
+
+      <CarteDCM titre="Analyseur semantique" sousTitre="Collez les extraits collectes, un par ligne">
+        <textarea
+          value={corpus}
+          onChange={function (e) { setCorpus(e.target.value); }}
+          rows={7}
+          placeholder={"Ex :\nLes Depeches — La Police Nationale a saisi 40 kg de produits stupefiants au port.\nFacebook — Les controles routiers de ce matin ont bloque la circulation pendant deux heures.\nRadio Congo — Ceremonie de remise de galons a Madingou saluee par la population."}
+          className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm placeholder:text-slate-600"
+        />
+        <div className="flex items-center justify-between mt-3">
+          <span className="text-slate-500 text-xs">
+            {corpus.split("\n").filter(function (l) { return l.trim(); }).length} extrait(s)
+          </span>
+          <BoutonAction onClick={analyser} disabled={chargement || !corpus.trim()}>
+            {chargement ? "Analyse en cours" : "Analyser le corpus"}
+          </BoutonAction>
+        </div>
+        <ZoneErreur message={erreur} />
+      </CarteDCM>
+
+      {resultat ? (
+        <div className="space-y-4">
+          <CarteDCM titre="Tonalite generale">
+            <div className="flex items-center gap-3 mb-4">
+              <BadgeSentiment sentiment={resultat.global} />
+              <span className="text-slate-500 text-xs">Analyse du {horodatage()}</span>
+            </div>
+            <div className="space-y-3">
+              {["positif", "neutre", "negatif"].map(function (k) {
+                var couleurs = { positif: "#16A34A", neutre: "#64748B", negatif: "#DC2626" };
+                var val = resultat.scores && resultat.scores[k] ? resultat.scores[k] : 0;
+                return (
+                  <div key={k}>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-slate-400 font-semibold uppercase">{k}</span>
+                      <span className="text-white font-bold">{val}%</span>
+                    </div>
+                    <Barre valeur={val} couleur={couleurs[k]} />
+                  </div>
+                );
+              })}
+            </div>
+          </CarteDCM>
+
+          <CarteDCM titre="Themes detectes">
+            <div className="space-y-2">
+              {(resultat.themes || []).map(function (t, i) {
+                return (
+                  <div key={i} className="flex items-center justify-between bg-slate-900 rounded-xl px-3 py-2.5">
+                    <div className="min-w-0">
+                      <p className="text-white text-sm font-semibold truncate">{t.nom}</p>
+                      <p className="text-slate-500 text-xs">{t.occurrences} mention(s)</p>
+                    </div>
+                    <BadgeSentiment sentiment={t.sentiment} />
+                  </div>
+                );
+              })}
+            </div>
+          </CarteDCM>
+
+          {(resultat.signaux || []).length ? (
+            <CarteDCM titre="Signaux a remonter">
+              <div className="space-y-2">
+                {resultat.signaux.map(function (s, i) {
+                  var c = s.niveau === "critique" ? "#DC2626" : (s.niveau === "vigilance" ? "#F59E0B" : "#0EA5E9");
+                  return (
+                    <div key={i} className="rounded-xl px-3 py-2.5 border" style={{ background: c + "12", borderColor: c + "55" }}>
+                      <p className="text-xs font-bold uppercase tracking-wide" style={{ color: c }}>{s.niveau}</p>
+                      <p className="text-slate-200 text-sm mt-1">{s.resume}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </CarteDCM>
+          ) : null}
+
+          {resultat.recommandation ? (
+            <CarteDCM titre="Recommandation de communication">
+              <p className="text-slate-200 text-sm leading-relaxed">{resultat.recommandation}</p>
+            </CarteDCM>
+          ) : null}
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+// =====================================================================
+// 2. GENERATEUR DE SYNTHESES DE PRESSE
+// =====================================================================
+function OngletPresse(props) {
+  var artState = useState([]);
+  var articles = artState[0];
+  var setArticles = artState[1];
+
+  var brouillonState = useState({ source: "", titre: "", contenu: "" });
+  var brouillon = brouillonState[0];
+  var setBrouillon = brouillonState[1];
+
+  var synthState = useState("");
+  var synthese = synthState[0];
+  var setSynthese = synthState[1];
+
+  var chargeState = useState(false);
+  var chargement = chargeState[0];
+  var setChargement = chargeState[1];
+
+  var errState = useState("");
+  var erreur = errState[0];
+  var setErreur = errState[1];
+
+  function ajouter() {
+    if (!brouillon.titre.trim() || !brouillon.contenu.trim()) { return; }
+    setArticles(articles.concat([Object.assign({ id: "ART-" + (articles.length + 1) }, brouillon)]));
+    setBrouillon({ source: "", titre: "", contenu: "" });
+  }
+
+  function retirer(id) {
+    setArticles(articles.filter(function (a) { return a.id !== id; }));
+  }
+
+  function genererSynthese() {
+    if (!articles.length) { return; }
+    setChargement(true);
+    setErreur("");
+    setSynthese("");
+
+    var corpus = articles.map(function (a, i) {
+      return (i + 1) + ". [" + (a.source || "source non precisee") + "] " + a.titre + "\n" + a.contenu;
+    }).join("\n\n");
+
+    var systeme = TON_REGALIEN +
+      " Tu produis une NOTE DE SYNTHESE DE PRESSE destinee au Commandement des Forces de Police. " +
+      "Structure imposee : un titre, la date du jour, une section 'Faits saillants' (3 a 5 puces), " +
+      "une section 'Traitement mediatique' (analyse de l'angle retenu par les organes de presse), " +
+      "une section 'Points d'attention', et une section 'Proposition de posture'. " +
+      "Une page maximum. Aucun element non present dans les articles fournis.";
+
+    appelIA(systeme, "Articles du jour :\n\n" + corpus, 2000)
+      .then(function (txt) { setSynthese(txt); setChargement(false); })
+      .catch(function (e) {
+        setErreur("La synthese n'a pas ete produite : " + e.message);
+        setChargement(false);
+      });
+  }
+
+  return (
+    <div className="space-y-4">
+      <CarteDCM titre="Revue de presse du jour" sousTitre="Alimentez la revue article par article">
+        <div className="space-y-2">
+          <input
+            value={brouillon.source}
+            onChange={function (e) { setBrouillon(Object.assign({}, brouillon, { source: e.target.value })); }}
+            placeholder="Organe de presse"
+            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm placeholder:text-slate-600"
+          />
+          <input
+            value={brouillon.titre}
+            onChange={function (e) { setBrouillon(Object.assign({}, brouillon, { titre: e.target.value })); }}
+            placeholder="Titre de l'article"
+            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm placeholder:text-slate-600"
+          />
+          <textarea
+            value={brouillon.contenu}
+            onChange={function (e) { setBrouillon(Object.assign({}, brouillon, { contenu: e.target.value })); }}
+            rows={4}
+            placeholder="Corps de l'article ou extrait significatif"
+            className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm placeholder:text-slate-600"
+          />
+          <div className="flex justify-end">
+            <BoutonAction onClick={ajouter} disabled={!brouillon.titre.trim() || !brouillon.contenu.trim()}>
+              Ajouter a la revue
+            </BoutonAction>
+          </div>
+        </div>
+      </CarteDCM>
+
+      <CarteDCM
+        titre={"Articles retenus (" + articles.length + ")"}
+        action={
+          <BoutonAction onClick={genererSynthese} disabled={chargement || !articles.length}>
+            {chargement ? "Redaction" : "Produire la note"}
+          </BoutonAction>
+        }
+      >
+        {articles.length ? (
+          <div className="space-y-2">
+            {articles.map(function (a) {
+              return (
+                <div key={a.id} className="flex items-start justify-between gap-3 bg-slate-900 rounded-xl px-3 py-2.5">
+                  <div className="min-w-0">
+                    <p className="text-white text-sm font-semibold">{a.titre}</p>
+                    <p className="text-slate-500 text-xs mt-0.5">{a.source || "Source non precisee"}</p>
+                  </div>
+                  <button onClick={function () { retirer(a.id); }} className="text-slate-500 hover:text-red-400 text-xs font-bold shrink-0">
+                    Retirer
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <EtatVide titre="Aucun article dans la revue" aide="Ajoutez au moins un article pour produire la note de synthese." />
+        )}
+        <ZoneErreur message={erreur} />
+      </CarteDCM>
+
+      {synthese ? (
+        <CarteDCM
+          titre="Note de synthese"
+          sousTitre={"Produite le " + horodatage()}
+          action={
+            <button
+              onClick={function () { if (navigator.clipboard) { navigator.clipboard.writeText(synthese); } }}
+              className="text-slate-400 hover:text-white text-xs font-bold uppercase"
+            >
+              Copier
+            </button>
+          }
+        >
+          <pre className="text-slate-200 text-sm whitespace-pre-wrap leading-relaxed font-sans">{synthese}</pre>
+        </CarteDCM>
+      ) : null}
+    </div>
+  );
+}
+
+// =====================================================================
+// 3. REDACTION ASSISTEE ET TRADUCTION
+// =====================================================================
+function OngletRedaction(props) {
+  var soumettre = props.soumettreAuCircuit;
+
+  var typeState = useState("communique");
+  var typeDoc = typeState[0];
+  var setTypeDoc = typeState[1];
+
+  var consigneState = useState("");
+  var consigne = consigneState[0];
+  var setConsigne = consigneState[1];
+
+  var texteState = useState("");
+  var texte = texteState[0];
+  var setTexte = texteState[1];
+
+  var tradState = useState({});
+  var traductions = tradState[0];
+  var setTraductions = tradState[1];
+
+  var chargeState = useState("");
+  var chargement = chargeState[0];
+  var setChargement = chargeState[1];
+
+  var errState = useState("");
+  var erreur = errState[0];
+  var setErreur = errState[1];
+
+  var TYPES = [
+    { cle: "communique", label: "Communique officiel" },
+    { cle: "discours", label: "Discours" },
+    { cle: "note", label: "Note de service" },
+    { cle: "reseaux", label: "Publication reseaux" },
+    { cle: "droit", label: "Droit de reponse" }
+  ];
+
+  function rediger() {
+    if (!consigne.trim()) { return; }
+    setChargement("redaction");
+    setErreur("");
+
+    var cadres = {
+      communique: "Un communique officiel : en-tete institutionnel, lieu et date, corps en 3 a 5 paragraphes, formule de cloture, mention du service emetteur.",
+      discours: "Un discours prononce par une autorite de la Force Publique : adresse protocolaire, developpement en trois temps, conclusion mobilisatrice sobre.",
+      note: "Une note de service interne : objet, references, destinataires, instructions numerotees, signature.",
+      reseaux: "Une publication pour les reseaux sociaux : 60 mots maximum, une seule idee, ton institutionnel, sans emoji.",
+      droit: "Un droit de reponse adresse a un organe de presse : rappel factuel de la publication contestee, rectification point par point, demande de publication au titre du droit de reponse."
+    };
+
+    var systeme = TON_REGALIEN + " Tu produis : " + cadres[typeDoc];
+
+    appelIA(systeme, "Instruction de la Direction de la Communication :\n" + consigne, 2000)
+      .then(function (txt) { setTexte(txt); setChargement(""); })
+      .catch(function (e) {
+        setErreur("La redaction n'a pas abouti : " + e.message);
+        setChargement("");
+      });
+  }
+
+  function relire() {
+    if (!texte.trim()) { return; }
+    setChargement("relecture");
+    setErreur("");
+    var systeme = TON_REGALIEN +
+      " Tu relis un texte institutionnel. Tu corriges l'orthographe, la grammaire, la ponctuation " +
+      "et tu redresses toute formulation qui s'ecarte du registre regalien. Tu renvoies UNIQUEMENT " +
+      "le texte corrige, sans commentaire ni liste de modifications.";
+    appelIA(systeme, texte, 2000)
+      .then(function (txt) { setTexte(txt); setChargement(""); })
+      .catch(function (e) { setErreur("La relecture n'a pas abouti : " + e.message); setChargement(""); });
+  }
+
+  function traduire(langue) {
+    if (!texte.trim()) { return; }
+    setChargement("trad-" + langue.code);
+    setErreur("");
+    var systeme =
+      "Tu traduis des documents officiels de la Force Publique de la Republique du Congo vers le " +
+      langue.nom + ". Tu conserves le registre institutionnel, les noms propres, les grades et les " +
+      "chiffres a l'identique. Pour les langues nationales congolaises, tu emploies le lexique " +
+      "administratif reellement utilise en Republique du Congo et tu conserves en francais les termes " +
+      "juridiques sans equivalent etabli, entre parentheses. Tu renvoies uniquement la traduction.";
+    appelIA(systeme, texte, 2000)
+      .then(function (txt) {
+        var maj = {};
+        Object.keys(traductions).forEach(function (k) { maj[k] = traductions[k]; });
+        maj[langue.code] = txt;
+        setTraductions(maj);
+        setChargement("");
+      })
+      .catch(function (e) { setErreur("La traduction n'a pas abouti : " + e.message); setChargement(""); });
+  }
+
+  function envoyer() {
+    if (!texte.trim()) { return; }
+    var libelle = TYPES.filter(function (t) { return t.cle === typeDoc; })[0].label;
+    soumettre({
+      nature: "texte",
+      type: libelle,
+      titre: consigne.slice(0, 70) || libelle,
+      contenu: texte,
+      traductions: traductions
+    });
+    setTexte("");
+    setConsigne("");
+    setTraductions({});
+  }
+
+  return (
+    <div className="space-y-4">
+      <CarteDCM titre="Assistant redactionnel" sousTitre="Le texte produit reste un projet tant qu'il n'a pas recu le visa hierarchique">
+        <div className="flex flex-wrap gap-2 mb-3">
+          {TYPES.map(function (t) {
+            return (
+              <button
+                key={t.cle}
+                onClick={function () { setTypeDoc(t.cle); }}
+                className={
+                  "px-3 py-1.5 rounded-lg text-xs font-bold border transition " +
+                  (typeDoc === t.cle
+                    ? "bg-pink-950/40 border-pink-700 text-pink-300"
+                    : "bg-slate-900 border-slate-700 text-slate-500")
+                }
+              >
+                {t.label}
+              </button>
+            );
+          })}
+        </div>
+        <textarea
+          value={consigne}
+          onChange={function (e) { setConsigne(e.target.value); }}
+          rows={3}
+          placeholder="Ex : annoncer le demantelement d'un reseau de vol de vehicules a Bacongo, six interpellations, operation conjointe DCPJ et Commissariat Central, nuit du 22 au 23 juillet."
+          className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm placeholder:text-slate-600"
+        />
+        <div className="flex justify-end mt-3">
+          <BoutonAction onClick={rediger} disabled={chargement === "redaction" || !consigne.trim()}>
+            {chargement === "redaction" ? "Redaction" : "Rediger le projet"}
+          </BoutonAction>
+        </div>
+        <ZoneErreur message={erreur} />
+      </CarteDCM>
+
+      <CarteDCM
+        titre="Projet de texte"
+        action={
+          <button
+            onClick={relire}
+            disabled={chargement === "relecture" || !texte.trim()}
+            className="text-slate-400 hover:text-white text-xs font-bold uppercase disabled:text-slate-600"
+          >
+            {chargement === "relecture" ? "Relecture" : "Relire"}
+          </button>
+        }
+      >
+        <textarea
+          value={texte}
+          onChange={function (e) { setTexte(e.target.value); }}
+          rows={12}
+          placeholder="Le texte redige apparait ici. Il reste entierement modifiable."
+          className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm leading-relaxed placeholder:text-slate-600"
+        />
+        <div className="flex items-center justify-between mt-3">
+          <span className="text-slate-500 text-xs">
+            {texte.split(/\s+/).filter(function (m) { return m; }).length} mots
+          </span>
+          <BoutonAction onClick={envoyer} disabled={!texte.trim()}>
+            Soumettre au visa
+          </BoutonAction>
+        </div>
+      </CarteDCM>
+
+      <CarteDCM titre="Traduction" sousTitre="Langues nationales et langues etrangeres">
+        <div className="flex flex-wrap gap-2">
+          {LANGUES.map(function (l) {
+            return (
+              <button
+                key={l.code}
+                onClick={function () { traduire(l); }}
+                disabled={!texte.trim() || chargement === "trad-" + l.code}
+                className="px-3 py-1.5 rounded-lg text-xs font-bold border bg-slate-900 border-slate-700 text-slate-300 hover:border-pink-700 hover:text-pink-300 disabled:text-slate-600 disabled:hover:border-slate-700 transition"
+              >
+                {chargement === "trad-" + l.code ? "Traduction..." : l.nom}
+              </button>
+            );
+          })}
+        </div>
+        {Object.keys(traductions).length ? (
+          <div className="space-y-3 mt-4">
+            {Object.keys(traductions).map(function (code) {
+              var nom = LANGUES.filter(function (l) { return l.code === code; })[0].nom;
+              return (
+                <div key={code} className="bg-slate-900 rounded-xl p-3">
+                  <p className="text-pink-400 text-xs font-bold uppercase tracking-widest mb-2">{nom}</p>
+                  <pre className="text-slate-200 text-sm whitespace-pre-wrap leading-relaxed font-sans">{traductions[code]}</pre>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="text-slate-600 text-xs mt-3">
+            Redigez un texte, puis choisissez une langue. Les traductions accompagnent le texte dans le circuit de validation.
+          </p>
+        )}
+      </CarteDCM>
+    </div>
+  );
+}
+
+// =====================================================================
+// 4. STUDIO DE MONTAGE VIDEO
+// ---------------------------------------------------------------------
+// CONTRAT D'API DU WORKER DE RENDU (a implementer sur le VPS) :
+//
+//   POST {ENDPOINT_STUDIO}/jobs        (multipart/form-data)
+//     champs : audio (File), clips (File[]), parametres (JSON string)
+//     parametres = {
+//       sousTitres: bool, floutage: bool, habillage: bool,
+//       formats: ["16:9","9:16","1:1"], cadence: "lente|standard|soutenue"
+//     }
+//     201 -> { jobId: string }
+//
+//   GET  {ENDPOINT_STUDIO}/jobs/:id
+//     200 -> { jobId, etat: "en_cours|termine|echec",
+//              etapes: [{ cle, etat: "attente|en_cours|termine|echec", detail }],
+//              rendus: [{ format, url, poids }],
+//              sousTitres: { vtt: url, srt: url },
+//              floutages: number }
+//
+// Chaine technique cote worker :
+//   - decoupage rythmique : detection d'energie + silences (ffmpeg silencedetect)
+//     sur la voix-off, puis alignement des points de coupe des clips
+//   - transcription : whisper.cpp -> .vtt -> incrustation ffmpeg subtitles
+//   - floutage : detection visages (RetinaFace) + plaques (YOLO) par frame,
+//     puis boxblur ffmpeg sur les zones detectees, avec suivi inter-frames
+//   - formats : recadrage intelligent centre sur les zones d'interet
+//   - habillage : overlay PNG (ecusson, bandeau, filigrane) + generique
+//
+// Tant que ENDPOINT_STUDIO n'est pas joignable, le composant execute une
+// simulation locale des memes etapes pour permettre la recette de l'interface.
+// =====================================================================
+var ETAPES_RENDU = [
+  { cle: "ingestion", label: "Ingestion des sources", detail: "Verification des codecs et des durees" },
+  { cle: "rythme", label: "Analyse rythmique de la voix-off", detail: "Detection des silences et des accents" },
+  { cle: "montage", label: "Montage et synchronisation", detail: "Selection et calage des sequences" },
+  { cle: "soustitres", label: "Transcription et sous-titrage", detail: "Incrustation dynamique" },
+  { cle: "floutage", label: "Masquage des elements sensibles", detail: "Visages, plaques, documents" },
+  { cle: "formats", label: "Declinaison multi-format", detail: "16:9, 9:16, 1:1" },
+  { cle: "habillage", label: "Habillage institutionnel", detail: "Ecusson, bandeau, filigrane" }
+];
+
+function OngletStudio(props) {
+  var soumettre = props.soumettreAuCircuit;
+
+  var audioState = useState(null);
+  var audio = audioState[0];
+  var setAudio = audioState[1];
+
+  var clipsState = useState([]);
+  var clips = clipsState[0];
+  var setClips = clipsState[1];
+
+  var paramState = useState({
+    sousTitres: true, floutage: true, habillage: true,
+    formats: { "16:9": true, "9:16": true, "1:1": false },
+    cadence: "standard"
+  });
+  var params = paramState[0];
+  var setParams = paramState[1];
+
+  var jobState = useState(null);
+  var job = jobState[0];
+  var setJob = jobState[1];
+
+  var refTimer = useRef(null);
+
+  useEffect(function () {
+    return function () { if (refTimer.current) { clearInterval(refTimer.current); } };
+  }, []);
+
+  function basculerFormat(f) {
+    var maj = Object.assign({}, params.formats);
+    maj[f] = !maj[f];
+    setParams(Object.assign({}, params, { formats: maj }));
+  }
+
+  function etapesActives() {
+    return ETAPES_RENDU.filter(function (e) {
+      if (e.cle === "soustitres" && !params.sousTitres) { return false; }
+      if (e.cle === "floutage" && !params.floutage) { return false; }
+      if (e.cle === "habillage" && !params.habillage) { return false; }
+      return true;
+    });
+  }
+
+  function lancer() {
+    if (!audio || !clips.length) { return; }
+    var actives = etapesActives();
+    var init = {
+      etat: "en_cours",
+      mode: "simulation",
+      demarre: horodatage(),
+      etapes: actives.map(function (e, i) {
+        return Object.assign({}, e, { etat: i === 0 ? "en_cours" : "attente" });
+      }),
+      floutages: 0,
+      rendus: []
+    };
+    setJob(init);
+
+    // --- Bascule reelle ---------------------------------------------
+    // Remplacer ce bloc de simulation par :
+    //   var fd = new FormData();
+    //   fd.append("audio", audio);
+    //   clips.forEach(function (c) { fd.append("clips", c); });
+    //   fd.append("parametres", JSON.stringify(params));
+    //   fetch(ENDPOINT_STUDIO + "/jobs", { method: "POST", body: fd })
+    //     .then(...)  puis interroger GET /jobs/:id toutes les 3 s.
+    // -----------------------------------------------------------------
+    var idx = 0;
+    if (refTimer.current) { clearInterval(refTimer.current); }
+    refTimer.current = setInterval(function () {
+      idx = idx + 1;
+      setJob(function (prec) {
+        if (!prec) { return prec; }
+        var etapes = prec.etapes.map(function (e, i) {
+          if (i < idx) { return Object.assign({}, e, { etat: "termine" }); }
+          if (i === idx) { return Object.assign({}, e, { etat: "en_cours" }); }
+          return e;
+        });
+        var fini = idx >= prec.etapes.length;
+        if (fini) {
+          clearInterval(refTimer.current);
+          var fmts = Object.keys(params.formats).filter(function (f) { return params.formats[f]; });
+          return Object.assign({}, prec, {
+            etat: "termine",
+            etapes: etapes,
+            floutages: params.floutage ? 7 : 0,
+            rendus: fmts.map(function (f) {
+              return { format: f, poids: (f === "16:9" ? "184 Mo" : (f === "9:16" ? "121 Mo" : "96 Mo")) };
+            })
+          });
+        }
+        return Object.assign({}, prec, { etapes: etapes });
+      });
+    }, 1400);
+  }
+
+  function envoyerAuVisa() {
+    if (!job || job.etat !== "termine") { return; }
+    soumettre({
+      nature: "video",
+      type: "Montage video",
+      titre: "Montage — voix-off " + (audio ? audio.name : "") + " (" + clips.length + " sequences)",
+      contenu:
+        "Formats produits : " + job.rendus.map(function (r) { return r.format; }).join(", ") + ". " +
+        "Sous-titres : " + (params.sousTitres ? "incrustes" : "absents") + ". " +
+        "Masquage automatique : " + (params.floutage ? job.floutages + " zone(s) traitee(s)" : "desactive") + ". " +
+        "Habillage institutionnel : " + (params.habillage ? "applique" : "absent") + ".",
+      traductions: {}
+    });
+    setJob(null);
+    setAudio(null);
+    setClips([]);
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-amber-950/40 border border-amber-800 rounded-2xl px-4 py-3">
+        <p className="text-amber-300 text-xs font-bold uppercase tracking-wide">Mode simulation</p>
+        <p className="text-amber-200/80 text-xs mt-1 leading-relaxed">
+          Le rendu s'execute sur le serveur de traitement. Tant qu'il n'est pas joignable, le studio
+          deroule les memes etapes a blanc pour permettre la recette de l'interface et du circuit de validation.
+        </p>
+      </div>
+
+      <CarteDCM titre="Sources" sousTitre="Voix-off et rushes a monter">
+        <label className="block bg-slate-900 border border-dashed border-slate-700 rounded-xl px-3 py-4 cursor-pointer hover:border-pink-700 transition">
+          <input
+            type="file"
+            accept="audio/*"
+            className="hidden"
+            onChange={function (e) { setAudio(e.target.files[0] || null); }}
+          />
+          <p className="text-slate-300 text-sm font-semibold">
+            {audio ? audio.name : "Choisir le fichier de voix-off"}
+          </p>
+          <p className="text-slate-600 text-xs mt-0.5">
+            {audio ? Math.round(audio.size / 1024 / 1024 * 10) / 10 + " Mo" : "WAV, MP3 ou M4A"}
+          </p>
+        </label>
+
+        <label className="block bg-slate-900 border border-dashed border-slate-700 rounded-xl px-3 py-4 cursor-pointer hover:border-pink-700 transition mt-2">
+          <input
+            type="file"
+            accept="video/*"
+            multiple
+            className="hidden"
+            onChange={function (e) { setClips(Array.prototype.slice.call(e.target.files)); }}
+          />
+          <p className="text-slate-300 text-sm font-semibold">
+            {clips.length ? clips.length + " sequence(s) selectionnee(s)" : "Choisir les rushes video"}
+          </p>
+          <p className="text-slate-600 text-xs mt-0.5">MP4, MOV — selection multiple</p>
+        </label>
+
+        {clips.length ? (
+          <div className="mt-2 space-y-1">
+            {clips.map(function (c, i) {
+              return (
+                <div key={i} className="flex justify-between text-xs bg-slate-900 rounded-lg px-3 py-1.5">
+                  <span className="text-slate-400 truncate">{c.name}</span>
+                  <span className="text-slate-600 shrink-0 ml-2">{Math.round(c.size / 1024 / 1024)} Mo</span>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+      </CarteDCM>
+
+      <CarteDCM titre="Parametres du montage">
+        <div className="space-y-2">
+          {[
+            { cle: "sousTitres", label: "Sous-titres incrustes", aide: "Transcription automatique de la voix-off" },
+            { cle: "floutage", label: "Masquage automatique", aide: "Visages, plaques, documents classifies" },
+            { cle: "habillage", label: "Habillage institutionnel", aide: "Ecusson, bandeau, filigrane officiel" }
+          ].map(function (o) {
+            return (
+              <button
+                key={o.cle}
+                onClick={function () {
+                  var maj = {};
+                  maj[o.cle] = !params[o.cle];
+                  setParams(Object.assign({}, params, maj));
+                }}
+                className="w-full flex items-center justify-between bg-slate-900 rounded-xl px-3 py-2.5 text-left"
+              >
+                <div className="min-w-0">
+                  <p className="text-white text-sm font-semibold">{o.label}</p>
+                  <p className="text-slate-600 text-xs">{o.aide}</p>
+                </div>
+                <span
+                  className="w-10 h-6 rounded-full flex items-center px-0.5 shrink-0 transition"
+                  style={{ background: params[o.cle] ? COULEUR_DCM : "#334155" }}
+                >
+                  <span
+                    className="w-5 h-5 bg-white rounded-full transition-transform"
+                    style={{ transform: params[o.cle] ? "translateX(16px)" : "translateX(0)" }}
+                  ></span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="text-slate-400 text-xs font-bold uppercase tracking-wide mt-4 mb-2">Formats de sortie</p>
+        <div className="flex gap-2">
+          {["16:9", "9:16", "1:1"].map(function (f) {
+            var libelle = f === "16:9" ? "Television" : (f === "9:16" ? "Reseaux" : "Carre");
+            return (
+              <button
+                key={f}
+                onClick={function () { basculerFormat(f); }}
+                className={
+                  "flex-1 px-3 py-2 rounded-lg text-xs font-bold border transition " +
+                  (params.formats[f]
+                    ? "bg-pink-950/40 border-pink-700 text-pink-300"
+                    : "bg-slate-900 border-slate-700 text-slate-500")
+                }
+              >
+                {f}
+                <span className="block font-normal opacity-70 mt-0.5">{libelle}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <p className="text-slate-400 text-xs font-bold uppercase tracking-wide mt-4 mb-2">Cadence de montage</p>
+        <div className="flex gap-2">
+          {[
+            { cle: "lente", label: "Lente" },
+            { cle: "standard", label: "Standard" },
+            { cle: "soutenue", label: "Soutenue" }
+          ].map(function (c) {
+            return (
+              <button
+                key={c.cle}
+                onClick={function () { setParams(Object.assign({}, params, { cadence: c.cle })); }}
+                className={
+                  "flex-1 px-3 py-2 rounded-lg text-xs font-bold border transition " +
+                  (params.cadence === c.cle
+                    ? "bg-pink-950/40 border-pink-700 text-pink-300"
+                    : "bg-slate-900 border-slate-700 text-slate-500")
+                }
+              >
+                {c.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex justify-end mt-4">
+          <BoutonAction onClick={lancer} disabled={!audio || !clips.length || (job && job.etat === "en_cours")}>
+            {job && job.etat === "en_cours" ? "Rendu en cours" : "Lancer le montage"}
+          </BoutonAction>
+        </div>
+        {(!audio || !clips.length) ? (
+          <p className="text-slate-600 text-xs mt-2 text-right">
+            Une voix-off et au moins une sequence video sont necessaires.
+          </p>
+        ) : null}
+      </CarteDCM>
+
+      {job ? (
+        <CarteDCM titre="Progression du rendu" sousTitre={"Lance le " + job.demarre}>
+          <div className="space-y-2">
+            {job.etapes.map(function (e) {
+              var couleur = e.etat === "termine" ? "#16A34A" : (e.etat === "en_cours" ? COULEUR_DCM : "#475569");
+              return (
+                <div key={e.cle} className="flex items-center gap-3 bg-slate-900 rounded-xl px-3 py-2.5">
+                  <span
+                    className="w-2.5 h-2.5 rounded-full shrink-0"
+                    style={{ background: couleur }}
+                  ></span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-white text-sm font-semibold">{e.label}</p>
+                    <p className="text-slate-600 text-xs">{e.detail}</p>
+                  </div>
+                  <span className="text-xs font-bold uppercase shrink-0" style={{ color: couleur }}>
+                    {e.etat === "termine" ? "Termine" : (e.etat === "en_cours" ? "En cours" : "En attente")}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          {job.etat === "termine" ? (
+            <div className="mt-4">
+              {params.floutage ? (
+                <div className="bg-slate-900 rounded-xl px-3 py-2.5 mb-3">
+                  <p className="text-white text-sm font-semibold">{job.floutages} zone(s) masquee(s)</p>
+                  <p className="text-slate-600 text-xs">
+                    Le masquage automatique ne dispense pas du controle visuel avant diffusion.
+                  </p>
+                </div>
+              ) : null}
+              <div className="space-y-2">
+                {job.rendus.map(function (r) {
+                  return (
+                    <div key={r.format} className="flex items-center justify-between bg-slate-900 rounded-xl px-3 py-2.5">
+                      <div>
+                        <p className="text-white text-sm font-semibold">Rendu {r.format}</p>
+                        <p className="text-slate-600 text-xs">{r.poids}</p>
+                      </div>
+                      <span className="text-slate-600 text-xs font-bold uppercase">Pret</span>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="flex justify-end mt-4">
+                <BoutonAction onClick={envoyerAuVisa}>Soumettre au visa</BoutonAction>
+              </div>
+            </div>
+          ) : null}
+        </CarteDCM>
+      ) : null}
+    </div>
+  );
+}
+
+// =====================================================================
+// 5. MEDIATHEQUE ET RECHERCHE VISUELLE
+// =====================================================================
+function OngletMediatheque(props) {
+  var qState = useState("");
+  var requete = qState[0];
+  var setRequete = qState[1];
+
+  var filtreState = useState("tous");
+  var filtre = filtreState[0];
+  var setFiltre = filtreState[1];
+
+  var resState = useState(null);
+  var resultats = resState[0];
+  var setResultats = resState[1];
+
+  var chargeState = useState(false);
+  var chargement = chargeState[0];
+  var setChargement = chargeState[1];
+
+  var errState = useState("");
+  var erreur = errState[0];
+  var setErreur = errState[1];
+
+  function rechercher() {
+    if (!requete.trim()) { setResultats(null); return; }
+    setChargement(true);
+    setErreur("");
+
+    var catalogue = ASSETS_DEMO.map(function (a) {
+      return a.id + " | " + a.type + " | " + a.titre + " | " + a.lieu + " | " + a.date + " | mots-cles : " + a.tags.join(", ");
+    }).join("\n");
+
+    var systeme =
+      "Tu es le moteur de recherche de la mediatheque de la Force Publique de la Republique du Congo. " +
+      "On te fournit un catalogue de medias et une requete en langage naturel. Tu identifies les medias " +
+      "pertinents, y compris par proximite semantique (une requete sur 'securite routiere' doit remonter " +
+      "un controle routier). Tu reponds UNIQUEMENT par un JSON valide, sans Markdown : " +
+      "{\"resultats\":[{\"id\":string, \"pertinence\":number, \"motif\":string}]}. " +
+      "La pertinence est un entier de 0 a 100. Tu n'inclus que les medias dont la pertinence depasse 40, " +
+      "tries par pertinence decroissante. Si rien ne correspond, tu renvoies une liste vide.";
+
+    appelIA(systeme, "Catalogue :\n" + catalogue + "\n\nRequete : " + requete, 1200)
+      .then(function (txt) {
+        var obj = JSON.parse(txt.replace(/```json/g, "").replace(/```/g, "").trim());
+        var enrichis = (obj.resultats || []).map(function (r) {
+          var asset = ASSETS_DEMO.filter(function (a) { return a.id === r.id; })[0];
+          return asset ? Object.assign({}, asset, { pertinence: r.pertinence, motif: r.motif }) : null;
+        }).filter(function (x) { return x; });
+        setResultats(enrichis);
+        setChargement(false);
+      })
+      .catch(function (e) {
+        setErreur("La recherche n'a pas abouti : " + e.message);
+        setChargement(false);
+      });
+  }
+
+  var affiches = resultats !== null
+    ? resultats
+    : ASSETS_DEMO.filter(function (a) { return filtre === "tous" || a.type === filtre; });
+
+  return (
+    <div className="space-y-4">
+      <CarteDCM titre="Recherche dans les archives" sousTitre="Interrogez la mediatheque en langage naturel">
+        <div className="flex gap-2">
+          <input
+            value={requete}
+            onChange={function (e) { setRequete(e.target.value); }}
+            onKeyDown={function (e) { if (e.key === "Enter") { rechercher(); } }}
+            placeholder="Ex : images de ceremonie en exterieur avec des gendarmes"
+            className="flex-1 bg-slate-900 border border-slate-700 rounded-xl px-3 py-2.5 text-white text-sm placeholder:text-slate-600"
+          />
+          <BoutonAction onClick={rechercher} disabled={chargement || !requete.trim()}>
+            {chargement ? "..." : "Chercher"}
+          </BoutonAction>
+        </div>
+        {resultats !== null ? (
+          <button
+            onClick={function () { setResultats(null); setRequete(""); }}
+            className="text-slate-500 hover:text-white text-xs font-bold uppercase mt-3"
+          >
+            Effacer la recherche
+          </button>
+        ) : (
+          <div className="flex gap-2 mt-3">
+            {[
+              { cle: "tous", label: "Tous" },
+              { cle: "photo", label: "Photos" },
+              { cle: "video", label: "Videos" }
+            ].map(function (f) {
+              return (
+                <button
+                  key={f.cle}
+                  onClick={function () { setFiltre(f.cle); }}
+                  className={
+                    "px-3 py-1.5 rounded-lg text-xs font-bold border transition " +
+                    (filtre === f.cle
+                      ? "bg-pink-950/40 border-pink-700 text-pink-300"
+                      : "bg-slate-900 border-slate-700 text-slate-500")
+                  }
+                >
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
+        <ZoneErreur message={erreur} />
+      </CarteDCM>
+
+      <CarteDCM titre={resultats !== null ? "Resultats (" + affiches.length + ")" : "Archives (" + affiches.length + ")"}>
+        {affiches.length ? (
+          <div className="space-y-2">
+            {affiches.map(function (a) {
+              return (
+                <div key={a.id} className="bg-slate-900 rounded-xl px-3 py-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-slate-500 text-xs font-mono">{a.id}</span>
+                        <span className="text-xs font-bold uppercase" style={{ color: a.type === "video" ? "#0EA5E9" : "#A855F7" }}>
+                          {a.type}
+                        </span>
+                        {a.duree ? <span className="text-slate-600 text-xs">{a.duree}</span> : null}
+                        {a.sensible ? (
+                          <span className="px-1.5 py-0.5 rounded text-xs font-bold uppercase bg-amber-950/60 text-amber-400 border border-amber-800">
+                            Sensible
+                          </span>
+                        ) : null}
+                      </div>
+                      <p className="text-white text-sm font-semibold mt-1">{a.titre}</p>
+                      <p className="text-slate-500 text-xs mt-0.5">{a.lieu} — {a.date}</p>
+                    </div>
+                    {typeof a.pertinence === "number" ? (
+                      <span className="text-pink-400 text-xs font-black shrink-0">{a.pertinence}%</span>
+                    ) : null}
+                  </div>
+                  {a.motif ? <p className="text-slate-400 text-xs mt-2 italic">{a.motif}</p> : null}
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {a.tags.map(function (t) {
+                      return (
+                        <span key={t} className="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-xs">{t}</span>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <EtatVide
+            titre="Aucun media ne correspond"
+            aide="Reformulez la requete ou elargissez les termes employes."
+          />
+        )}
+      </CarteDCM>
+    </div>
+  );
+}
+
+// =====================================================================
+// 6. CIRCUIT DE VALIDATION HIERARCHIQUE
+// =====================================================================
+function OngletValidation(props) {
+  var dossiers = props.dossiers;
+  var faireAvancer = props.faireAvancer;
+  var rejeter = props.rejeter;
+  var compte = props.compte;
+
+  var ouvertState = useState(null);
+  var ouvert = ouvertState[0];
+  var setOuvert = ouvertState[1];
+
+  var motifState = useState("");
+  var motif = motifState[0];
+  var setMotif = motifState[1];
+
+  function indexEtape(cle) {
+    for (var i = 0; i < CIRCUIT_ETAPES.length; i++) {
+      if (CIRCUIT_ETAPES[i].cle === cle) { return i; }
+    }
+    return 0;
+  }
+
+  return (
+    <div className="space-y-4">
+      <CarteDCM titre="Circuit de validation" sousTitre="Aucune diffusion externe sans visa complet">
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {CIRCUIT_ETAPES.map(function (e, i) {
+            return (
+              <React.Fragment key={e.cle}>
+                <span className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-slate-400 text-xs font-bold">
+                  {e.label}
+                </span>
+                {i < CIRCUIT_ETAPES.length - 1 ? <span className="text-slate-600 text-xs">-&gt;</span> : null}
+              </React.Fragment>
+            );
+          })}
+        </div>
+      </CarteDCM>
+
+      {dossiers.length ? (
+        <div className="space-y-3">
+          {dossiers.map(function (d) {
+            var pos = indexEtape(d.etape);
+            var estOuvert = ouvert === d.id;
+            var couleurEtat = d.etape === "publie" ? "#16A34A" : (d.rejete ? "#DC2626" : COULEUR_DCM);
+            return (
+              <div key={d.id} className="bg-slate-800 border border-slate-700 rounded-2xl overflow-hidden">
+                <button
+                  onClick={function () { setOuvert(estOuvert ? null : d.id); }}
+                  className="w-full text-left px-4 py-3"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-slate-500 text-xs font-mono">{d.id}</span>
+                        <span className="text-slate-400 text-xs font-bold uppercase">{d.type}</span>
+                      </div>
+                      <p className="text-white text-sm font-semibold mt-1 truncate">{d.titre}</p>
+                    </div>
+                    <span
+                      className="px-2 py-0.5 rounded text-xs font-bold uppercase shrink-0"
+                      style={{ background: couleurEtat + "1A", color: couleurEtat, border: "1px solid " + couleurEtat + "45" }}
+                    >
+                      {d.rejete ? "Rejete" : CIRCUIT_ETAPES[pos].label}
+                    </span>
+                  </div>
+                  <div className="mt-3">
+                    <Barre valeur={(pos / (CIRCUIT_ETAPES.length - 1)) * 100} couleur={couleurEtat} />
+                  </div>
+                </button>
+
+                {estOuvert ? (
+                  <div className="border-t border-slate-700 px-4 py-3 space-y-3">
+                    <div className="bg-slate-900 rounded-xl p-3 max-h-64 overflow-y-auto">
+                      <pre className="text-slate-200 text-sm whitespace-pre-wrap leading-relaxed font-sans">{d.contenu}</pre>
+                    </div>
+
+                    {Object.keys(d.traductions || {}).length ? (
+                      <div className="space-y-2">
+                        {Object.keys(d.traductions).map(function (code) {
+                          var l = LANGUES.filter(function (x) { return x.code === code; })[0];
+                          return (
+                            <div key={code} className="bg-slate-900 rounded-xl p-3">
+                              <p className="text-pink-400 text-xs font-bold uppercase tracking-widest mb-1.5">
+                                {l ? l.nom : code}
+                              </p>
+                              <pre className="text-slate-300 text-xs whitespace-pre-wrap font-sans">{d.traductions[code]}</pre>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : null}
+
+                    <div>
+                      <p className="text-slate-400 text-xs font-bold uppercase tracking-wide mb-2">Journal des actions</p>
+                      <div className="space-y-1.5">
+                        {d.journal.map(function (j, i) {
+                          return (
+                            <div key={i} className="flex items-start gap-2 text-xs">
+                              <span className="text-slate-600 shrink-0 font-mono">{j.date}</span>
+                              <span className="text-slate-300">{j.action}</span>
+                              <span className="text-slate-600 ml-auto shrink-0">{j.acteur}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {!d.rejete && d.etape !== "publie" ? (
+                      <div className="space-y-2 pt-1">
+                        <input
+                          value={motif}
+                          onChange={function (e) { setMotif(e.target.value); }}
+                          placeholder="Observation (obligatoire en cas de rejet)"
+                          className="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white text-sm placeholder:text-slate-600"
+                        />
+                        <div className="flex gap-2">
+                          <BoutonAction
+                            onClick={function () { faireAvancer(d.id, compte, motif); setMotif(""); }}
+                            couleur="#16A34A"
+                          >
+                            {pos === CIRCUIT_ETAPES.length - 2 ? "Publier" : "Accorder le visa"}
+                          </BoutonAction>
+                          <button
+                            onClick={function () {
+                              if (!motif.trim()) { return; }
+                              rejeter(d.id, compte, motif);
+                              setMotif("");
+                            }}
+                            className="px-3.5 py-2 rounded-xl font-bold text-xs uppercase tracking-wide bg-slate-900 border border-red-900 text-red-400 hover:bg-red-950/40 transition"
+                          >
+                            Rejeter
+                          </button>
+                        </div>
+                        <p className="text-slate-600 text-xs">
+                          Dans le systeme cible, chaque visa est accorde par le titulaire du compte concerne.
+                          Le visa depuis ce poste est enregistre au nom de la DCM.
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <EtatVide
+          titre="Aucun dossier dans le circuit"
+          aide="Les textes rediges et les montages produits arrivent ici pour visa."
+        />
+      )}
+    </div>
+  );
+}
+
+// =====================================================================
+// COMPOSANT PRINCIPAL
+// =====================================================================
+export function ModuleCommunication(props) {
+  var compte = props.compte;
+
+  var ongletState = useState("veille");
+  var onglet = ongletState[0];
+  var setOnglet = ongletState[1];
+
+  var dossierState = useState([]);
+  var dossiers = dossierState[0];
+  var setDossiers = dossierState[1];
+
+  var ONGLETS = [
+    { cle: "veille", label: "Veille" },
+    { cle: "presse", label: "Synthese presse" },
+    { cle: "redaction", label: "Redaction" },
+    { cle: "studio", label: "Studio video" },
+    { cle: "mediatheque", label: "Mediatheque" },
+    { cle: "validation", label: "Validation" }
+  ];
+
+  function soumettreAuCircuit(dossier) {
+    var id = "DCM-" + String(dossiers.length + 1).padStart(4, "0");
+    var nouveau = Object.assign({}, dossier, {
+      id: id,
+      etape: "commandement",
+      rejete: false,
+      journal: [
+        { date: horodatage(), action: "Depot du projet", acteur: "DCM" },
+        { date: horodatage(), action: "Transmis pour visa au Commandement", acteur: "DCM" }
+      ]
+    });
+    setDossiers([nouveau].concat(dossiers));
+    setOnglet("validation");
+  }
+
+  function faireAvancer(id, acteur, observation) {
+    setDossiers(dossiers.map(function (d) {
+      if (d.id !== id) { return d; }
+      var i = 0;
+      for (var k = 0; k < CIRCUIT_ETAPES.length; k++) {
+        if (CIRCUIT_ETAPES[k].cle === d.etape) { i = k; }
+      }
+      var suivante = CIRCUIT_ETAPES[Math.min(i + 1, CIRCUIT_ETAPES.length - 1)];
+      var entree = {
+        date: horodatage(),
+        action: suivante.cle === "publie"
+          ? "Publication autorisee"
+          : ("Visa accorde — passage a l'etape " + suivante.label) + (observation ? " (" + observation + ")" : ""),
+        acteur: acteur.nom ? acteur.nom.split("(")[0].trim() : "DCM"
+      };
+      return Object.assign({}, d, { etape: suivante.cle, journal: d.journal.concat([entree]) });
+    }));
+  }
+
+  function rejeter(id, acteur, motif) {
+    setDossiers(dossiers.map(function (d) {
+      if (d.id !== id) { return d; }
+      var entree = {
+        date: horodatage(),
+        action: "Rejet — " + motif,
+        acteur: acteur.nom ? acteur.nom.split("(")[0].trim() : "DCM"
+      };
+      return Object.assign({}, d, { rejete: true, etape: "redaction", journal: d.journal.concat([entree]) });
+    }));
+  }
+
+  var enAttente = dossiers.filter(function (d) {
+    return !d.rejete && d.etape !== "publie";
+  }).length;
+
+  return (
+    <div className="min-h-screen bg-slate-950 p-4">
+      <div className="max-w-4xl mx-auto">
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest" style={{ color: COULEUR_DCM }}>
+              Direction de la Communication et des Medias
+            </p>
+            <h1 className="text-white font-black text-2xl mt-0.5">Salle de redaction</h1>
+            <p className="text-slate-500 text-xs mt-0.5">
+              {compte && compte.nom ? compte.nom : "DCM"} — Commandement des Forces de Police
+            </p>
+          </div>
+        </div>
+
+        <div className="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-4 px-4">
+          {ONGLETS.map(function (o) {
+            var actif = onglet === o.cle;
+            return (
+              <button
+                key={o.cle}
+                onClick={function () { setOnglet(o.cle); }}
+                className={
+                  "px-3.5 py-2 rounded-xl text-xs font-bold uppercase tracking-wide whitespace-nowrap border transition " +
+                  (actif ? "text-white" : "bg-slate-800 border-slate-700 text-slate-400")
+                }
+                style={actif ? { background: COULEUR_DCM, borderColor: COULEUR_DCM } : {}}
+              >
+                {o.label}
+                {o.cle === "validation" && enAttente ? (
+                  <span className="ml-2 px-1.5 py-0.5 rounded bg-slate-950/40 text-xs">{enAttente}</span>
+                ) : null}
+              </button>
+            );
+          })}
+        </div>
+
+        {onglet === "veille" ? <OngletVeille /> : null}
+        {onglet === "presse" ? <OngletPresse /> : null}
+        {onglet === "redaction" ? <OngletRedaction soumettreAuCircuit={soumettreAuCircuit} /> : null}
+        {onglet === "studio" ? <OngletStudio soumettreAuCircuit={soumettreAuCircuit} /> : null}
+        {onglet === "mediatheque" ? <OngletMediatheque /> : null}
+        {onglet === "validation" ? (
+          <OngletValidation
+            dossiers={dossiers}
+            faireAvancer={faireAvancer}
+            rejeter={rejeter}
+            compte={compte}
+          />
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
+export default ModuleCommunication;
+
+// =====================================================================
+// NOTE_BUILD
+// ---------------------------------------------------------------------
+// Si la chaine de build ne gere qu'un seul fichier, concatener ce fichier
+// dans App.jsx en supprimant :
+//   - la ligne d'import React en tete
+//   - les mots-cles "export" devant ModuleCommunication
+//   - la ligne "export default" en fin de fichier
+//
+// PERSISTANCE (etape suivante recommandee) :
+// Les dossiers du circuit vivent en memoire et disparaissent au
+// rechargement. Pour les conserver, creer dans Supabase :
+//
+//   create table dcm_dossiers (
+//     id text primary key,
+//     nature text, type text, titre text, contenu text,
+//     traductions jsonb, etape text, rejete boolean default false,
+//     journal jsonb, cree_le timestamptz default now()
+//   );
+//
+// puis remplacer setDossiers par des appels supabase.from('dcm_dossiers'),
+// sur le meme modele que la synchronisation temps reel deja en place pour
+// les incidents et les gardes a vue.
+// =====================================================================
