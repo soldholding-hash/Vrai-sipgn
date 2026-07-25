@@ -10413,7 +10413,6 @@ var NAV_ICON = {
 var NAV_BY_ROLE = {
   communication: [
     { id: "communication", label: "Communication & Medias" },
-    { id: "dashboard", label: "Tableau de bord" },
     { id: "calendrier", label: "Calendrier" },
     { id: "notes", label: "Notes de Service" },
     { id: "messagerie", label: "Messagerie" },
@@ -10748,7 +10747,7 @@ export default function App() {
   var compteState = useState(null);
   var compte = compteState[0];
   var setCompte = compteState[1];
-  var moduleState = useState("dashboard");
+  var moduleState = useState(compte.role === "communication" ? "communication" : "dashboard");
   var module = moduleState[0];
   var setModule = moduleState[1];
   var horlogeState = useState(new Date());
