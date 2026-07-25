@@ -10747,9 +10747,10 @@ export default function App() {
   var compteState = useState(null);
   var compte = compteState[0];
   var setCompte = compteState[1];
-  var moduleState = useState(compte.role === "communication" ? "communication" : "dashboard");
+  var moduleState = useState("dashboard");
   var module = moduleState[0];
   var setModule = moduleState[1];
+  useEffect(function () { if (compte && compte.role === "communication") { setModule("communication"); } }, [compte]);
   var horlogeState = useState(new Date());
   var horloge = horlogeState[0];
   var setHorloge = horlogeState[1];
