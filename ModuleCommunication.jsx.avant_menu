@@ -30,16 +30,6 @@ var ENDPOINT_STUDIO = "https://sipgn-ia-backend.onrender.com/api/studio";
 
 var COULEUR_DCM = "#DB2777";
 
-// Magasin partage : les dossiers du circuit de validation survivent au
-// changement d entree de menu (chaque changement remonte le composant).
-// A remplacer par la table Supabase dcm_dossiers pour une vraie persistance.
-var STORE_DOSSIERS = [];
-var ABONNES_DOSSIERS = [];
-function publierDossiers(liste) {
-  STORE_DOSSIERS = liste;
-  for (var i = 0; i < ABONNES_DOSSIERS.length; i++) { ABONNES_DOSSIERS[i](liste); }
-}
-
 // ---------------------------------------------------------------------
 // APPEL IA — passerelle unique vers le backend
 // ---------------------------------------------------------------------
@@ -1542,29 +1532,13 @@ function OngletAccueil(props) {
 export function ModuleCommunication(props) {
   var compte = props.compte;
 
-  var ongletState = useState(props.vue ? props.vue : "accueil");
+  var ongletState = useState("accueil");
   var onglet = ongletState[0];
   var setOnglet = ongletState[1];
 
-  var dossierState = useState(STORE_DOSSIERS);
+  var dossierState = useState([]);
   var dossiers = dossierState[0];
-  var majDossiers = dossierState[1];
-  function setDossiers(liste) { publierDossiers(liste); majDossiers(liste); }
-
-  useEffect(function () {
-    ABONNES_DOSSIERS.push(majDossiers);
-    return function () {
-      var reste = [];
-      for (var i = 0; i < ABONNES_DOSSIERS.length; i++) {
-        if (ABONNES_DOSSIERS[i] !== majDossiers) { reste.push(ABONNES_DOSSIERS[i]); }
-      }
-      ABONNES_DOSSIERS = reste;
-    };
-  }, []);
-
-  useEffect(function () {
-    if (props.vue) { setOnglet(props.vue); }
-  }, [props.vue]);
+  var setDossiers = dossierState[1];
 
   var ONGLETS = [
     { cle: "accueil", label: "Tableau de bord" },
@@ -1588,7 +1562,7 @@ export function ModuleCommunication(props) {
       ]
     });
     setDossiers([nouveau].concat(dossiers));
-    if (!props.vue) { setOnglet("validation"); }
+    setOnglet("validation");
   }
 
   function faireAvancer(id, acteur, observation) {
@@ -1641,7 +1615,7 @@ export function ModuleCommunication(props) {
           </div>
         </div>
 
-        <div className={"gap-2 overflow-x-auto pb-2 mb-4 -mx-4 px-4 " + (props.vue ? "hidden" : "flex")}>
+        <div className="flex gap-2 overflow-x-auto pb-2 mb-4 -mx-4 px-4">
           {ONGLETS.map(function (o) {
             var actif = onglet === o.cle;
             return (

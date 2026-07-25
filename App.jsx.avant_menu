@@ -10404,13 +10404,6 @@ var NAV_ICON = {
   assistance: BookOpen,
   casier: Fingerprint,
   communication: MonitorPlay,
-  comveille: Search,
-  compresse: BookOpen,
-  comredaction: FileText,
-  comstudio: Video,
-  commediatheque: Package,
-  comreseaux: Shuffle,
-  comvalidation: ClipboardCheck,
   dossiers360: Users,
   visioconf: Video,
   planifvisio: CalendarCheck,
@@ -10419,13 +10412,7 @@ var NAV_ICON = {
 
 var NAV_BY_ROLE = {
   communication: [
-    { id: "communication", label: "Tableau de bord" },
-    { id: "comveille", label: "Veille & Analyse" },
-    { id: "compresse", label: "Synthese Presse" },
-    { id: "comredaction", label: "Redaction & Traduction" },
-    { id: "comstudio", label: "Studio Video" },
-    { id: "commediatheque", label: "Mediatheque" },
-    { id: "comvalidation", label: "Circuit de Validation" },
+    { id: "communication", label: "Communication & Medias" },
     { id: "calendrier", label: "Calendrier" },
     { id: "notes", label: "Notes de Service" },
     { id: "messagerie", label: "Messagerie" },
@@ -10842,19 +10829,7 @@ export default function App() {
   } else if (module === "datascientist") {
     content = <DataScientistRouter compte={compte} />;
   } else if (module === "communication") {
-    content = <ModuleCommunication compte={compte} vue="accueil" />;
-  } else if (module === "comveille") {
-    content = <ModuleCommunication compte={compte} vue="veille" />;
-  } else if (module === "compresse") {
-    content = <ModuleCommunication compte={compte} vue="presse" />;
-  } else if (module === "comredaction") {
-    content = <ModuleCommunication compte={compte} vue="redaction" />;
-  } else if (module === "comstudio") {
-    content = <ModuleCommunication compte={compte} vue="studio" />;
-  } else if (module === "commediatheque") {
-    content = <ModuleCommunication compte={compte} vue="mediatheque" />;
-  } else if (module === "comvalidation") {
-    content = <ModuleCommunication compte={compte} vue="validation" />;
+    content = <ModuleCommunication compte={compte} />;
   } else if (module === "budget") {
     content = <GestionBudget compte={compte} />;
   } else if (module === "etatmajor") {
