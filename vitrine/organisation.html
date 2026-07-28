@@ -481,6 +481,32 @@ document.querySelectorAll('.actu-main, .actu-card, .mission-card, .communique-it
   el.style.opacity='0'; el.style.transform='translateY(20px)'; el.style.transition='opacity 0.5s ease, transform 0.5s ease';
   observer.observe(el);
 });
+
+// Fermer les menus déroulants (nav-dropdown) au clic en dehors
+document.addEventListener('click', function(e){
+  document.querySelectorAll('details.nav-dropdown[open]').forEach(function(d){
+    if(!d.contains(e.target)){ d.removeAttribute('open'); }
+  });
+});
+
+// Fermer les autres menus déroulants quand on en ouvre un nouveau
+document.querySelectorAll('details.nav-dropdown').forEach(function(d){
+  d.addEventListener('toggle', function(){
+    if(this.open){
+      document.querySelectorAll('details.nav-dropdown[open]').forEach(function(other){
+        if(other !== d){ other.removeAttribute('open'); }
+      });
+    }
+  });
+});
+
+// Fermer les menus déroulants après un clic sur un lien à l'intérieur
+document.querySelectorAll('details.nav-dropdown a').forEach(function(a){
+  a.addEventListener('click', function(){
+    var parent = this.closest('details.nav-dropdown');
+    if(parent){ parent.removeAttribute('open'); }
+  });
+});
 </script>
 </body>
 </html>
