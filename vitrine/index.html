@@ -350,6 +350,32 @@
 </script>
 </head>
 <body>
+<div id="consentOverlay" style="position:fixed; inset:0; z-index:9999; background:rgba(4,10,20,0.97); display:flex; align-items:center; justify-content:center; padding:24px;">
+  <div style="max-width:480px; width:100%; background:#0B1622; border:1px solid #0B1F3A; border-radius:16px; padding:32px 28px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.6);">
+    <p style="font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:#3B82F6; font-weight:700; margin-bottom:14px;">République du Congo — Police Nationale</p>
+    <h2 style="color:#fff; font-family:'Oswald',sans-serif; font-size:20px; font-weight:700; margin-bottom:16px; text-transform:uppercase; letter-spacing:0.03em;">Bienvenue sur notre site officiel</h2>
+    <p style="color:rgba(255,255,255,0.75); font-size:14px; line-height:1.7; margin-bottom:24px;">
+      Ce site utilise des outils de mesure d'audience (Google Analytics) afin d'améliorer votre expérience et de mieux comprendre l'utilisation de nos services en ligne. En poursuivant votre navigation, vous acceptez cette collecte de données statistiques anonymisées.
+    </p>
+    <button id="consentAcceptBtn" style="width:100%; background:#3B82F6; color:#fff; border:none; padding:14px 28px; border-radius:8px; font-family:'Oswald',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;">J'accepte et je continue</button>
+  </div>
+</div>
+<script>
+  (function() {
+    var consentKey = 'sipgn_consent_v1';
+    var overlay = document.getElementById('consentOverlay');
+    if (localStorage.getItem(consentKey) === 'accepted') {
+      overlay.style.display = 'none';
+    } else {
+      document.body.style.overflow = 'hidden';
+    }
+    document.getElementById('consentAcceptBtn').addEventListener('click', function() {
+      localStorage.setItem(consentKey, 'accepted');
+      overlay.style.display = 'none';
+      document.body.style.overflow = '';
+    });
+  })();
+</script>
 
 <!-- BANDE TRICOLORE TOP -->
 <div class="tricolor"><span></span><span></span><span></span></div>
