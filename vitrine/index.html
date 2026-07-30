@@ -525,29 +525,64 @@
 
 
 <!-- HERO -->
-<section class="hero">
-  <div class="hero-bg"></div>
+<section class="hero hero-landscape">
   <div class="hero-stripe"></div>
-  <div class="hero-content">
-    <img src="images/logo-police.png?v=2" alt="Logo Police Nationale" class="hero-logo" />
-    <p class="hero-eyebrow">République du Congo — Brazzaville</p>
-    <h1 class="hero-title">Bienvenue sur le site du <span class="accent">Commandement des Forces de Police</span></h1>
-    <p class="hero-subtitle">Protéger, Servir, Garantir la Sécurité de tous les citoyens de la République du Congo</p>
-    <div class="hero-actions">
-      <a href="#actualites" class="btn-primary">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 10h16M4 14h8"/></svg>
-        Voir l'actualité
-      </a>
-      <a href="#commandement" class="btn-outline">
-        Nous découvrir
-      </a>
+  <div class="hero-landscape-inner">
+    <div class="hero-slideshow">
+      <div class="hero-slide active" style="background-image:url('images/actu-operation.jpg');"></div>
+      <div class="hero-slide" style="background-image:url('images/actu-interpellation.jpg');"></div>
+      <div class="hero-slide" style="background-image:url('images/actu-interpol.jpg');"></div>
+      <div class="hero-slide" style="background-image:url('images/actu-decoration-vignette.jpg');"></div>
+      <div class="hero-slide" style="background-image:url('images/actu-radars.jpg');"></div>
+    </div>
+    <div class="hero-landscape-text">
+      <p class="hero-eyebrow">République du Congo — Brazzaville</p>
+      <h1 class="hero-title">Bienvenue sur le site du <span class="accent">Commandement des Forces de Police</span></h1>
+      <p class="hero-subtitle">Protéger, Servir, Garantir la Sécurité de tous les citoyens de la République du Congo</p>
     </div>
   </div>
-  <div class="hero-scroll">
-    <div class="hero-scroll-line"></div>
-    <span>Défiler</span>
-  </div>
 </section>
+
+<style>
+  .hero-landscape { min-height: auto; padding: 60px 24px; display: block; }
+  .hero-landscape-inner {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+    align-items: center;
+    position: relative; z-index: 2;
+  }
+  .hero-slideshow {
+    position: relative; width: 100%; aspect-ratio: 4/3;
+    border-radius: 16px; overflow: hidden;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+  }
+  .hero-slide {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    opacity: 0; transition: opacity 1.2s ease;
+  }
+  .hero-slide.active { opacity: 1; }
+  .hero-landscape-text { text-align: left; }
+  .hero-landscape-text .hero-title { margin-bottom: 16px; }
+  .hero-landscape-text .hero-subtitle { margin-left: 0; margin-right: 0; text-align: left; }
+  @media (max-width: 900px) {
+    .hero-landscape-inner { grid-template-columns: 1fr; }
+    .hero-landscape-text { text-align: center; }
+    .hero-landscape-text .hero-subtitle { text-align: center; margin-left: auto; margin-right: auto; }
+  }
+</style>
+
+<script>
+  (function() {
+    var slides = document.querySelectorAll('.hero-slide');
+    var current = 0;
+    setInterval(function() {
+      slides[current].classList.remove('active');
+      current = (current + 1) % slides.length;
+      slides[current].classList.add('active');
+    }, 4000);
+  })();
+</script>
 
 <!-- STATS BAR -->
 <div class="stats-bar">
