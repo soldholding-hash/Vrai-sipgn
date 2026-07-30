@@ -544,7 +544,12 @@
 </section>
 
 <style>
-  .hero-landscape { min-height: auto; padding: 60px 24px; display: block; }
+  .hero-landscape {
+    min-height: auto; padding: 60px 24px; display: block;
+    background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(59,130,246,0.06) 0%, transparent 70%),
+                radial-gradient(ellipse 60% 80% at 80% 80%, rgba(11,31,58,0.04) 0%, transparent 60%),
+                linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%);
+  }
   .hero-landscape-inner {
     max-width: 1200px; margin: 0 auto;
     display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
