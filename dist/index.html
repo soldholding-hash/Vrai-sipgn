@@ -9,20 +9,20 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --vert:    #3B82F6;
-    --jaune:   #F2F2F0;
+    --jaune:   #0B1F3A;
     --bleu-clair: #3B82F6;
     --rouge:   #DC2626;
     --bleu-nuit: #000000;
     --bleu-fonce: #0D0D10;
     --bleu-panel: #1A1A20;
     --bleu-card:  #22222A;
-    --gris-clair: #94A3B8;
+    --gris-clair: #4B5563;
     --blanc: #FFFFFF;
     --serif: 'Oswald', sans-serif;
     --body: 'Source Sans 3', sans-serif;
   }
   html { scroll-behavior: smooth; }
-  body { background: var(--bleu-nuit); color: var(--blanc); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+  body { background: #FFFFFF; color: #000000; font-family: var(--body); font-size: 16px; line-height: 1.6; }
 
   /* BANDE TRICOLORE */
   .tricolor { display: flex; height: 5px; }
@@ -154,9 +154,9 @@
 
   /* STATS BAR */
   .stats-bar {
-    background: var(--bleu-panel);
-    border-top: 1px solid rgba(255,255,255,0.05);
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    background: #F5F5F5;
+    border-top: 1px solid rgba(0,0,0,0.06);
+    border-bottom: 1px solid rgba(0,0,0,0.06);
   }
   .stats-inner {
     max-width: 1200px; margin: 0 auto;
@@ -165,7 +165,7 @@
   }
   .stat-item {
     padding: 28px 24px; text-align: center;
-    border-right: 1px solid rgba(255,255,255,0.07);
+    border-right: 1px solid rgba(0,0,0,0.08);
     position: relative;
   }
   .stat-item:last-child { border-right: none; }
@@ -186,7 +186,7 @@
   /* ACTUALITES */
   #actualites { background: var(--bleu-fonce); }
   .actu-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
-  .actu-main { background: var(--bleu-card); border-radius: 12px; border: 1px solid rgba(255,255,255,0.07); overflow: hidden; transition: transform 0.2s; }
+  .actu-main { background: #F5F5F5; border-radius: 12px; border: 1px solid rgba(0,0,0,0.08); overflow: hidden; transition: transform 0.2s; }
   .actu-main:hover { transform: translateY(-4px); }
   .actu-main-img { height: 260px; background: linear-gradient(180deg, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.45) 100%), url("images/actu-operation.jpg"); background-size: cover; background-position: center; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
   .actu-main-img .badge-cat { position: absolute; top: 16px; left: 16px; background: var(--rouge); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; }
@@ -199,7 +199,7 @@
   .actu-main-body a:hover { color: var(--jaune); }
 
   .actu-side { display: flex; flex-direction: column; gap: 16px; }
-  .actu-card { background: var(--bleu-card); border-radius: 10px; border: 1px solid rgba(255,255,255,0.07); padding: 18px; display: flex; gap: 14px; transition: transform 0.2s, border-color 0.2s; cursor: pointer; }
+  .actu-card { background: #F5F5F5; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); padding: 18px; display: flex; gap: 14px; transition: transform 0.2s, border-color 0.2s; cursor: pointer; }
   .actu-card:hover { transform: translateY(-2px); border-color: rgba(59,130,246,0.4); }
   .actu-card-icon { width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; }
   .actu-card-icon.vert { background: rgba(59,130,246,0.25); }
@@ -275,15 +275,15 @@
   .urgence-box p { color: var(--gris-clair); font-size: 13px; margin-top: 12px; }
 
   /* FOOTER */
-  footer { background: #020A14; border-top: 1px solid rgba(255,255,255,0.06); }
+  footer { background: #F5F5F5; border-top: 1px solid rgba(0,0,0,0.08); }
   .footer-inner { max-width: 1200px; margin: 0 auto; padding: 48px 24px 24px; }
   .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
   .footer-brand img { width: 52px; margin-bottom: 12px; }
   .footer-brand p { font-size: 13px; color: var(--gris-clair); line-height: 1.7; margin-top: 10px; max-width: 220px; }
   .footer-col h4 { font-family: var(--serif); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--jaune); margin-bottom: 14px; }
   .footer-col a { display: block; color: var(--gris-clair); text-decoration: none; font-size: 13px; margin-bottom: 8px; transition: color 0.2s; }
-  .footer-col a:hover { color: var(--blanc); }
-  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .footer-col a:hover { color: #000000; }
+  .footer-bottom { border-top: 1px solid rgba(0,0,0,0.08); padding-top: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
   .footer-social { display:flex; gap:10px; margin-top:14px; }
   .footer-social a { width:34px; height:34px; border-radius:8px; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.7); transition:background .2s,color .2s; }
   .footer-social a:hover { background:var(--vert); color:#fff; }
@@ -613,7 +613,7 @@
 
 
 <!-- PORTRAIT CFP -->
-<section id="commandement" style="background: linear-gradient(135deg, #040E1C 0%, #071828 100%); padding: 80px 24px; border-top: 1px solid rgba(59,130,246,0.2); border-bottom: 1px solid rgba(59,130,246,0.2);">
+<section id="commandement" style="background: linear-gradient(135deg, #FAFAFA 0%, #F0F0F0 100%); padding: 80px 24px; border-top: 1px solid rgba(59,130,246,0.2); border-bottom: 1px solid rgba(59,130,246,0.2);">
   <div class="container" style="max-width:1200px; margin:0 auto;">
     <div style="display:grid; grid-template-columns: repeat(auto-fit,minmax(280px,1fr)); gap:60px; align-items:center;">
       
@@ -645,18 +645,18 @@
 
       <!-- Texte -->
       <div>
-        <blockquote style="border-left:3px solid #0B1F3A; background:rgba(11,31,58,0.15); padding:24px 28px; margin:0; border-radius:0 12px 12px 0;">
-          <p style="color:#F5F3EE; font-size:12px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:16px;">Mot du Commandant des Forces de Police</p>
-          <p style="color:#CBD5E1; font-size:15px; font-style:italic; line-height:1.8; margin-bottom:16px;">
+        <blockquote style="border-left:3px solid #0B1F3A; background:rgba(11,31,58,0.06); padding:24px 28px; margin:0; border-radius:0 12px 12px 0;">
+          <p style="color:#0B1F3A; font-size:12px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; margin-bottom:16px;">Mot du Commandant des Forces de Police</p>
+          <p style="color:#333333; font-size:15px; font-style:italic; line-height:1.8; margin-bottom:16px;">
             « Le Commandement des Forces de Police est au service de la Nation. Notre mission est sacrée : protéger chaque citoyen, garantir la loi et maintenir la paix sur toute l'étendue du territoire congolais.
           </p>
-          <p style="color:#CBD5E1; font-size:15px; font-style:italic; line-height:1.8; margin-bottom:16px;">
+          <p style="color:#333333; font-size:15px; font-style:italic; line-height:1.8; margin-bottom:16px;">
             Sous l'Autorité éclairé et l'impulsion de l'État, les Forces de Police s'engagent chaque jour avec détermination à relever les défis sécuritaires contemporains. Notre action quotidienne repose sur des valeurs cardinales et innégociables : l'intégrité, le professionnalisme et le dévouement au service exclusif de la République et de ses concitoyens.
           </p>
-          <p style="color:#CBD5E1; font-size:15px; font-style:italic; line-height:1.8; margin-bottom:16px;">
+          <p style="color:#333333; font-size:15px; font-style:italic; line-height:1.8; margin-bottom:16px;">
             Ce site web se veut être un pont direct entre notre institution et la population. Il traduit notre volonté d'ouverture, de transparence et de modernisation pour mieux vous écouter, vous informer et vous servir 24h/24 et 7j/7. La sécurité est l'affaire de tous ; ensemble, faisons de la République du Congo un havre de paix durable. »
           </p>
-          <p style="color:#FFD20A; font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; margin-top:10px;">— Général de Police de 1ère Classe A.F. OBAMI ITOU, Commandant des Forces de Police</p>
+          <p style="color:#3B82F6; font-size:12px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; margin-top:10px;">— Général de Police de 1ère Classe A.F. OBAMI ITOU, Commandant des Forces de Police</p>
         </blockquote>
       </div>
     </div>
