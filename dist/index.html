@@ -84,9 +84,10 @@
                 linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%);
   }
   .hero-stripe {
-    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    height: 4px; width: 100%;
     background: linear-gradient(90deg, #1B6B3A 33.3%, #FFD20A 33.3% 66.6%, #DC2626 66.6%);
   }
+  .hero-landscape .hero-stripe { position: static; }
   .hero-content {
     position: relative; z-index: 2;
     text-align: center;
@@ -535,7 +536,7 @@
     <div class="hero-landscape-text">
       <p class="hero-eyebrow">République du Congo — Brazzaville</p>
       <h1 class="hero-title">Bienvenue sur le site du <span class="accent">Commandement des Forces de Police</span></h1>
-      <p class="hero-subtitle">Protéger, Servir, Garantir la Sécurité de tous les citoyens de la République du Congo</p>
+      <p class="hero-subtitle">Protéger, Servir et Garantir la sécurité de tous les citoyens.</p>
     </div>
   </div>
 </section>
