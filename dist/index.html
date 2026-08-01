@@ -530,11 +530,7 @@
   <div class="hero-stripe"></div>
   <div class="hero-landscape-inner">
     <div class="hero-slideshow">
-      <div class="hero-slide active" style="background-image:url('images/actu-operation.jpg');"></div>
-      <div class="hero-slide" style="background-image:url('images/actu-interpellation.jpg');"></div>
-      <div class="hero-slide" style="background-image:url('images/actu-interpol.jpg');"></div>
-      <div class="hero-slide" style="background-image:url('images/actu-decoration-vignette.jpg');"></div>
-      <div class="hero-slide" style="background-image:url('images/actu-radars.jpg');"></div>
+      <div class="hero-slide active" style="background-image:url('images/hero-slide-unique.jpg');"></div>
     </div>
     <div class="hero-landscape-text">
       <p class="hero-eyebrow">République du Congo — Brazzaville</p>
@@ -584,17 +580,7 @@
   }
 </style>
 
-<script>
-  (function() {
-    var slides = document.querySelectorAll('.hero-slide');
-    var current = 0;
-    setInterval(function() {
-      slides[current].classList.remove('active');
-      current = (current + 1) % slides.length;
-      slides[current].classList.add('active');
-    }, 4000);
-  })();
-</script>
+
 
 <!-- STATS BAR -->
 <div class="stats-bar">
