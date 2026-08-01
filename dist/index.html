@@ -546,21 +546,20 @@
 
 <style>
   .hero-landscape {
-    min-height: auto; padding: 60px 24px; display: block;
+    min-height: auto; padding: 0; display: block;
     background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(59,130,246,0.06) 0%, transparent 70%),
                 radial-gradient(ellipse 60% 80% at 80% 80%, rgba(11,31,58,0.04) 0%, transparent 60%),
                 linear-gradient(180deg, #FFFFFF 0%, #F5F5F5 100%);
   }
   .hero-landscape-inner {
-    max-width: 1200px; margin: 0 auto;
-    display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+    display: grid; grid-template-columns: 50% 50%;
     align-items: center;
     position: relative; z-index: 2;
+    min-height: 480px;
   }
   .hero-slideshow {
-    position: relative; width: 100%; aspect-ratio: 4/3;
-    border-radius: 16px; overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+    position: relative; width: 100%; height: 100%; min-height: 480px;
+    overflow: hidden;
   }
   .hero-slide {
     position: absolute; inset: 0;
@@ -568,12 +567,20 @@
     opacity: 0; transition: opacity 1.2s ease;
   }
   .hero-slide.active { opacity: 1; }
-  .hero-landscape-text { text-align: left; }
-  .hero-landscape-text .hero-title { margin-bottom: 16px; }
-  .hero-landscape-text .hero-subtitle { margin-left: 0; margin-right: 0; text-align: left; }
+  .hero-landscape-text { text-align: left; padding: 40px 40px 40px 0; }
+  .hero-landscape-text .hero-title {
+    margin-bottom: 14px;
+    font-size: clamp(22px, 3vw, 38px);
+  }
+  .hero-landscape-text .hero-subtitle {
+    margin-left: 0; margin-right: 0; text-align: left;
+    font-size: 15px;
+  }
+  .hero-landscape-text .hero-eyebrow { font-size: 10px; }
   @media (max-width: 900px) {
-    .hero-landscape-inner { grid-template-columns: 1fr; }
-    .hero-landscape-text { text-align: center; }
+    .hero-landscape-inner { grid-template-columns: 1fr; min-height: auto; }
+    .hero-slideshow { aspect-ratio: 4/3; min-height: auto; }
+    .hero-landscape-text { text-align: center; padding: 32px 24px; }
     .hero-landscape-text .hero-subtitle { text-align: center; margin-left: auto; margin-right: auto; }
   }
 </style>
