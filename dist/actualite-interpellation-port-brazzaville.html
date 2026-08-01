@@ -9,19 +9,19 @@
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
     --vert:    #3B82F6;
-    --jaune:   #FFD20A;
+    --jaune:   #0B1F3A;
     --rouge:   #DC2626;
     --bleu-nuit: #040E1C;
     --bleu-fonce: #071828;
     --bleu-panel: #0B2337;
     --bleu-card:  #0D2A40;
-    --gris-clair: #94A3B8;
+    --gris-clair: #4B5563;
     --blanc: #FFFFFF;
     --serif: 'Oswald', sans-serif;
     --body: 'Source Sans 3', sans-serif;
   }
   html { scroll-behavior: smooth; }
-  body { background: var(--bleu-nuit); color: var(--blanc); font-family: var(--body); font-size: 16px; line-height: 1.6; }
+  body { background: #FFFFFF; color: #000000; font-family: var(--body); font-size: 16px; line-height: 1.6; }
 
   /* BANDE TRICOLORE */
   .tricolor { display: flex; height: 5px; }
@@ -32,9 +32,9 @@
   /* NAV */
   nav {
     position: sticky; top: 0; z-index: 100;
-    background: rgba(4,14,28,0.96);
+    background: rgba(255,255,255,0.97);
     backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255,255,255,0.07);
+    border-bottom: 1px solid rgba(0,0,0,0.08);
   }
   .nav-inner {
     max-width: 1200px; margin: 0 auto;
@@ -45,11 +45,11 @@
   .nav-brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
   .nav-brand img { width: 40px; height: 40px; object-fit: contain; }
   .nav-brand-text { display: flex; flex-direction: column; }
-  .nav-brand-text strong { font-family: var(--serif); font-size: 14px; letter-spacing: 0.12em; color: #fff; text-transform: uppercase; }
-  .nav-brand-text span { font-size: 10px; color: var(--gris-clair); letter-spacing: 0.08em; text-transform: uppercase; }
+  .nav-brand-text strong { font-family: var(--serif); font-size: 14px; letter-spacing: 0.12em; color: #000000; text-transform: uppercase; }
+  .nav-brand-text span { font-size: 10px; color: #555555; letter-spacing: 0.08em; text-transform: uppercase; }
   .nav-links { display: flex; align-items: center; gap: 28px; }
-  .nav-links a { color: var(--gris-clair); text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.2s; }
-  .nav-links a:hover { color: var(--jaune); }
+  .nav-links a { color: #000000; text-decoration: none; font-size: 13px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--bleu-clair); }
   .btn-connexion {
     background: var(--vert);
     color: #fff !important;
@@ -153,17 +153,17 @@
   /* STATS BAR */
   .stats-bar {
     background: var(--bleu-panel);
-    border-top: 1px solid rgba(255,255,255,0.05);
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-top: 1px solid rgba(0,0,0,0.05);
+    border-bottom: 1px solid rgba(0,0,0,0.05);
   }
   .stats-inner {
     max-width: 1200px; margin: 0 auto;
     display: grid; grid-template-columns: repeat(4, 1fr);
-    divide-x: 1px solid rgba(255,255,255,0.07);
+    divide-x: 1px solid rgba(0,0,0,0.07);
   }
   .stat-item {
     padding: 28px 24px; text-align: center;
-    border-right: 1px solid rgba(255,255,255,0.07);
+    border-right: 1px solid rgba(0,0,0,0.07);
     position: relative;
   }
   .stat-item:last-child { border-right: none; }
@@ -184,7 +184,7 @@
   /* ACTUALITES */
   #actualites { background: var(--bleu-fonce); }
   .actu-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
-  .actu-main { background: var(--bleu-card); border-radius: 12px; border: 1px solid rgba(255,255,255,0.07); overflow: hidden; transition: transform 0.2s; }
+  .actu-main { background: var(--bleu-card); border-radius: 12px; border: 1px solid rgba(0,0,0,0.07); overflow: hidden; transition: transform 0.2s; }
   .actu-main:hover { transform: translateY(-4px); }
   .actu-main-img { height: 260px; background: linear-gradient(135deg, var(--vert) 0%, #0a3520 100%); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
   .actu-main-img .badge-cat { position: absolute; top: 16px; left: 16px; background: var(--rouge); color: #fff; font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 4px 10px; border-radius: 4px; }
@@ -197,7 +197,7 @@
   .actu-main-body a:hover { color: var(--jaune); }
 
   .actu-side { display: flex; flex-direction: column; gap: 16px; }
-  .actu-card { background: var(--bleu-card); border-radius: 10px; border: 1px solid rgba(255,255,255,0.07); padding: 18px; display: flex; gap: 14px; transition: transform 0.2s, border-color 0.2s; cursor: pointer; }
+  .actu-card { background: var(--bleu-card); border-radius: 10px; border: 1px solid rgba(0,0,0,0.07); padding: 18px; display: flex; gap: 14px; transition: transform 0.2s, border-color 0.2s; cursor: pointer; }
   .actu-card:hover { transform: translateY(-2px); border-color: rgba(59,130,246,0.4); }
   .actu-card-icon { width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; }
   .actu-card-icon.vert { background: rgba(59,130,246,0.25); }
@@ -214,7 +214,7 @@
   .missions-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
   .mission-card {
     background: var(--bleu-card); border-radius: 10px;
-    border: 1px solid rgba(255,255,255,0.06);
+    border: 1px solid rgba(0,0,0,0.06);
     padding: 28px 24px;
     border-top: 3px solid var(--top-color, var(--vert));
     transition: transform 0.2s;
@@ -247,7 +247,7 @@
 
   /* COMMUNIQUES */
   #communiques { background: var(--bleu-fonce); }
-  .communiques-list { display: flex; flex-direction: column; gap: 1px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.07); }
+  .communiques-list { display: flex; flex-direction: column; gap: 1px; background: rgba(0,0,0,0.05); border-radius: 10px; overflow: hidden; border: 1px solid rgba(0,0,0,0.07); }
   .communique-item { background: var(--bleu-card); padding: 20px 24px; display: flex; align-items: center; gap: 20px; transition: background 0.15s; cursor: pointer; }
   .communique-item:hover { background: #0f3350; }
   .communique-date { font-family: var(--serif); font-size: 13px; font-weight: 700; color: var(--jaune); min-width: 80px; }
@@ -273,18 +273,18 @@
   .urgence-box p { color: var(--gris-clair); font-size: 13px; margin-top: 12px; }
 
   /* FOOTER */
-  footer { background: #020A14; border-top: 1px solid rgba(255,255,255,0.06); }
+  footer { background: #F5F5F5; border-top: 1px solid rgba(0,0,0,0.08); }
   .footer-inner { max-width: 1200px; margin: 0 auto; padding: 48px 24px 24px; }
   .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 40px; }
   .footer-brand img { width: 52px; margin-bottom: 12px; }
   .footer-brand p { font-size: 13px; color: var(--gris-clair); line-height: 1.7; margin-top: 10px; max-width: 220px; }
   .footer-col h4 { font-family: var(--serif); font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--jaune); margin-bottom: 14px; }
   .footer-col a { display: block; color: var(--gris-clair); text-decoration: none; font-size: 13px; margin-bottom: 8px; transition: color 0.2s; }
-  .footer-col a:hover { color: var(--blanc); }
-  .footer-bottom { border-top: 1px solid rgba(255,255,255,0.06); padding-top: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+  .footer-col a:hover { color: #000000; }
+  .footer-bottom { border-top: 1px solid rgba(0,0,0,0.08); padding-top: 20px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
   .footer-bottom p { font-size: 12px; color: #475569; }
   .footer-social { display:flex; gap:10px; margin-top:14px; }
-  .footer-social a { width:34px; height:34px; border-radius:8px; background:rgba(255,255,255,0.06); display:flex; align-items:center; justify-content:center; color:rgba(255,255,255,0.7); transition:background .2s,color .2s; }
+  .footer-social a { width:34px; height:34px; border-radius:8px; background:rgba(0,0,0,0.06); display:flex; align-items:center; justify-content:center; color:rgba(0,0,0,0.7); transition:background .2s,color .2s; }
   .footer-social a:hover { background:var(--vert); color:#fff; }
   .footer-social svg { width:16px; height:16px; }
   .footer-sipgn { display: flex; align-items: center; gap-8px; gap: 8px; }
@@ -307,14 +307,14 @@
     .hero-title{font-size:32px;}
   }
   .nav-dropdown { position: relative; }
-  .nav-dropdown summary { cursor: pointer; list-style: none; color: rgba(255,255,255,0.85); font-size: 13px; letter-spacing: 0.03em; }
+  .nav-dropdown summary { cursor: pointer; list-style: none; color: #000000; font-size: 13px; letter-spacing: 0.03em; font-weight: 600; text-transform: uppercase; }
   .nav-dropdown summary::-webkit-details-marker { display: none; }
   .nav-dropdown summary:hover, .nav-dropdown[open] summary { color: var(--vert); }
-  .nav-dropdown-menu { position: absolute; top: 100%; left: 0; margin-top: 12px; background: #0B1622; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; min-width: 270px; padding: 8px 0; box-shadow: 0 12px 30px rgba(0,0,0,0.4); z-index: 50; }
-  .nav-dropdown-menu a { display: block; padding: 12px 20px; color: rgba(255,255,255,0.85); font-size: 14px; border-bottom: 1px solid rgba(255,255,255,0.06); text-decoration: none; }
+  .nav-dropdown-menu { position: absolute; top: 100%; left: 0; margin-top: 12px; background: #0B1622; border: 1px solid rgba(0,0,0,0.08); border-radius: 10px; min-width: 270px; padding: 8px 0; box-shadow: 0 12px 30px rgba(0,0,0,0.4); z-index: 50; }
+  .nav-dropdown-menu a { display: block; padding: 12px 20px; color:rgba(0,0,0,0.85); font-size: 14px; border-bottom: 1px solid rgba(0,0,0,0.06); text-decoration: none; }
   .nav-dropdown-menu a:last-child { border-bottom: none; }
-  .nav-dropdown-menu a:hover { color: var(--vert); background: rgba(255,255,255,0.03); }
-  @media (max-width: 900px) { .nav-dropdown-menu { position: static; margin-top: 6px; box-shadow: none; border: none; background: rgba(255,255,255,0.03); } }
+  .nav-dropdown-menu a:hover { color: var(--vert); background: rgba(0,0,0,0.03); }
+  @media (max-width: 900px) { .nav-dropdown-menu { position: static; margin-top: 6px; box-shadow: none; border: none; background: rgba(0,0,0,0.03); } }
 </style>
 <style>
 @media(max-width:768px){
@@ -343,7 +343,7 @@
   <div style="max-width:480px; width:100%; background:#0B1622; border:1px solid #0B1F3A; border-radius:16px; padding:32px 28px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,0.6);">
     <p style="font-size:11px; letter-spacing:0.2em; text-transform:uppercase; color:#3B82F6; font-weight:700; margin-bottom:14px;">République du Congo — Police Nationale</p>
     <h2 style="color:#fff; font-family:'Oswald',sans-serif; font-size:20px; font-weight:700; margin-bottom:16px; text-transform:uppercase; letter-spacing:0.03em;">Bienvenue sur notre site officiel</h2>
-    <p style="color:rgba(255,255,255,0.75); font-size:14px; line-height:1.7; margin-bottom:24px;">
+    <p style="color:rgba(0,0,0,0.75); font-size:14px; line-height:1.7; margin-bottom:24px;">
       Ce site utilise des outils de mesure d'audience (Google Analytics) afin d'améliorer votre expérience et de mieux comprendre l'utilisation de nos services en ligne. En poursuivant votre navigation, vous acceptez cette collecte de données statistiques anonymisées.
     </p>
     <button id="consentAcceptBtn" style="width:100%; background:#3B82F6; color:#fff; border:none; padding:14px 28px; border-radius:8px; font-family:'Oswald',sans-serif; font-size:14px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; cursor:pointer;">J'accepte et je continue</button>
@@ -430,12 +430,12 @@
       <img src="images/actu-interpellation.jpg" alt="Interpellation de 14 individus suspects dans la zone du Port de Brazzaville" style="width:100%; height:100%; object-fit:cover; display:block;" />
     </div>
     
-    <p style="color:rgba(255,255,255,0.6); font-size:16px; line-height:1.6; margin-bottom:28px; font-weight:300;">Une opération ciblée dans une zone stratégique pour l'économie nationale.</p>
-    <p style="color:rgba(255,255,255,0.8); font-size:15px; line-height:1.85; margin-bottom:22px;">Le 21 juin 2026, une opération conjointe menée par plusieurs unités de la Police Nationale a permis l'interpellation de 14 individus suspectés d'activités illicites dans le périmètre du Port Autonome de Brazzaville. Cette action s'inscrit dans le cadre du renforcement continu de la sécurité de cette zone stratégique pour les échanges commerciaux du pays.</p>
-    <p style="color:rgba(255,255,255,0.8); font-size:15px; line-height:1.85; margin-bottom:22px;">L'opération, planifiée sur plusieurs jours à la suite d'un travail de renseignement, a mobilisé des effectifs de la Direction de la Sécurité Publique en coordination avec les services de police judiciaire. Le dispositif déployé a permis de contrôler l'ensemble de la zone portuaire sur une période déterminée.</p>
-    <p style="color:rgba(255,255,255,0.8); font-size:15px; line-height:1.85; margin-bottom:22px;">Les individus interpellés, dont l'âge et le profil restent à préciser dans le cadre de l'enquête en cours, sont suspectés d'être impliqués dans diverses activités portant atteinte à la sécurité des biens et des personnes transitant par cette infrastructure économique majeure. Ils ont été placés en garde à vue et mis à la disposition des autorités judiciaires compétentes.</p>
-    <p style="color:rgba(255,255,255,0.8); font-size:15px; line-height:1.85; margin-bottom:22px;">Le Port Autonome de Brazzaville constitue un point névralgique pour l'économie congolaise, en raison du volume important de marchandises qui y transitent quotidiennement. La Police Nationale y maintient une présence renforcée afin de prévenir tout acte susceptible de perturber son fonctionnement ou de menacer la sécurité des usagers et des travailleurs.</p>
-    <p style="color:rgba(255,255,255,0.8); font-size:15px; line-height:1.85; margin-bottom:22px;">Cette opération illustre la détermination des forces de l'ordre à maintenir un haut niveau de vigilance dans les zones stratégiques du territoire national, en particulier celles à forte activité économique.</p>
+    <p style="color:rgba(0,0,0,0.6); font-size:16px; line-height:1.6; margin-bottom:28px; font-weight:300;">Une opération ciblée dans une zone stratégique pour l'économie nationale.</p>
+    <p style="color:rgba(0,0,0,0.8); font-size:15px; line-height:1.85; margin-bottom:22px;">Le 21 juin 2026, une opération conjointe menée par plusieurs unités de la Police Nationale a permis l'interpellation de 14 individus suspectés d'activités illicites dans le périmètre du Port Autonome de Brazzaville. Cette action s'inscrit dans le cadre du renforcement continu de la sécurité de cette zone stratégique pour les échanges commerciaux du pays.</p>
+    <p style="color:rgba(0,0,0,0.8); font-size:15px; line-height:1.85; margin-bottom:22px;">L'opération, planifiée sur plusieurs jours à la suite d'un travail de renseignement, a mobilisé des effectifs de la Direction de la Sécurité Publique en coordination avec les services de police judiciaire. Le dispositif déployé a permis de contrôler l'ensemble de la zone portuaire sur une période déterminée.</p>
+    <p style="color:rgba(0,0,0,0.8); font-size:15px; line-height:1.85; margin-bottom:22px;">Les individus interpellés, dont l'âge et le profil restent à préciser dans le cadre de l'enquête en cours, sont suspectés d'être impliqués dans diverses activités portant atteinte à la sécurité des biens et des personnes transitant par cette infrastructure économique majeure. Ils ont été placés en garde à vue et mis à la disposition des autorités judiciaires compétentes.</p>
+    <p style="color:rgba(0,0,0,0.8); font-size:15px; line-height:1.85; margin-bottom:22px;">Le Port Autonome de Brazzaville constitue un point névralgique pour l'économie congolaise, en raison du volume important de marchandises qui y transitent quotidiennement. La Police Nationale y maintient une présence renforcée afin de prévenir tout acte susceptible de perturber son fonctionnement ou de menacer la sécurité des usagers et des travailleurs.</p>
+    <p style="color:rgba(0,0,0,0.8); font-size:15px; line-height:1.85; margin-bottom:22px;">Cette opération illustre la détermination des forces de l'ordre à maintenir un haut niveau de vigilance dans les zones stratégiques du territoire national, en particulier celles à forte activité économique.</p>
   
   </div>
 </section>
